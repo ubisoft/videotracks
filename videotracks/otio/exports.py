@@ -5,7 +5,7 @@ import opentimelineio
 
 from xml.dom.minidom import parse
 
-from shotmanager.utils import utils_xml
+from videotracks.utils import utils_xml
 
 import logging
 

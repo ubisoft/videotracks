@@ -11,18 +11,27 @@ from bpy.props import (
     PointerProperty,
 )
 
-from .track import UAS_VideoShotManager_Track
+from videotracks.properties.track import UAS_VideoTracks_Track
 
-from shotmanager.utils import utils_vse
+from videotracks.utils import utils
+from videotracks.utils import utils_vse
 
 import logging
 
 _logger = logging.getLogger(__name__)
 
 
-class UAS_VSM_Props(PropertyGroup):
+class VideoTracks_Props(PropertyGroup):
+    def version(self):
+        """ Return the add-on version in the form of a tupple made by: 
+                - a string x.y.z (eg: "1.21.3")
+                - an integer. x.y.z becomes xxyyyzzz (eg: "1.21.3" becomes 1021003)
+            Return None if the addon has not been found
+        """
+        return utils.addonVersion("UAS Video Tracks")
+
     def initialize_video_shot_manager(self):
-        print(f"\nInitializing Video Shot Manager... Scene: {bpy.context.scene.name}")
+        print(f"\nInitializing Video Tracks... Scene: {bpy.context.scene.name}")
         # self.parentScene = self.getParentScene()
 
         if self.parentScene is None:
@@ -59,7 +68,7 @@ class UAS_VSM_Props(PropertyGroup):
         try:
             parentScn = self.parentScene
         except Exception:  # as e
-            print("Error - parentScene property is None in vsm_props.getParentScene():", sys.exc_info()[0])
+            print("Error - parentScene property is None in vt_props.getParentScene():", sys.exc_info()[0])
 
         # if parentScn is not None:
         #     return parentScn
@@ -77,8 +86,8 @@ class UAS_VSM_Props(PropertyGroup):
 
     def findParentScene(self):
         for scn in bpy.data.scenes:
-            if "UAS_vsm_props" in scn:
-                props = scn.UAS_vsm_props
+            if "UAS_video_tracks_props" in scn:
+                props = scn.UAS_video_tracks_props
                 if self == props:
                     #    print("findParentScene: Scene found")
                     return scn
@@ -118,7 +127,7 @@ class UAS_VSM_Props(PropertyGroup):
         default=5,
     )
 
-    tracks: CollectionProperty(type=UAS_VideoShotManager_Track)
+    tracks: CollectionProperty(type=UAS_VideoTracks_Track)
 
     # property used by the template_list component in an inverted order than selected_track_index in order
     # to reflect the VSE channels stack
@@ -439,8 +448,8 @@ class UAS_VSM_Props(PropertyGroup):
 
 
 _classes = (
-    UAS_VideoShotManager_Track,
-    UAS_VSM_Props,
+    UAS_VideoTracks_Track,
+    VideoTracks_Props,
 )
 
 
@@ -448,12 +457,12 @@ def register():
     for cls in _classes:
         bpy.utils.register_class(cls)
 
-    bpy.types.Scene.UAS_vsm_props = PointerProperty(type=UAS_VSM_Props)
+    bpy.types.Scene.UAS_video_tracks_props = PointerProperty(type=VideoTracks_Props)
 
 
 def unregister():
 
-    del bpy.types.Scene.UAS_vsm_props
+    del bpy.types.Scene.UAS_video_tracks_props
 
     for cls in reversed(_classes):
         bpy.utils.unregister_class(cls)

@@ -11,8 +11,8 @@ from bpy.props import (
     PointerProperty,
 )
 
-from shotmanager.config import config
-from shotmanager.utils import utils
+from videotracks.config import config
+from videotracks.utils import utils
 
 # # ------------------------------------------------------------------------#
 # #                                VSE tool Panel                             #
@@ -43,7 +43,7 @@ from shotmanager.utils import utils
 #         row = layout.row(align=True)
 #         row.prop(context.window_manager.UAS_vse_render, "inputOverResolution")
 
-#         #    row.operator ( "uas_shot_manager.render_openexplorer", text="", icon='FILEBROWSER').path = props.renderRootPath
+#         #    row.operator ( "uas_video_tracks.render_openexplorer", text="", icon='FILEBROWSER').path = props.renderRootPath
 #         layout.separator()
 
 #         row = layout.row(align=True)
@@ -1022,7 +1022,7 @@ class UAS_Vse_Render(PropertyGroup):
 
         bpy.context.window.scene = previousScene
 
-        # bpy.ops.image.open(filepath="//Main_Take0010.png", directory="Z:\\EvalSofts\\Blender\\DevPython_Data\\UAS_ShotManager_Data\\", files=[{"name":"Main_Take0010.png", "name":"Main_Take0010.png"}], relative_path=True, show_multiview=False)
+        # bpy.ops.image.open(filepath="//Main_Take0010.png", directory="Z:\\EvalSofts\\Blender\\DevPython_Data\\UAS_VideoTracks_Data\\", files=[{"name":"Main_Take0010.png", "name":"Main_Take0010.png"}], relative_path=True, show_multiview=False)
         # bpy.ops.image.open(
         #     filepath="//SceneRace_Sh0020_0079.png",
         #     directory="C:\\tmp02\\Main_Take\\",

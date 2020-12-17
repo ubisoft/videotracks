@@ -12,8 +12,8 @@ from .ogl_ui import Square
 font_info = {"font_id": 0, "handler": None}
 
 
-class UAS_ShotManager_DrawCameras_UI(bpy.types.Operator):
-    bl_idname = "uas_shot_manager.draw_cameras_ui"
+class UAS_VideoTracks_DrawCameras_UI(bpy.types.Operator):
+    bl_idname = "uas_video_tracks.draw_cameras_ui"
     bl_label = "ShotManager_DrawCameras_UI"
     bl_description = "ShotManager_DrawCameras_UI."
     bl_options = {"REGISTER", "INTERNAL"}
@@ -63,7 +63,7 @@ class UAS_ShotManager_DrawCameras_UI(bpy.types.Operator):
 
     def draw_shots_names(self, context):
         scn = context.scene
-        props = context.scene.UAS_shot_manager_props
+        props = context.scene.UAS_video_tracks_props
 
         font_size = 10
 
@@ -82,7 +82,7 @@ class UAS_ShotManager_DrawCameras_UI(bpy.types.Operator):
 
 
 def draw_all_shots_names(context, cam, pos_x, pos_y, vertical=False):
-    props = context.scene.UAS_shot_manager_props
+    props = context.scene.UAS_video_tracks_props
     current_shot = props.getCurrentShot()
     hud_offset_x = 19
     hud_offset_y = 0
@@ -188,8 +188,8 @@ def view3d_camera_border(context):
     return frame_px
 
 
-class UAS_ShotManager_DrawHUD(bpy.types.Operator):
-    bl_idname = "uas_shot_manager.draw_hud"
+class UAS_VideoTracks_DrawHUD(bpy.types.Operator):
+    bl_idname = "uas_video_tracks.draw_hud"
     bl_label = "Shot Manager Draw HUD."
     bl_description = "Draw the shot manager hud."
     bl_options = {"REGISTER", "INTERNAL"}
@@ -234,7 +234,7 @@ class UAS_ShotManager_DrawHUD(bpy.types.Operator):
         #     # if not bpy.context.space_data.show_gizmo:
         #     return
 
-        props = context.scene.UAS_shot_manager_props
+        props = context.scene.UAS_video_tracks_props
         current_shot = props.getCurrentShot()
         if current_shot is None or context.space_data.region_3d.view_perspective != "CAMERA":
             return
@@ -256,7 +256,7 @@ class UAS_ShotManager_DrawHUD(bpy.types.Operator):
         # line_position.y -= font_height + line_separation
 
     # def draw(self, context):
-    #     props = context.scene.UAS_shot_manager_props
+    #     props = context.scene.UAS_video_tracks_props
     #     current_shot = props.getCurrentShot()
     #     if current_shot is None or context.space_data.region_3d.view_perspective != "CAMERA":
     #         return
@@ -281,8 +281,8 @@ class UAS_ShotManager_DrawHUD(bpy.types.Operator):
 
 
 _classes = (
-    UAS_ShotManager_DrawCameras_UI,
-    UAS_ShotManager_DrawHUD,
+    UAS_VideoTracks_DrawCameras_UI,
+    UAS_VideoTracks_DrawHUD,
 )
 
 

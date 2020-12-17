@@ -172,10 +172,11 @@ class ShotClip:
         self.contour_mesh = build_rectangle_mesh(self.origin, self.width, self.height, True)
 
 
-class UAS_ShotManager_DrawMontageTimeline(bpy.types.Operator):
-    bl_idname = "uas_shot_manager.draw_montage_timeline"
+class UAS_VideoTracks_DrawMontageTimeline(bpy.types.Operator):
+    bl_idname = "uas_video_tracks.draw_montage_timeline"
     bl_label = "Draw Montage in timeline"
-    bl_options = { "REGISTER", "INTERNAL" }
+    bl_options = {"REGISTER", "INTERNAL"}
+
     def __init__(self):
         self.asset_browser = None
         self.compact_display = False
@@ -270,7 +271,7 @@ class UAS_ShotManager_DrawMontageTimeline(bpy.types.Operator):
         self.draw_event = context.window_manager.event_timer_add(0.1, window=context.window)
         context.window_manager.modal_handler_add(self)
         self.context = context
-        self.sm_props = context.scene.UAS_shot_manager_props
+        self.sm_vt_props = context.scene.UAS_video_tracks_props
         self.build_clips()
         return {"RUNNING_MODAL"}
 
@@ -313,7 +314,7 @@ class UAS_ShotManager_DrawMontageTimeline(bpy.types.Operator):
             blf.draw(0, str(self.frame_under_mouse))
 
 
-_classes = (UAS_ShotManager_DrawMontageTimeline,)
+_classes = (UAS_VideoTracks_DrawMontageTimeline,)
 
 
 def register():

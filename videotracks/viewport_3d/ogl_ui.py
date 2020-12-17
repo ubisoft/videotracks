@@ -713,8 +713,8 @@ class BL_UI_Timeline:
         pass
 
 
-class UAS_ShotManager_DrawTimeline(bpy.types.Operator):
-    bl_idname = "uas_shot_manager.draw_timeline"
+class UAS_VideoTracks_DrawTimeline(bpy.types.Operator):
+    bl_idname = "uas_video_tracks.draw_timeline"
     bl_label = "Draw Timeline"
     bl_description = "Draw the edting timeline in the viewport"
     bl_options = {"REGISTER", "INTERNAL"}

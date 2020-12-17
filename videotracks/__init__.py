@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import bpy
+
 from bpy.app.handlers import persistent
 
 from bpy.props import BoolProperty, IntProperty, FloatProperty
@@ -11,78 +12,53 @@ from bpy.props import BoolProperty, IntProperty, FloatProperty
 
 from .config import config
 
-from .handlers import jump_to_shot
+from .operators import prefs
+from .operators import general
+from .operators import tracks
 
 from . import otio
+from .operators import vt_tools
+from .properties import vt_props
 
-from .features import cameraBG
-from .features import greasepencil
+# from .ui.vsm_ui import UAS_PT_VideoTracks
+from .ui import vt_ui
+from .ui import vt_panels_ui
+from .ui import vt_time_control_ui
 
-from .operators import takes
-from .operators import shots
-from .operators import shots_global_settings
 
-from .operators import general
-from .operators import playbar
-from .operators import shots_toolbar
-
-from .operators import prefs
-from .operators import features
 from .operators import about
 
-from .properties import props
+# from .properties import props
 from .properties import addon_prefs
 
-from .retimer import retimer_ui
-from .retimer import retimer_props
-
-
-from . import rendering
-from .rendering import rendering_ui
-
-# from .rrs_specific import rrs_vsm_tools
-
-from .scripts import precut_tools
-
-from .tools import vse_render
+# from .tools import vse_render
 from .tools.markers_nav_bar import markers_nav_bar
 
-# from .tools.markers_nav_bar import markers_nav_bar_addon_prefs
+from .tools.markers_nav_bar import markers_nav_bar_addon_prefs
 
-from .ui import sm_ui
+from .ui import vt_ui
 
 from .utils import utils
-from .utils import utils_render
-from .utils import utils_handlers
+
+
 from .utils import utils_operators
-from .utils import utils_get_set_current_time
 
-from . import videoshotmanager
-from . import viewport_3d
+from .opengl import sequencer_draw
 
-from .scripts import rrs
-
-# from .data_patches.data_patch_to_v1_2_25 import data_patch_to_v1_2_25
-# from .data_patches.data_patch_to_v1_3_16 import data_patch_to_v1_3_16
-
-# # from .data_patches.data_patch_to_v1_3_31 import data_patch_to_v1_3_31
-
-from .debug import sm_debug
 
 bl_info = {
-    "name": "UAS Shot Manager",
-    "author": "Julien Blervaque (aka Werwack), Romain Carriquiry Borchiari",
-    "description": "Manage a sequence of shots and cameras in the 3D View - Ubisoft Animation Studio",
+    "name": "UAS Video Tracks",
+    "author": "Julien Blervaque (aka Werwack)",
+    "description": "Introduce tracks to the Blender VSE - Ubisoft Animation Studio",
     "blender": (2, 90, 0),
-    "version": (1, 3, 80),
-    "location": "View3D > UAS Shot Manager",
-    "wiki_url": "https://gitlab-ncsa.ubisoft.org/animation-studio/blender/shotmanager-addon/-/wikis/home",
-    "warning": "BETA Version - Fais gaffe à tes données !!!",
+    "version": (0, 1, 0),
+    "location": "View3D > UAS Video Tracks",
+    "wiki_url": "https://gitlab-ncsa.ubisoft.org/animation-studio/blender/videotracks-addon/-/wikis/home",
+    "warning": "BETA Version",
     "category": "UAS",
 }
 
 __version__ = f"v{bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}"
-
 
 ###########
 # Logging
@@ -147,35 +123,8 @@ class Formatter(logging.Formatter):
 
 
 ###########
-# Handlers
+# Version
 ###########
-
-
-def timeline_valueChanged(self, context):
-    # print("  timeline_valueChanged:  self.UAS_shot_manager_display_timeline: ", self.UAS_shot_manager_display_timeline)
-    if self.UAS_shot_manager_display_timeline:
-        bpy.ops.uas_shot_manager.draw_timeline("INVOKE_DEFAULT")
-        bpy.ops.uas_shot_manager.draw_montage_timeline("INVOKE_DEFAULT")
-        # bpy.ops.uas_shot_manager.draw_cameras_ui("INVOKE_DEFAULT")
-
-
-def install_shot_handler(self, context):
-    if self.UAS_shot_manager_shots_play_mode and jump_to_shot not in bpy.app.handlers.frame_change_pre:
-        scene = context.scene
-        shots = scene.UAS_shot_manager_props.get_shots()
-        for i, shot in enumerate(shots):
-            if shot.start <= scene.frame_current <= shot.end:
-                scene.UAS_shot_manager_props.current_shot_index = i
-                break
-        bpy.app.handlers.frame_change_pre.append(jump_to_shot)
-    #     bpy.app.handlers.frame_change_post.append(jump_to_shot__frame_change_post)
-
-    #    bpy.ops.uas_shot_manager.draw_timeline ( "INVOKE_DEFAULT" )
-    elif not self.UAS_shot_manager_shots_play_mode and jump_to_shot in bpy.app.handlers.frame_change_pre:
-        utils_handlers.removeAllHandlerOccurences(jump_to_shot, handlerCateg=bpy.app.handlers.frame_change_pre)
-        # utils_handlers.removeAllHandlerOccurences(
-        #     jump_to_shot__frame_change_post, handlerCateg=bpy.app.handlers.frame_change_post
-        # )
 
 
 @persistent
@@ -186,7 +135,7 @@ def checkDataVersion_post_load_handler(self, context):
         print("\nNew file loaded")
     else:
         print("\nExisting file loaded: ", bpy.path.basename(bpy.context.blend_data.filepath))
-        _logger.info("  - Shot Manager is checking the version used to create the loaded scene data...")
+        _logger.info("  - Video Track is checking the version used to create the loaded scene data...")
 
         latestVersionToPatch = 1003061
 
@@ -269,36 +218,20 @@ def checkDataVersion_post_load_handler(self, context):
     if props is not None:
         if props.display_shotname_in_3dviewport:
             try:
-                bpy.ops.uas_shot_manager.draw_cameras_ui("INVOKE_DEFAULT")
+                bpy.ops.uas_video_tracks.draw_cameras_ui("INVOKE_DEFAULT")
             except Exception as e:
                 print("Paf in draw cameras ui  *")
 
         if props.display_hud_in_3dviewport:
             try:
-                bpy.ops.uas_shot_manager.draw_hud("INVOKE_DEFAULT")
+                bpy.ops.uas_video_tracks.draw_hud("INVOKE_DEFAULT")
             except Exception as e:
                 print("Paf in draw hud  *")
 
 
-# wkip doesn t work!!! Property values changed right before the save are not saved in the file!
-# @persistent
-# def checkDataVersion_save_pre_handler(self, context):
-#     print("\nFile saved - Shot Manager is writing its data version in the scene")
-#     for scn in bpy.data.scenes:
-#         if "UAS_shot_manager_props" in scn:
-#             print("\n   Shot Manager instance found in scene, writing data version: " + scn.name)
-#             props.dataVersion = bpy.context.window_manager.UAS_shot_manager_version
-#             print("   props.dataVersion: ", props.dataVersion)
-
-
-# classes = (
-#
-# )
-
-
 def register():
 
-    versionTupple = utils.display_addon_registered_version("UAS Shot Manager")
+    versionTupple = utils.display_addon_registered_version("UAS Video Tracks")
 
     config.initGlobalVariables()
 
@@ -313,7 +246,8 @@ def register():
         _logger.setLevel(logging.WARNING)
         formatter = None
 
-        if config.uasDebug_ignoreLoggerFormatting:
+        # if config.uasDebug_ignoreLoggerFormatting:
+        if True:
             ch = "~"  # "\u02EB"
             formatter = Formatter(ch + " {message:<140}", style="{")
         else:
@@ -330,37 +264,17 @@ def register():
     # update data
     ###################
 
-    # bpy.context.window_manager.UAS_shot_manager_version
-    bpy.types.WindowManager.UAS_shot_manager_version = IntProperty(
+    bpy.types.WindowManager.UAS_video_tracks_version = IntProperty(
         name="Add-on Version Int", description="Add-on version as integer", default=versionTupple[1]
     )
 
-    # handler to check the data version at load
-    ##################
-    # print("       * Post Load handler added\n")
+    # utils_handlers.removeAllHandlerOccurences(
+    #     checkDataVersion_post_load_handler, handlerCateg=bpy.app.handlers.load_post
+    # )
+    # bpy.app.handlers.load_post.append(checkDataVersion_post_load_handler)
 
     # if config.uasDebug:
     #     utils_handlers.displayHandlers(handlerCategName="load_post")
-
-    utils_handlers.removeAllHandlerOccurences(
-        checkDataVersion_post_load_handler, handlerCateg=bpy.app.handlers.load_post
-    )
-    bpy.app.handlers.load_post.append(checkDataVersion_post_load_handler)
-
-    if config.uasDebug:
-        utils_handlers.displayHandlers(handlerCategName="load_post")
-
-    # handler to write the data version at save
-    ##################
-    # print("       - Pre Save handler added")
-    # if config.uasDebug:
-    #     utils_handlers.displayHandlers(handlerCategName="save_pre")
-
-    # utils_handlers.removeAllHandlerOccurences(checkDataVersion_save_pre_handler, handlerCateg=bpy.app.handlers.save_pre)
-    # bpy.app.handlers.save_pre.append(checkDataVersion_save_pre_handler)
-
-    # if config.uasDebug:
-    #     utils_handlers.displayHandlers(handlerCategName="save_pre")
 
     # initialization
     ##################
@@ -371,7 +285,7 @@ def register():
     # )
 
     # utils_handlers.displayHandlers()
-    utils_handlers.removeAllHandlerOccurences(jump_to_shot, handlerCateg=bpy.app.handlers.frame_change_pre)
+    #   utils_handlers.removeAllHandlerOccurences(jump_to_shot, handlerCateg=bpy.app.handlers.frame_change_pre)
     # utils_handlers.removeAllHandlerOccurences(
     #     jump_to_shot__frame_change_post, handlerCateg=bpy.app.handlers.frame_change_post
     # )
@@ -385,77 +299,51 @@ def register():
     utils_operators.register()
 
     # operators
-    # markers_nav_bar_addon_prefs.register()
-    cameraBG.register()
-    greasepencil.register()
-    markers_nav_bar.register()
-    utils_get_set_current_time.register()
-    rendering.register()
-    takes.register()
-    shots.register()
-    shots_global_settings.register()
-    precut_tools.register()
-    playbar.register()
-    retimer_props.register()
-    props.register()
-    shots_toolbar.register()
+    prefs.register()
 
-    # ui
-    sm_ui.register()
-    rrs.register()
-    retimer_ui.register()
-    rendering_ui.register()
+    markers_nav_bar_addon_prefs.register()
+    markers_nav_bar.register()
 
     otio.register()
-    vse_render.register()
-    utils_render.register()
-    general.register()
-    viewport_3d.register()
-    videoshotmanager.register()
-    prefs.register()
-    features.register()
-    about.register()
+    # vse_render.register()
+    # utils_render.register()
+    # viewport_3d.register()
+    # videovideotracks.register()
+    # features.register()
 
     # rrs specific
     # rrs_vsm_tools.register()
 
-    # debug tools
-    if config.uasDebug:
-        sm_debug.register()
+    general.register()
+
+    vt_props.register()
+    tracks.register()
+    vt_tools.register()
+
+    # ui
+    vt_ui.register()
+    vt_panels_ui.register()
+    vt_time_control_ui.register()
+
+    sequencer_draw.register()
+
+    about.register()
 
     # declaration of properties that will not be saved in the scene:
     ####################
 
     # call in the code by context.window_manager.UAS_shot_manager_shots_play_mode etc
 
-    bpy.types.WindowManager.UAS_shot_manager_shots_play_mode = BoolProperty(
-        name="frame_handler",
-        description="Override the standard animation Play mode to play the enabled shots\nin the specified order",
-        default=False,
-        update=install_shot_handler,
-    )
+    # bpy.types.WindowManager.UAS_shot_manager_display_timeline = BoolProperty(
+    #     name="display_timeline",
+    #     description="Display a timeline in the 3D Viewport with the shots in the specified order",
+    #     default=False,
+    #     update=timeline_valueChanged,
+    # )
 
-    bpy.types.WindowManager.UAS_shot_manager_display_timeline = BoolProperty(
-        name="display_timeline",
-        description="Display a timeline in the 3D Viewport with the shots in the specified order",
-        default=False,
-        update=timeline_valueChanged,
-    )
-
-    bpy.types.WindowManager.UAS_shot_manager_toggle_montage_interaction = BoolProperty(
-        name="montage_interaction", description="Disable or enable montage like timeline interaction", default=True,
-    )
-
-    bpy.types.WindowManager.UAS_shot_manager_progressbar = FloatProperty(
-        name="progressbar",
-        description="Value of the progress bar",
-        subtype="PERCENTAGE",
-        min=0,
-        max=100,
-        precision=0,
-        default=0,
-        options=set(),
-    )
+    # bpy.types.WindowManager.UAS_shot_manager_toggle_montage_interaction = BoolProperty(
+    #     name="montage_interaction", description="Disable or enable montage like timeline interaction", default=True,
+    # )
 
     if config.uasDebug:
         print(f"\n ------ UAS debug: {config.uasDebug} ------- ")
@@ -464,66 +352,53 @@ def register():
 
 def unregister():
 
-    print("\n*** --- Unregistering UAS Shot Manager Add-on --- ***\n")
+    print("\n*** --- Unregistering UAS Video Tracks Add-on --- ***\n")
 
     #    bpy.context.scene.UAS_shot_manager_props.display_shotname_in_3dviewport = False
 
-    utils_handlers.removeAllHandlerOccurences(
-        checkDataVersion_post_load_handler, handlerCateg=bpy.app.handlers.load_post
-    )
+    # utils_handlers.removeAllHandlerOccurences(
+    #     checkDataVersion_post_load_handler, handlerCateg=bpy.app.handlers.load_post
+    # )
 
     # debug tools
-    if config.uasDebug:
-        sm_debug.unregister()
+    # if config.uasDebug:
+    #     sm_debug.unregister()
 
     # rrs specific
-    #    rrs_vsm_tools.unregister()
+    # rrs_vsm_tools.unregister()
 
+    try:
+        sequencer_draw.unregister()
+    except Exception as e:
+        print("Error in Unregister sequencer_draw")
+
+    vt_time_control_ui.unregister()
+    vt_panels_ui.unregister()
+    vt_ui.unregister()
+    vt_tools.unregister()
+    tracks.unregister()
+    vt_props.unregister()
+    prefs.unregister()
+    general.unregister()
+
+    # rrs specific
+    #   rrs_vsm_tools.unregister()
     # ui
     about.unregister()
-    features.unregister()
-    prefs.unregister()
-    videoshotmanager.unregister()
-    viewport_3d.unregister()
-    general.unregister()
-    utils_render.unregister()
-    vse_render.unregister()
+
     otio.unregister()
-
-    rendering_ui.unregister()
-    retimer_ui.unregister()
-    rrs.unregister()
-    sm_ui.unregister()
-
-    # operators
-    rendering.unregister()
-    shots_toolbar.unregister()
-    props.unregister()
-    retimer_props.unregister()
-    playbar.unregister()
-    precut_tools.unregister()
-    shots_global_settings.unregister()
-    shots.unregister()
-    takes.unregister()
     utils_operators.unregister()
-    utils_get_set_current_time.unregister()
     markers_nav_bar.unregister()
-    greasepencil.unregister()
-    cameraBG.unregister()
-    #   markers_nav_bar_addon_prefs.unregister()
-
-    addon_prefs.unregister()
+    markers_nav_bar_addon_prefs.unregister()
 
     # for cls in reversed(classes):
     #     bpy.utils.unregister_class(cls)
 
-    if jump_to_shot in bpy.app.handlers.frame_change_pre:
-        bpy.app.handlers.frame_change_pre.remove(jump_to_shot)
-
-    del bpy.types.WindowManager.UAS_shot_manager_shots_play_mode
-    del bpy.types.WindowManager.UAS_shot_manager_display_timeline
+    # del bpy.types.WindowManager.UAS_shot_manager_shots_play_mode
+    # del bpy.types.WindowManager.UAS_shot_manager_display_timeline
 
     #   del bpy.types.WindowManager.UAS_shot_manager_isInitialized
-    del bpy.types.WindowManager.UAS_shot_manager_version
+    del bpy.types.WindowManager.UAS_video_tracks_version
 
     config.releaseGlobalVariables()
+

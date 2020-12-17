@@ -43,8 +43,8 @@ class UAS_Utils_RunScript(Operator):
         return {"FINISHED"}
 
 
-class UAS_ShotManager_OpenExplorer(Operator):
-    bl_idname = "uas_shot_manager.open_explorer"
+class UAS_VideoTracks_OpenExplorer(Operator):
+    bl_idname = "uas_video_tracks.open_explorer"
     bl_label = "Open Explorer"
     bl_description = "Open an Explorer window located at the render output directory.\nShift + Click: Copy the path into the clipboard"
 
@@ -116,7 +116,7 @@ class UAS_Utils_GetCurrentFrameForTimeRange(Operator):
 _classes = (
     UAS_OT_EmptyOperator,
     UAS_Utils_RunScript,
-    UAS_ShotManager_OpenExplorer,
+    UAS_VideoTracks_OpenExplorer,
     UAS_Utils_GetCurrentFrameForTimeRange,
 )
 

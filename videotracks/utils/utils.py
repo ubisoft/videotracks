@@ -35,32 +35,32 @@ def addonVersion(addonName):
             - an integer. x.y.z becomes xxyyyzzz (eg: "1.21.3" becomes 1021003)
         Return None if the addon has not been found
     """
-    # import addon_utils
+    import addon_utils
 
     #   print("addonVersion called...")
     versionStr = "-"
     versionInt = -1
     versions = None
 
-    # versionTupple = [
-    #     addon.bl_info.get("version", (-1, -1, -1))
-    #     for addon in addon_utils.modules()
-    #     if addon.bl_info["name"] == addonName
-    # ]
-    # if len(versionTupple):
-    #     versionTupple = versionTupple[0]
-    #     versionStr = str(versionTupple[0]) + "." + str(versionTupple[1]) + "." + str(versionTupple[2])
+    versionTupple = [
+        addon.bl_info.get("version", (-1, -1, -1))
+        for addon in addon_utils.modules()
+        if addon.bl_info["name"] == addonName
+    ]
+    if len(versionTupple):
+        versionTupple = versionTupple[0]
+        versionStr = str(versionTupple[0]) + "." + str(versionTupple[1]) + "." + str(versionTupple[2])
 
-    #     # versionStr = "131.258.265"
-    #     versionInt = convertVersionStrToInt(versionStr)
+        # versionStr = "131.258.265"
+        versionInt = convertVersionStrToInt(versionStr)
 
-    #     # print("versionStr: ", versionStr)
-    #     # print("versionInt: ", versionInt)
-    #     # print("convertVersionIntToStr: ", convertVersionIntToStr(versionInt))
+        # print("versionStr: ", versionStr)
+        # print("versionInt: ", versionInt)
+        # print("convertVersionIntToStr: ", convertVersionIntToStr(versionInt))
 
-    #    versions = (versionStr, versionInt)
+        versions = (versionStr, versionInt)
 
-    versions = ("1.3.80", 1003080)
+    # versions = ("1.3.80", 1003080)
 
     return versions
 
@@ -319,7 +319,7 @@ def getSceneVSE(vsm_sceneName, createVseTab=False):
     """ Return the scene that has the name held by vsm_sceneName and adds a VSE in it if there is not already one.
         Use <returned scene>.sequence_editor to get the vse of the scene
     """
-    # vsm_sceneName = "VideoShotManager"
+    # vsm_sceneName = "VideoTracks"
     vsm_scene = None
 
     if vsm_sceneName in bpy.data.scenes:

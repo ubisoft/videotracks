@@ -1,21 +1,23 @@
 import bpy
 from bpy.types import AddonPreferences
-from bpy.props import StringProperty, IntProperty, BoolProperty, EnumProperty
+from bpy.props import StringProperty, BoolProperty, StringProperty
 
 
 class UAS_markers_nav_bar_addon_prefs(AddonPreferences):
     """
         Use this to get these prefs:
-        prefs = context.preferences.addons["shotmanager"].preferences
+        prefs = context.preferences.addons["videotracks"].preferences
     """
 
     # this must match the add-on name, use '__package__'
     # when defining this in a submodule of a python package
-    bl_idname = "shotmanager"
+    bl_idname = "videotracks"
 
     ##################
     # markers ###
     ##################
+
+    markerEmptyField: StringProperty(name=" ")
 
     mnavbar_use_filter: BoolProperty(
         name="Filter Markers", default=False,

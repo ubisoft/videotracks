@@ -31,8 +31,8 @@ def draw_item(self, context):
     layout.menu(MyCustomMenu.bl_idname)
 
 
-class UAS_ShotManager_SetTimeRangeStart(Operator):
-    bl_idname = "uas_shot_manager.set_time_range_start"
+class UAS_VideoTracks_SetTimeRangeStart(Operator):
+    bl_idname = "uas_video_tracks.set_time_range_start"
     bl_label = "Set Start Range"
     bl_description = "Set the end time range with the curent time value"
     bl_options = {"INTERNAL"}
@@ -42,7 +42,7 @@ class UAS_ShotManager_SetTimeRangeStart(Operator):
     )
 
     # def invoke(self, context, event):
-    #     props = context.scene.UAS_shot_manager_props
+    #     props = context.scene.UAS_video_tracks_props
 
     #     return {"FINISHED"}
 
@@ -57,8 +57,8 @@ class UAS_ShotManager_SetTimeRangeStart(Operator):
         return {"FINISHED"}
 
 
-class UAS_ShotManager_SetTimeRangeEnd(Operator):
-    bl_idname = "uas_shot_manager.set_time_range_end"
+class UAS_VideoTracks_SetTimeRangeEnd(Operator):
+    bl_idname = "uas_video_tracks.set_time_range_end"
     bl_label = "Set End Range"
     bl_description = "Set the end time range with the curent time value"
     bl_options = {"INTERNAL"}
@@ -68,7 +68,7 @@ class UAS_ShotManager_SetTimeRangeEnd(Operator):
     )
 
     # def invoke(self, context, event):
-    #     props = context.scene.UAS_shot_manager_props
+    #     props = context.scene.UAS_video_tracks_props
 
     #     return {"FINISHED"}
 
@@ -83,8 +83,8 @@ class UAS_ShotManager_SetTimeRangeEnd(Operator):
         return {"FINISHED"}
 
 
-class UAS_ShotManager_FrameTimeRange(Operator):
-    bl_idname = "uas_shot_manager.frame_time_range"
+class UAS_VideoTracks_FrameTimeRange(Operator):
+    bl_idname = "uas_video_tracks.frame_time_range"
     bl_label = "Frame Time Range"
     bl_description = "Change the VSE zoom value to fit the scene time range"
     bl_options = {"INTERNAL"}
@@ -94,7 +94,7 @@ class UAS_ShotManager_FrameTimeRange(Operator):
     )
 
     # def invoke(self, context, event):
-    #     props = context.scene.UAS_shot_manager_props
+    #     props = context.scene.UAS_video_tracks_props
 
     #     return {"FINISHED"}
 
@@ -168,15 +168,15 @@ def draw_op_item(self, context):
     row.alignment = "RIGHT"
     # row.label(text="toto dsf trterte")
     # row.operator("bpy.ops.time.view_all")
-    row.operator("uas_shot_manager.set_time_range_start", text="", icon="TRIA_UP_BAR")
-    row.operator("uas_shot_manager.frame_time_range", text="", icon="CENTER_ONLY")
-    row.operator("uas_shot_manager.set_time_range_end", text="", icon="TRIA_UP_BAR")
+    row.operator("uas_video_tracks.set_time_range_start", text="", icon="TRIA_UP_BAR")
+    row.operator("uas_video_tracks.frame_time_range", text="", icon="CENTER_ONLY")
+    row.operator("uas_video_tracks.set_time_range_end", text="", icon="TRIA_UP_BAR")
 
 
 _classes = (
-    UAS_ShotManager_SetTimeRangeStart,
-    UAS_ShotManager_SetTimeRangeEnd,
-    UAS_ShotManager_FrameTimeRange,
+    UAS_VideoTracks_SetTimeRangeStart,
+    UAS_VideoTracks_SetTimeRangeEnd,
+    UAS_VideoTracks_FrameTimeRange,
 )
 
 

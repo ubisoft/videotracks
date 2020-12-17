@@ -5,31 +5,22 @@ import subprocess, platform
 
 import bpy
 from bpy.types import Operator
-from bpy.props import StringProperty, BoolProperty, IntProperty, EnumProperty, PointerProperty
+from bpy.props import StringProperty, BoolProperty, IntProperty, EnumProperty
 from bpy_extras.io_utils import ImportHelper
 
-from shotmanager.config import config
-from shotmanager.utils import utils
+from videotracks.config import config
+from videotracks.utils import utils
 
 import opentimelineio
 from .exports import exportShotManagerEditToOtio
-
-# from shotmanager.otio import imports
-from .imports import createShotsFromOtio, importOtioToVSE
-from .imports import getSequenceListFromOtioTimeline
-from .imports import createShotsFromOtioTimelineClass, conformToRefMontage
-
-from shotmanager.rrs_specific.montage.montage_otio import MontageOtio
-
-from . import otio_wrapper as ow
 
 import logging
 
 _logger = logging.getLogger(__name__)
 
 
-class UAS_ShotManager_Export_OTIO(Operator):
-    bl_idname = "uas_shot_manager.export_otio"
+class UAS_VideoTracks_Export_OTIO(Operator):
+    bl_idname = "uas_video_tracks.export_otio"
     bl_label = "Export otio"
     bl_description = "Export otio"
     bl_options = {"INTERNAL"}
@@ -37,7 +28,7 @@ class UAS_ShotManager_Export_OTIO(Operator):
     file: StringProperty()
 
     # def invoke ( self, context, event ):
-    #     props = context.scene.UAS_shot_manager_props
+    #     props = context.scene.UAS_video_tracks_props
 
     #     if not props.isRenderRootPathValid():
     #         from ..utils.utils import ShowMessageBox
@@ -70,7 +61,7 @@ class UAS_ShotManager_Export_OTIO(Operator):
     # return wm.invoke_props_dialog ( self )
 
     def execute(self, context):
-        props = context.scene.UAS_shot_manager_props
+        props = context.scene.UAS_video_tracks_props
 
         if props.isRenderRootPathValid():
             exportShotManagerEditToOtio(
@@ -93,17 +84,6 @@ def list_sequences_from_edl(self, context):
     nothingList = list()
     nothingList.append(("NO_SEQ", "No Sequence Found", "No sequence found in the specified EDL file", 0))
 
-    # seqList = getSequenceListFromOtioTimeline(config.gMontageOtio)
-    # for i, item in enumerate(seqList):
-    #     res.append((item, item, "My seq", i + 1))
-
-    # res = getSequenceListFromOtio()
-    # res.append(("NEW_CAMERA", "New Camera", "Create new camera", 0))
-    # for i, cam in enumerate([c for c in context.scene.objects if c.type == "CAMERA"]):
-    #     res.append(
-    #         (cam.name, cam.name, 'Use the exising scene camera named "' + cam.name + '"\nfor the new shot', i + 1)
-    #     )
-
     if res is None or 0 == len(res):
         res = nothingList
     return res
@@ -119,8 +99,8 @@ def list_video_tracks_from_edl(self, context):
     return res
 
 
-class UAS_ShotManager_OT_Create_Shots_From_OTIO_RRS(Operator):
-    bl_idname = "uasshotmanager.createshotsfromotio_rrs"
+class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
+    bl_idname = "uasvideotracks.createshotsfromotio_rrs"
     bl_label = "Import/Update Shots from EDL File"
     bl_description = "Open EDL file (Final Cut XML, OTIO...) to import a set of shots"
     bl_options = {"INTERNAL", "UNDO"}
@@ -425,8 +405,6 @@ class UAS_ShotManager_OT_Create_Shots_From_OTIO_RRS(Operator):
                 self.sequenceList = config.gSeqEnumList[0][0]
             _logger.debug(f"self.sequenceList: {self.sequenceList}")
 
-        #    seqList = getSequenceListFromOtioTimeline(config.gMontageOtio)
-        #  self.sequenceList.items = list_sequences_from_edl(context, seqList)
 
         wm.invoke_props_dialog(self, width=500)
         #    res = bpy.ops.uasotio.openfilebrowser("INVOKE_DEFAULT")
@@ -520,12 +498,12 @@ class UAS_ShotManager_OT_Create_Shots_From_OTIO_RRS(Operator):
                 row.alert = False
 
             # if config.uasDebug:
-            #     row.operator("uas_shot_manager.montage_sequences_to_json")  # uses config.gMontageOtio
+            #     row.operator("uas_video_tracks.montage_sequences_to_json")  # uses config.gMontageOtio
 
             if selSeq is not None:
                 subRow = box.row()
                 subRow.enabled = selSeq is not None
-                row.operator("uasshotmanager.compare_otio_and_current_montage").sequenceName = selSeq.get_name()
+                row.operator("uasvideotracks.compare_otio_and_current_montage").sequenceName = selSeq.get_name()
 
         row = layout.row(align=True)
         box = row.box()
@@ -645,7 +623,7 @@ class UAS_ShotManager_OT_Create_Shots_From_OTIO_RRS(Operator):
         layout.separator()
 
     def execute(self, context):
-        props = context.scene.UAS_shot_manager_props
+        props = context.scene.UAS_video_tracks_props
         print(f"\n--------------------")
         print(
             f"\nCreateshotsfromotio Import Sequence Exec: {self.sequenceList}, {config.gSeqEnumList[int(self.sequenceList)]}"
@@ -733,7 +711,7 @@ class UAS_ShotManager_OT_Create_Shots_From_OTIO_RRS(Operator):
                 audioTracksToImport.extend(list(range(28, 30)))
 
             if config.uasDebug:
-                bpy.ops.uasshotmanager.compare_otio_and_current_montage(sequenceName=selSeq.get_name())
+                bpy.ops.uasvideotracks.compare_otio_and_current_montage(sequenceName=selSeq.get_name())
 
             textFile = conformToRefMontage(
                 context.scene,
@@ -772,7 +750,7 @@ class UAS_ShotManager_OT_Create_Shots_From_OTIO_RRS(Operator):
             props.display_notes_in_properties = True
 
             # update track list in VSM
-            #            context.scene.uas_video_shot_manager.update_tracks_list()
+            #            context.scene.uas_video_tracks.update_tracks_list()
 
             # open notes
             # import subprocess, os, platform
@@ -786,8 +764,8 @@ class UAS_ShotManager_OT_Create_Shots_From_OTIO_RRS(Operator):
         return {"FINISHED"}
 
 
-class UAS_ShotManager_OT_CompareOtioAndCurrentMontage(Operator):
-    bl_idname = "uasshotmanager.compare_otio_and_current_montage"
+class UAS_VideoTracks_OT_CompareOtioAndCurrentMontage(Operator):
+    bl_idname = "uasvideotracks.compare_otio_and_current_montage"
     bl_label = "Print Comparison"
     bl_description = (
         "Print the differences between the current sequence in the scene and the imported EDL file into the console"
@@ -801,8 +779,8 @@ class UAS_ShotManager_OT_CompareOtioAndCurrentMontage(Operator):
         return {"FINISHED"}
 
 
-class UAS_ShotManager_OT_Create_Shots_From_OTIO(Operator):
-    bl_idname = "uasshotmanager.createshotsfromotio"
+class UAS_VideoTracks_OT_Create_Shots_From_OTIO(Operator):
+    bl_idname = "uasvideotracks.createshotsfromotio"
     bl_label = "Import/Update Shots from EDL File - deprec"
     bl_description = "Open EDL file (Final Cut XML, OTIO...) to import a set of shots"
     bl_options = {"INTERNAL", "UNDO"}
@@ -915,7 +893,7 @@ class UAS_ShotManager_OT_Create_Shots_From_OTIO(Operator):
         #   import opentimelineio as otio
         # from random import uniform
         # from math import radians
-        print("Exec uasshotmanager.createshotsfromotio")
+        print("Exec uasvideotracks.createshotsfromotio")
         # filename, extension = os.path.splitext(self.filepath)
         # print("ex Selected file:", self.filepath)
         # print("ex File name:", filename)
@@ -969,10 +947,10 @@ class UAS_OTIO_OpenFileBrowser(Operator, ImportHelper):  # from bpy_extras.io_ut
         #    self.directory = bpy.context.scene.UAS_shot_manager_props.renderRootPath
         context.window_manager.fileselect_add(self)
         # wm = bpy.context.window_manager
-        # operat = bpy.ops.uasshotmanager.createshotsfromotio
-        # operat = type(UAS_ShotManager_OT_Create_Shots_From_OTIO)
-        # operat = wm.operators["uasshotmanager.createshotsfromotio"]
-        # operator = [op for op in wm.operators if op.name == "uasshotmanager.createshotsfromotio"]
+        # operat = bpy.ops.uasvideotracks.createshotsfromotio
+        # operat = type(UAS_VideoTracks_OT_Create_Shots_From_OTIO)
+        # operat = wm.operators["uasvideotracks.createshotsfromotio"]
+        # operator = [op for op in wm.operators if op.name == "uasvideotracks.createshotsfromotio"]
 
         # if operator:
         #     print(" -- found op:", operator[-1].otioFile)
@@ -990,21 +968,21 @@ class UAS_OTIO_OpenFileBrowser(Operator, ImportHelper):  # from bpy_extras.io_ut
         # print("ex File extension:", extension)
 
         if "CREATE_SHOTS" == self.importMode:
-            # bpy.ops.uasshotmanager.createshotsfromotio("INVOKE_DEFAULT", otioFile=self.filepath)
-            bpy.ops.uasshotmanager.createshotsfromotio_rrs("INVOKE_DEFAULT", otioFile=self.filepath)
+            # bpy.ops.uasvideotracks.createshotsfromotio("INVOKE_DEFAULT", otioFile=self.filepath)
+            bpy.ops.uasvideotracks.createshotsfromotio_rrs("INVOKE_DEFAULT", otioFile=self.filepath)
         elif "IMPORT_EDIT" == self.importMode:
-            bpy.ops.uas_video_shot_manager.importeditfromotio("INVOKE_DEFAULT", otioFile=self.filepath)
+            bpy.ops.uas_video_tracks.importeditfromotio("INVOKE_DEFAULT", otioFile=self.filepath)
         elif "PARSE_EDIT" == self.importMode:
-            bpy.ops.uas_video_shot_manager.parseeditfromotio("INVOKE_DEFAULT", otioFile=self.filepath)
+            bpy.ops.uas_video_tracks.parseeditfromotio("INVOKE_DEFAULT", otioFile=self.filepath)
 
         return {"FINISHED"}
 
 
 _classes = (
-    UAS_ShotManager_Export_OTIO,
-    UAS_ShotManager_OT_Create_Shots_From_OTIO,
-    UAS_ShotManager_OT_Create_Shots_From_OTIO_RRS,
-    UAS_ShotManager_OT_CompareOtioAndCurrentMontage,
+    UAS_VideoTracks_Export_OTIO,
+    UAS_VideoTracks_OT_Create_Shots_From_OTIO,
+    UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS,
+    UAS_VideoTracks_OT_CompareOtioAndCurrentMontage,
     UAS_OTIO_OpenFileBrowser,
 )
 

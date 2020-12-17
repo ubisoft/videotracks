@@ -3,28 +3,28 @@ import bpy
 from bpy.types import Panel, Menu, Operator
 from bpy.props import IntProperty, EnumProperty, BoolProperty, FloatProperty, StringProperty
 
-from ..properties import vsm_props
-from ..operators import tracks
+from videotracks.properties import vt_props
+from videotracks.operators import tracks
 
-import shotmanager.config as config
+import videotracks.config as config
 
-from .vsm_ui import UAS_PT_VideoShotManager
+from .vt_ui import UAS_PT_VideoTracks
 
 
-class UAS_VideoShotManager_SelectStrip(Operator):
-    bl_idname = "uas_videoshotmanager.select_strip"
+class UAS_VideoTracks_SelectStrip(Operator):
+    bl_idname = "uas_videovideotracks.select_strip"
     bl_label = "Select"
     bl_description = "Select Strip"
     bl_options = {"INTERNAL"}
 
     # @classmethod
     # def poll(cls, context):
-    #     props = context.scene.UAS_shot_manager_props
+    #     props = context.scene.UAS_video_tracks_props
     #     val = len(props.getTakes()) and len(props.get_shots())
     #     return val
 
     # def invoke(self, context, event):
-    #     props = context.scene.UAS_shot_manager_props
+    #     props = context.scene.UAS_video_tracks_props
 
     #     return {"FINISHED"}
     # can be "SEL_SEQ", "ACTIVE"
@@ -47,19 +47,19 @@ class UAS_VideoShotManager_SelectStrip(Operator):
         return {"FINISHED"}
 
 
-class UAS_PT_VideoShotManagerSelectedStrip(Panel):
-    bl_idname = "UAS_PT_VideoShotManagerSelectedStripPanel"
+class UAS_PT_VideoTracksSelectedStrip(Panel):
+    bl_idname = "UAS_PT_VideoTracksSelectedStripPanel"
     bl_label = "Active Strip"
     bl_description = "Active Strip Options"
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
     bl_category = "UAS Video Shot Man"
-    bl_parent_id = "UAS_PT_Video_Shot_Manager"
+    bl_parent_id = "UAS_PT_Video_Tracks"
     # bl_options = {"DEFAULT_CLOSED"}
 
     def draw(self, context):
         scene = context.scene
-        prefs = context.preferences.addons["shotmanager"].preferences
+        prefs = context.preferences.addons["videotracks"].preferences
         layout = self.layout
 
         row = layout.row()
@@ -71,9 +71,9 @@ class UAS_PT_VideoShotManagerSelectedStrip(Panel):
             subRow.prop(scene.sequence_editor.active_strip, "name", text="")
         else:
             subRow.enabled = False
-            subRow.prop(prefs, "emptyField", text="")
+            subRow.prop(prefs, "markerEmptyField", text="")
         subRow.operator(
-            "uas_videoshotmanager.select_strip", text="", icon="RESTRICT_SELECT_OFF"
+            "uas_videovideotracks.select_strip", text="", icon="RESTRICT_SELECT_OFF"
         ).mode = "ACTIVE"  # "SEL_SEQ"
 
         row = layout.row()
@@ -85,7 +85,7 @@ class UAS_PT_VideoShotManagerSelectedStrip(Panel):
         #     box = layout.box()
         #     box.label(text="Tools:")
         #     row = box.row()
-        #     #  row.operator("uas_video_shot_manager.selected_to_active")
+        #     #  row.operator("uas_video_tracks.selected_to_active")
 
         #     box = layout.box()
 
@@ -94,8 +94,8 @@ class UAS_PT_VideoShotManagerSelectedStrip(Panel):
 
 
 _classes = (
-    UAS_PT_VideoShotManagerSelectedStrip,
-    UAS_VideoShotManager_SelectStrip,
+    UAS_PT_VideoTracksSelectedStrip,
+    UAS_VideoTracks_SelectStrip,
 )
 
 

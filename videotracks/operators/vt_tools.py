@@ -7,22 +7,22 @@ from bpy.types import Operator, Menu
 from bpy.props import StringProperty, BoolProperty, IntProperty
 
 import opentimelineio
-from shotmanager.otio import otio_wrapper as ow
-from shotmanager.otio.imports import importToVSE
+from videotracks.otio import otio_wrapper as ow
+from videotracks.otio.imports import importToVSE
 
-from shotmanager.rrs_specific.montage.montage_otio import MontageOtio
+# from videotracks.rrs_specific.montage.montage_otio import MontageOtio
 
-from shotmanager.utils import utils
+from videotracks.utils import utils
 
-from shotmanager.config import config
+from videotracks.config import config
 
 import logging
 
 _logger = logging.getLogger(__name__)
 
 
-class UAS_VideoShotManager_OT_Import_Edit_From_OTIO(Operator):
-    bl_idname = "uas_video_shot_manager.importeditfromotio"
+class UAS_VideoTracks_OT_Import_Edit_From_OTIO(Operator):
+    bl_idname = "uas_video_tracks.importeditfromotio"
     bl_label = "Import Edit from EDL file"
     bl_description = "Open EDL file (Final Cut XML, OTIO...) to import its content"
     bl_options = {"INTERNAL", "UNDO"}
@@ -113,7 +113,7 @@ class UAS_VideoShotManager_OT_Import_Edit_From_OTIO(Operator):
                 box.alert = False
 
         row = box.row(align=True)
-        row.operator("uas_video_shot_manager.print_montage_info")
+        row.operator("uas_video_tracks.print_montage_info")
         row.separator()
 
         box = layout.box()
@@ -220,13 +220,13 @@ class UAS_VideoShotManager_OT_Import_Edit_From_OTIO(Operator):
             track_type=trackType,
         )
 
-        #    context.scene.UAS_vsm_props.updateTracksList(context.scene)
+        #    context.scene.UAS_video_tracks_props.updateTracksList(context.scene)
 
         return {"FINISHED"}
 
 
-class UAS_VideoShotManager_OT_Parse_Edit_From_OTIO(Operator):
-    bl_idname = "uas_video_shot_manager.parseeditfromotio"
+class UAS_VideoTracks_OT_Parse_Edit_From_OTIO(Operator):
+    bl_idname = "uas_video_tracks.parseeditfromotio"
     bl_label = "Parse Edit from EDL file"
     bl_description = "Open EDL file (Final Cut XML, OTIO...) to import its content"
     bl_options = {"INTERNAL"}
@@ -274,8 +274,8 @@ class UAS_VideoShotManager_OT_Parse_Edit_From_OTIO(Operator):
         return {"FINISHED"}
 
 
-class UAS_VideoShotManager_OT_PrintMontageInfo(Operator):
-    bl_idname = "uas_video_shot_manager.print_montage_info"
+class UAS_VideoTracks_OT_PrintMontageInfo(Operator):
+    bl_idname = "uas_video_tracks.print_montage_info"
     bl_label = "Print Montage Info"
     bl_description = "Print montage information in the console"
     bl_options = {"INTERNAL"}
@@ -301,8 +301,8 @@ class UAS_VideoShotManager_OT_PrintMontageInfo(Operator):
         return {"FINISHED"}
 
 
-class UAS_VideoShotManager_OT_ExportContentbetweenMarkers(Operator):
-    bl_idname = "uas_video_shot_manager.export_content_between_markers"
+class UAS_VideoTracks_OT_ExportContentbetweenMarkers(Operator):
+    bl_idname = "uas_video_tracks.export_content_between_markers"
     bl_label = "Batch Export Content Between Markers..."
     bl_description = "Export all the segments defined by the markers as separated videos"
     bl_options = {"INTERNAL"}
@@ -401,8 +401,8 @@ class UAS_VideoShotManager_OT_ExportContentbetweenMarkers(Operator):
         # Export Sound Tracks
 
         if self.exportEditSoundtracks:
-            vsm_props = context.scene.UAS_vsm_props
-            tracks = vsm_props.getTracks()
+            vt_props = scene.UAS_video_tracks_props
+            tracks = vt_props.getTracks()
             for t in tracks:
                 t.enabled = False
 
@@ -473,12 +473,12 @@ class UAS_VideoShotManager_OT_ExportContentbetweenMarkers(Operator):
 # general tools
 #################
 
-# class UAS_MT_VideoShotManager_Prefs_MainMenu(Menu):
-#     bl_idname = "UAS_MT_Video_Shot_Manager_prefs_mainmenu"
+# class UAS_MT_VideoTracks_Prefs_MainMenu(Menu):
+#     bl_idname = "UAS_MT_Video_Tracks_prefs_mainmenu"
 
 
-class UAS_MT_VideoShotManager_Clear_Menu(Menu):
-    bl_idname = "UAS_MT_Video_Shot_Manager_clear_menu"
+class UAS_MT_VideoTracks_Clear_Menu(Menu):
+    bl_idname = "UAS_MT_Video_Tracks_clear_menu"
     bl_label = "Clear Tools"
     bl_description = "Clear Tools"
 
@@ -492,44 +492,44 @@ class UAS_MT_VideoShotManager_Clear_Menu(Menu):
 
         row = layout.row(align=True)
         row.operator_context = "INVOKE_DEFAULT"
-        row.operator("uas_video_shot_manager.remove_multiple_tracks", text="Remove Disabled Tracks").action = "DISABLED"
+        row.operator("uas_video_tracks.remove_multiple_tracks", text="Remove Disabled Tracks").action = "DISABLED"
 
         row = layout.row(align=True)
         row.operator_context = "INVOKE_DEFAULT"
-        row.operator("uas_video_shot_manager.remove_multiple_tracks", text="Remove All Tracks").action = "ALL"
+        row.operator("uas_video_tracks.remove_multiple_tracks", text="Remove All Tracks").action = "ALL"
 
         row = layout.row(align=True)
         row.operator_context = "INVOKE_DEFAULT"
-        row.operator("uas_video_shot_manager.clear_clips", text="Remove All Clips")
+        row.operator("uas_video_tracks.clear_clips", text="Remove All Clips")
 
         row = layout.row(align=True)
         row.operator_context = "INVOKE_DEFAULT"
-        row.operator("uas_video_shot_manager.clear_markers", text="Remove All Markers")
+        row.operator("uas_video_tracks.clear_markers", text="Remove All Markers")
 
 
 #        layout.separator()
 
 
-class UAS_VideoShotManager_OT_ClearAll(Operator):
-    bl_idname = "uas_video_shot_manager.clear_all"
+class UAS_VideoTracks_OT_ClearAll(Operator):
+    bl_idname = "uas_video_tracks.clear_all"
     bl_label = "Clear All"
     bl_description = "Clear all channels"
     bl_options = {"INTERNAL", "UNDO"}
 
     def invoke(self, context, event):
-        vsm_props = context.scene.UAS_vsm_props
+        vt_props = context.scene.UAS_video_tracks_props
         # print("Clear all ici")
-        bpy.ops.uas_video_shot_manager.remove_multiple_tracks(action="ALL")
-        bpy.ops.uas_video_shot_manager.clear_clips()
-        bpy.ops.uas_video_shot_manager.clear_markers()
+        bpy.ops.uas_video_tracks.remove_multiple_tracks(action="ALL")
+        bpy.ops.uas_video_tracks.clear_clips()
+        bpy.ops.uas_video_tracks.clear_markers()
 
-        vsm_props.updateTracksList(context.scene)
+        vt_props.updateTracksList(context.scene)
 
         return {"FINISHED"}
 
 
-class UAS_VideoShotManager_OT_ClearMarkers(Operator):
-    bl_idname = "uas_video_shot_manager.clear_markers"
+class UAS_VideoTracks_OT_ClearMarkers(Operator):
+    bl_idname = "uas_video_tracks.clear_markers"
     bl_label = "Clear Markers"
     bl_description = "Clear all markers"
     bl_options = {"INTERNAL", "UNDO"}
@@ -539,14 +539,14 @@ class UAS_VideoShotManager_OT_ClearMarkers(Operator):
         return {"FINISHED"}
 
 
-# class UAS_VideoShotManager_OT_ClearTracks(Operator):
-#     bl_idname = "uas_video_shot_manager.clear_tracks"
+# class UAS_VideoTracks_OT_ClearTracks(Operator):
+#     bl_idname = "uas_video_tracks.clear_tracks"
 #     bl_label = "Clear Clips"
 #     bl_description = "Clear all tracks"
 #     bl_options = {"INTERNAL", "UNDO"}
 
 #     def invoke(self, context, event):
-#         # vsm_sceneName = "VideoShotManager"
+#         # vsm_sceneName = "VideoTracks"
 #         # vsm_scene = bpy.data.scenes[vsm_sceneName]
 #         vsm_scene = bpy.context.scene
 #         vsm_scene.sequence_editor_clear()
@@ -560,8 +560,8 @@ class UAS_VideoShotManager_OT_ClearMarkers(Operator):
 #         return {"FINISHED"}
 
 
-class UAS_VideoShotManager_OT_ClearClips(Operator):
-    bl_idname = "uas_video_shot_manager.clear_clips"
+class UAS_VideoTracks_OT_ClearClips(Operator):
+    bl_idname = "uas_video_tracks.clear_clips"
     bl_label = "Clear Clips"
     bl_description = "Clear all clips"
     bl_options = {"INTERNAL", "UNDO"}
@@ -578,8 +578,8 @@ class UAS_VideoShotManager_OT_ClearClips(Operator):
         return {"FINISHED"}
 
 
-class UAS_VideoShotManager_OT_GoToScene(Operator):
-    bl_idname = "uas_video_shot_manager.go_to_scene"
+class UAS_VideoTracks_OT_GoToScene(Operator):
+    bl_idname = "uas_video_tracks.go_to_scene"
     bl_label = "Go To Specified Scene"
     bl_description = "Go to specified scene"
     bl_options = {"INTERNAL"}
@@ -590,7 +590,7 @@ class UAS_VideoShotManager_OT_GoToScene(Operator):
 
         # print("trackName: ", self.trackName)
         # Make track scene the current one
-        # bpy.context.window.scene = context.scene.UAS_vsm_props.tracks[self.trackName].shotManagerScene
+        # bpy.context.window.scene = context.scene.UAS_video_tracks_props.tracks[self.trackName].shotManagerScene
         bpy.context.window.scene = bpy.data.scenes[self.sceneName]
         bpy.context.window.workspace = bpy.data.workspaces["Layout"]
 
@@ -598,16 +598,16 @@ class UAS_VideoShotManager_OT_GoToScene(Operator):
 
 
 _classes = (
-    UAS_VideoShotManager_OT_Import_Edit_From_OTIO,
-    UAS_VideoShotManager_OT_Parse_Edit_From_OTIO,
-    UAS_VideoShotManager_OT_PrintMontageInfo,
-    UAS_VideoShotManager_OT_ExportContentbetweenMarkers,
-    UAS_MT_VideoShotManager_Clear_Menu,
-    UAS_VideoShotManager_OT_ClearAll,
-    UAS_VideoShotManager_OT_ClearMarkers,
-    # UAS_VideoShotManager_OT_ClearTracks,
-    UAS_VideoShotManager_OT_ClearClips,
-    UAS_VideoShotManager_OT_GoToScene,
+    UAS_VideoTracks_OT_Import_Edit_From_OTIO,
+    UAS_VideoTracks_OT_Parse_Edit_From_OTIO,
+    UAS_VideoTracks_OT_PrintMontageInfo,
+    UAS_VideoTracks_OT_ExportContentbetweenMarkers,
+    UAS_MT_VideoTracks_Clear_Menu,
+    UAS_VideoTracks_OT_ClearAll,
+    UAS_VideoTracks_OT_ClearMarkers,
+    # UAS_VideoTracks_OT_ClearTracks,
+    UAS_VideoTracks_OT_ClearClips,
+    UAS_VideoTracks_OT_GoToScene,
 )
 
 

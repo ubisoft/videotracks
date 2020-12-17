@@ -18,36 +18,20 @@ def initGlobalVariables():
 
     uasDebug = True
 
-    global uasDebug_keepVSEContent
-    uasDebug_keepVSEContent = False and uasDebug
-
-    global uasDebug_ignoreLoggerFormatting
-    uasDebug_ignoreLoggerFormatting = True and uasDebug
-
     # icons ############
-    global icons_col
+    global vt_icons_col
 
     pcoll = bpy.utils.previews.new()
     my_icons_dir = os.path.join(os.path.dirname(__file__), "../icons")
     for png in Path(my_icons_dir).rglob("*.png"):
         pcoll.load(png.stem, str(png), "IMAGE")
 
-    icons_col = pcoll
-
-    # import otio ############
-    global gMontageOtio
-    gMontageOtio = None
-
-    global gSeqEnumList
-    gSeqEnumList = None
-
-    global gTracksEnumList
-    gTracksEnumList = None
+    vt_icons_col = pcoll
 
 
 def releaseGlobalVariables():
 
-    global icons_col
+    global vt_icons_col
 
-    bpy.utils.previews.remove(icons_col)
-    icons_col = None
+    bpy.utils.previews.remove(vt_icons_col)
+    vt_icons_col = None

@@ -4,17 +4,17 @@ from bpy.types import Operator
 from ..utils import utils
 
 
-class UAS_ShotManager_OT_About(Operator):
-    bl_idname = "uas_shot_manager.about"
-    bl_label = "About UAS Shot Manager..."
-    bl_description = "More information about UAS Shot Manager..."
+class UAS_VideoTracks_OT_About(Operator):
+    bl_idname = "uas_video_tracks.about"
+    bl_label = "About UAS Video Tracks..."
+    bl_description = "More information about UAS Video Tracks..."
     bl_options = {"INTERNAL"}
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=400)
 
     def draw(self, context):
-        props = context.scene.UAS_shot_manager_props
+        props = context.scene.UAS_video_tracks_props
         layout = self.layout
         box = layout.box()
 
@@ -22,15 +22,14 @@ class UAS_ShotManager_OT_About(Operator):
         ###############
         row = box.row()
         row.separator()
-        row.label(
-            text="Version:" + props.version()[0] + "   -    (" + "July 2020" + ")" + "   -    Ubisoft Animation Studio"
-        )
+        print(f"Props.version(): {props.version()}")
+        row.label(text=f"Version: {props.version()[0]}   -    (December 2020)   -    Ubisoft Animation Studio")
 
         # Authors
         ###############
         row = box.row()
         row.separator()
-        row.label(text="Written by Julien Blervaque (aka Werwack), Romain Carriquiry Borchiari")
+        row.label(text="Written by Julien Blervaque (aka Werwack)")
 
         # Purpose
         ###############
@@ -38,10 +37,10 @@ class UAS_ShotManager_OT_About(Operator):
         row.label(text="Purpose:")
         row = box.row()
         row.separator()
-        row.label(text="Create a set of camera shots and edit them")
-        row = box.row()
-        row.separator()
-        row.label(text="in the 3D View as you would do with video clips.")
+        row.label(text="Create a notion of tracks to manipulate the channels of the VSE.")
+        # row = box.row()
+        # row.separator()
+        # row.label(text="of the VSE.")
 
         # Dependencies
         ###############
@@ -59,14 +58,14 @@ class UAS_ShotManager_OT_About(Operator):
         except Exception as e:
             row.label(text="Module not found")
 
-        row = box.row()
-        row.separator()
-        row.label(text="- UAS Stamp Info")
-        if props.isStampInfoAvailable():
-            versionStr = utils.addonVersion("UAS_StampInfo")
-            row.label(text="V." + versionStr[0])
-        else:
-            row.label(text="Add-on not found")
+        # row = box.row()
+        # row.separator()
+        # row.label(text="- UAS Stamp Info")
+        # if props.isStampInfoAvailable():
+        #     versionStr = utils.addonVersion("UAS_StampInfo")
+        #     row.label(text="V." + versionStr[0])
+        # else:
+        #     row.label(text="Add-on not found")
 
         box.separator()
 
@@ -76,7 +75,7 @@ class UAS_ShotManager_OT_About(Operator):
         return {"FINISHED"}
 
 
-_classes = (UAS_ShotManager_OT_About,)
+_classes = (UAS_VideoTracks_OT_About,)
 
 
 def register():

@@ -12,10 +12,8 @@ from bpy.props import (
     FloatProperty,
 )
 
-from shotmanager.properties.take import UAS_ShotManager_Take
-
-from shotmanager.utils.utils import findFirstUniqueName
-from shotmanager.utils import utils_vse
+from videotracks.utils.utils import findFirstUniqueName
+from videotracks.utils import utils_vse
 
 # ("STANDARD", "Standard", ""),
 # ("AUDIO", "Audio", ""),
@@ -27,7 +25,7 @@ from shotmanager.utils import utils_vse
 # ("CUSTOM", "Custom", ""),
 
 
-class UAS_VideoShotManager_Track(PropertyGroup):
+class UAS_VideoTracks_Track(PropertyGroup):
 
     parentScene: PointerProperty(type=Scene, description="Scene to which this track belongs to")
 
@@ -42,7 +40,7 @@ class UAS_VideoShotManager_Track(PropertyGroup):
     def set_name(self, value):
         """ Set a unique name to the track
         """
-        tracks = self.parentScene.UAS_vsm_props.getTracks()
+        tracks = self.parentScene.UAS_video_tracks_props.getTracks()
 
         # newName = value
         # foundDuplicateName = False
@@ -61,7 +59,7 @@ class UAS_VideoShotManager_Track(PropertyGroup):
     def _update_enabled(self, context):
         if 0 < self.vseTrackIndex:
             utils_vse.muteChannel(self.parentScene, self.vseTrackIndex, not self.enabled)
-        self.parentScene.UAS_vsm_props.setSelectedTrack(self)
+        self.parentScene.UAS_video_tracks_props.setSelectedTrack(self)
 
     enabled: BoolProperty(
         name="Enabled", description="Use - or not - the track in the edit", update=_update_enabled, default=True
@@ -76,7 +74,7 @@ class UAS_VideoShotManager_Track(PropertyGroup):
 
     def _update_opacity(self, context):
         utils_vse.setChannelAlpha(self.parentScene, self.vseTrackIndex, self.opacity * 0.01)
-        self.parentScene.UAS_vsm_props.setSelectedTrack(self)
+        self.parentScene.UAS_video_tracks_props.setSelectedTrack(self)
 
     opacity: IntProperty(
         name="Opacity",
@@ -100,7 +98,7 @@ class UAS_VideoShotManager_Track(PropertyGroup):
 
     def _update_volume(self, context):
         utils_vse.setChannelVolume(self.parentScene, self.vseTrackIndex, self.volume)
-        self.parentScene.UAS_vsm_props.setSelectedTrack(self)
+        self.parentScene.UAS_video_tracks_props.setSelectedTrack(self)
 
     volume: FloatProperty(
         name="Volume",
@@ -117,14 +115,14 @@ class UAS_VideoShotManager_Track(PropertyGroup):
     )
 
     def _update_color(self, context):
-        self.parentScene.UAS_vsm_props.setSelectedTrack(self)
+        self.parentScene.UAS_video_tracks_props.setSelectedTrack(self)
 
     color: FloatVectorProperty(
         subtype="COLOR", min=0.0, max=1.0, size=4, update=_update_color, default=(1.0, 1.0, 1.0, 1.0), options=set(),
     )
 
     def _get_vseTrackIndex(self):
-        ind = self.parentScene.UAS_vsm_props.getTrackIndex(self)
+        ind = self.parentScene.UAS_video_tracks_props.getTrackIndex(self)
         val = self.get("vseTrackIndex", ind)
         return val
 
@@ -143,7 +141,7 @@ class UAS_VideoShotManager_Track(PropertyGroup):
 
     def _update_trackType(self, context):
         self.setColorFromTrackType()
-        self.parentScene.UAS_vsm_props.setSelectedTrack(self)
+        self.parentScene.UAS_video_tracks_props.setSelectedTrack(self)
 
     trackType: EnumProperty(
         name="Track Type",
@@ -179,12 +177,6 @@ class UAS_VideoShotManager_Track(PropertyGroup):
         name="Shot Manager Scene",
         description="Scene with a Shot Manager instance.\nCurrent scene cannot be used",
     )
-
-    # shotManagerTake: PointerProperty(
-    #     type=UAS_ShotManager_Take,
-    #     name="Shot Manager Take",
-    #     description="Scene with a Shot Manager instance.\nCurrent scene cannot be used",
-    # )
 
     def _list_takes(self, context):
         res = list()
@@ -290,7 +282,7 @@ class UAS_VideoShotManager_Track(PropertyGroup):
     # wkip rajouter un range?
     def getClips(self):
         # return bpy.context.window_manager.UAS_vse_render.getChannelClips(self.parentScene, self.vseTrackIndex)
-        return self.parentScene.UAS_vsm_props.getChannelClips(self.parentScene, self.vseTrackIndex)
+        return self.parentScene.UAS_video_tracks_props.getChannelClips(self.parentScene, self.vseTrackIndex)
 
     def getClipsNumber(self):
         return bpy.context.window_manager.UAS_vse_render.getChannelClipsNumber(self.parentScene, self.vseTrackIndex)
