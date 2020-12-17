@@ -31,7 +31,7 @@ from .operators import about
 # from .properties import props
 from .properties import addon_prefs
 
-# from .tools import vse_render
+from .tools import vse_render
 from .tools.markers_nav_bar import markers_nav_bar
 
 from .tools.markers_nav_bar import markers_nav_bar_addon_prefs
@@ -39,6 +39,8 @@ from .tools.markers_nav_bar import markers_nav_bar_addon_prefs
 from .ui import vt_ui
 
 from .utils import utils
+
+# from .utils import utils_vse
 
 
 from .utils import utils_operators
@@ -297,6 +299,7 @@ def register():
     addon_prefs.register()
 
     utils_operators.register()
+    #   utils_vse.register()
 
     # operators
     prefs.register()
@@ -305,7 +308,7 @@ def register():
     markers_nav_bar.register()
 
     otio.register()
-    # vse_render.register()
+    vse_render.register()
     # utils_render.register()
     # viewport_3d.register()
     # videovideotracks.register()
@@ -381,6 +384,8 @@ def unregister():
     prefs.unregister()
     general.unregister()
 
+    vse_render.unregister()
+
     # rrs specific
     #   rrs_vsm_tools.unregister()
     # ui
@@ -390,6 +395,8 @@ def unregister():
     utils_operators.unregister()
     markers_nav_bar.unregister()
     markers_nav_bar_addon_prefs.unregister()
+
+    #  utils_vse.unregister()
 
     # for cls in reversed(classes):
     #     bpy.utils.unregister_class(cls)

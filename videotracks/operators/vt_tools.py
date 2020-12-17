@@ -342,7 +342,7 @@ class UAS_VideoTracks_OT_ExportContentbetweenMarkers(Operator):
 
     def execute(self, context):
         scene = context.scene
-        props = scene.UAS_shot_manager_props
+        props = scene.UAS_video_tracks_props
 
         vse_render = bpy.context.window_manager.UAS_vse_render
 
