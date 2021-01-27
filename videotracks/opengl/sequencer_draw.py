@@ -135,9 +135,56 @@ def draw_sequencer():
     draw_channel_name(props.tracks, view_boundaries)
 
 
+from .bgl_ui import BGL_UIOperatorBase, BGLCanva
+from .bgl_ui.widgets import *
+
+
+class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
+    bl_idname = "uas_video_tracks.tracks_overlay"
+    bl_label = "Draw tracks overlay."
+    bl_options = { "REGISTER", "INTERNAL" }
+
+    def __init__ ( self ):
+        BGL_UIOperatorBase.__init__ ( self )
+
+    def build_ui( self ):
+        props = bpy.context.scene.UAS_video_tracks_props
+        self.track_count = len ( props.tracks )
+        canva = BGLCanva ( BGLViewToRegion ( apply_to_x = False ), 0, 11, 11, 22 )
+        self.add_canva ( canva )
+        for i, track in enumerate(reversed(props.tracks)):
+            button = BGLButton ( Position2d ( 0, i + 1 ), 100, 1, lambda track=track: track.name)
+            #button.clicked_callback = lambda ii = i: print ( "button", ii )
+            button.color = lambda track = track: Color ( track.color[0], track.color[1], track.color[2])
+            canva.addWidget ( button )
+        canva = BGLCanva (  )
+        self.add_canva ( canva )
+        canva.addWidget ( BGLButton ( Position2d ( 250, 50 ), 30, 15, "LAYER 2" ) )
+
+    def space_type ( self ):
+        return bpy.types.SpaceSequenceEditor
+
+    def should_cancel ( self ):
+        return False
+
+    def should_rebuild_ui( self ) -> bool:
+        props = bpy.context.scene.UAS_video_tracks_props
+        if len ( props.tracks ) != self.track_count:
+            return True
+        else:
+            return False
+
+
+
+_classes = ( UAS_VideoTracks_TracksOverlay, )
+
 def register():
-    bpy.types.SpaceSequenceEditor.draw_handler_add(draw_sequencer, (), "WINDOW", "POST_PIXEL")
+    for cls in _classes:
+        bpy.utils.register_class ( cls )
+    #bpy.types.SpaceSequenceEditor.draw_handler_add(draw_sequencer, (), "WINDOW", "POST_PIXEL")
 
 
 def unregister():
-    bpy.types.SpaceSequenceEditor.draw_handler_remove(draw_sequencer, "WINDOW")
+    for cls in reversed ( _classes ):
+        bpy.utils.unregister_class ( cls )
+    #bpy.types.SpaceSequenceEditor.draw_handler_remove(draw_sequencer, "WINDOW")
