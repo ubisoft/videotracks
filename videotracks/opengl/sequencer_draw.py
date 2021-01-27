@@ -137,6 +137,7 @@ def draw_sequencer():
 
 from .bgl_ui import BGL_UIOperatorBase, BGLCanva
 from .bgl_ui.widgets import *
+from .bgl_ui.types import BGLViewToRegion
 
 
 class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
@@ -153,13 +154,13 @@ class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
         canva = BGLCanva ( BGLViewToRegion ( apply_to_x = False ), 0, 11, 11, 22 )
         self.add_canva ( canva )
         for i, track in enumerate(reversed(props.tracks)):
-            button = BGLButton ( Position2d ( 0, i + 1 ), 100, 1, lambda track=track: track.name)
+            button = BGLButton ( BGLCoord ( 0, i + 1 ), 100, 1, lambda track=track: track.name )
             #button.clicked_callback = lambda ii = i: print ( "button", ii )
-            button.color = lambda track = track: Color ( track.color[0], track.color[1], track.color[2])
+            button.color = lambda track = track: BGLColor ( track.color[0 ], track.color[1 ], track.color[2 ] )
             canva.addWidget ( button )
         canva = BGLCanva (  )
         self.add_canva ( canva )
-        canva.addWidget ( BGLButton ( Position2d ( 250, 50 ), 30, 15, "LAYER 2" ) )
+        canva.addWidget ( BGLButton ( BGLCoord ( 250, 50 ), 30, 15, "LAYER 2" ) )
 
     def space_type ( self ):
         return bpy.types.SpaceSequenceEditor

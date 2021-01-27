@@ -2,7 +2,8 @@
 from typing import Union
 import bpy
 from .utils import get_region_at_xy
-from.widgets import BGLWidget, BGLRegion, BGLTransform
+from.widgets import BGLWidget, BGLRegion
+from.types import BGLTransform
 
 
 class BGLCanva:
