@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import math
+
 import bpy
 from .utils import clamp, clamp_to_region
 
@@ -26,6 +28,12 @@ class BGLCoord ( BGLType ):
         BGLType.__init__( self )
         self.x = x
         self.y = y
+
+    def length ( self ):
+        return math.sqrt ( self.x * self.x + self.y * self.y )
+
+    def length2 ( self ):
+        return self.x * self.x + self.y * self.y
 
     def __iter__ ( self ):
         return iter ( ( self.x, self.y ) )

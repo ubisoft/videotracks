@@ -135,11 +135,15 @@ def draw_sequencer():
     draw_channel_name(props.tracks, view_boundaries)
 
 
-from .bgl_ui import BGL_UIOperatorBase, BGLCanva
+from .bgl_ui import BGL_UIOperatorBase, BGLCanvas
 from .bgl_ui.widgets import *
 from .bgl_ui.types import BGLViewToRegion
 
-
+def tt ( prop ):
+    print ( prop.tracks[ prop.selected_track_index ].name, prop.selected_track_index )
+    return BGLColor ( prop.tracks[ prop.selected_track_index ].color[ 0 ],
+                                                                prop.tracks[prop.selected_track_index].color[ 1 ],
+     prop.tracks[prop.selected_track_index].color[ 2 ], .5 )
 class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
     bl_idname = "uas_video_tracks.tracks_overlay"
     bl_label = "Draw tracks overlay."
@@ -151,16 +155,23 @@ class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
     def build_ui( self ):
         props = bpy.context.scene.UAS_video_tracks_props
         self.track_count = len ( props.tracks )
-        canva = BGLCanva ( BGLViewToRegion ( apply_to_x = False ), 0, 11, 11, 22 )
+        canva = BGLCanvas ( BGLViewToRegion ( apply_to_x = False ), 0, 11, 11, 22 )
         self.add_canva ( canva )
+        track_selected_frame = BGLGeometryStamp ( BGLRect ( lambda prop =  props: BGLCoord ( 0, prop.selected_track_index ), 9999999, 1 ) )
+        track_selected_frame.color = lambda prop = props: BGLColor ( prop.tracks[prop.selected_track_index_inverted].color[ 0 ],
+                                                                     prop.tracks[prop.selected_track_index_inverted].color[ 1 ],
+                                                                     prop.tracks[prop.selected_track_index_inverted].color[ 2 ], .5 )
+        canva.addWidget ( track_selected_frame )
         for i, track in enumerate(reversed(props.tracks)):
             button = BGLButton ( BGLCoord ( 0, i + 1 ), 100, 1, lambda track=track: track.name )
-            #button.clicked_callback = lambda ii = i: print ( "button", ii )
+            button.clicked_callback = lambda prop = props, index = i: prop.setSelectedTrackByIndex ( index + 1 )
             button.color = lambda track = track: BGLColor ( track.color[0 ], track.color[1 ], track.color[2 ] )
             canva.addWidget ( button )
-        canva = BGLCanva (  )
+
+
+        canva = BGLCanvas ( )
         self.add_canva ( canva )
-        canva.addWidget ( BGLButton ( BGLCoord ( 250, 50 ), 30, 15, "LAYER 2" ) )
+        canva.addWidget ( BGLButton ( BGLCoord ( 250, 50 ), 75, 30, lambda prop = props: "Nothing selected" if prop.selected_track_index_inverted < 0 else props.tracks[ prop.selected_track_index_inverted ].name ) )
 
     def space_type ( self ):
         return bpy.types.SpaceSequenceEditor

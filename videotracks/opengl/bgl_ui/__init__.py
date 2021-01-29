@@ -6,7 +6,7 @@ from.widgets import BGLWidget, BGLRegion
 from.types import BGLTransform
 
 
-class BGLCanva:
+class BGLCanvas:
     def __init__ ( self, transform = None, crop_left = 0, crop_bottom = 0, crop_right = 0, crop_top = 0 ):
         BGLWidget.__init__ ( self )
         self._widgets: list[ BGLWidget ] = list ( )
@@ -22,7 +22,8 @@ class BGLCanva:
     def draw ( self, region: bpy.types.Region ):
         self._region.bl_region = region
         for wdgt in self._widgets:
-            wdgt.draw ( self._region )
+            if wdgt.visible:
+                wdgt.draw ( self._region )
 
     def handle_event ( self, region: bpy.types.Region, event : bpy.types.Event) -> bool:
         self._region.bl_region = region
@@ -42,7 +43,7 @@ class BGL_UIOperatorBase ( bpy.types.Operator ):
         self._timer = None
         self.context = None
 
-        self._canvas = list ( ) # type: list[BGLCanva]
+        self._canvas = list ( ) # type: list[BGLCanvas]
 
     def add_canva ( self, canva ):
         self._canvas.append ( canva )

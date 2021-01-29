@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import bpy
+import bpy, bgl
 from typing import Callable, Union, Tuple
 
 from .types import BGLBound, BGLColor, BGLCoord, BGLRegion, BGLPropValue
-from.geometries import BGLRect, BGLText
+from.geometry import *
 from . import shaders
 
-
+#todo: Make BGLPropValue property getter/setter "template"
 
 def _nop ( *args, **kwargs ):
     pass
@@ -18,6 +18,16 @@ class BGLWidget:
             self._position = BGLPropValue ( BGLCoord ( ) )
         else:
             self._position = BGLPropValue ( position )
+
+        self._visible = BGLPropValue ( True )
+
+    @property
+    def visible ( self ):
+        return  self._visible.value
+
+    @visible.setter
+    def visible ( self, value ):
+        self._visible.value = value
 
     @property
     def position ( self ):
@@ -45,7 +55,7 @@ class BGLButton ( BGLWidget ):
         self._color = BGLPropValue ( BGLColor ( .5, .5, .5 ) )
         self._hightlight_color = self._color ** .8
 
-        self._geometry = BGLRect ( position.x, position.y , width, height )
+        self._geometry = BGLRect ( position , width, height )
         self._text_geometry = BGLText ( self._geometry.get_bound ( ).center, text = text, center_text = True )
 
         self._highlighted = False
@@ -117,5 +127,30 @@ class BGLButton ( BGLWidget ):
         else:
             shaders.UNIFORM_SHADER_2D.uniform_float ( "color", self.color )
 
+        bgl.glEnable ( bgl.GL_BLEND )
         self._geometry.draw ( shaders.UNIFORM_SHADER_2D, region )
+        bgl.glDisable ( bgl.GL_BLEND )
         self._text_geometry.draw ( None, region )
+
+
+
+class BGLGeometryStamp ( BGLWidget ):
+    def __init__ ( self, geometry ): # Currently no position since the geometry have one as well.
+        BGLWidget.__init__ ( self )
+        self._color = BGLPropValue ( BGLColor ( ) )
+        self.geometry: BGLGeometry = geometry
+
+    @property
+    def color ( self ):
+        return self._color.value
+
+    @color.setter
+    def color ( self, value ):
+        self._color.value = value
+
+    def draw ( self, region: BGLRegion ):
+        shaders.UNIFORM_SHADER_2D.bind ( )
+        shaders.UNIFORM_SHADER_2D.uniform_float ( "color", self.color )
+        bgl.glEnable ( bgl.GL_BLEND )
+        self.geometry.draw ( shaders.UNIFORM_SHADER_2D, region )
+        bgl.glDisable ( bgl.GL_BLEND )
