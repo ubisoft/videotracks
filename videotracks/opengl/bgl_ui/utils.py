@@ -6,7 +6,16 @@ import gpu
 from gpu_extras.batch import batch_for_shader
 from mathutils import Vector
 
+def remap ( value, old_min, old_max, new_min, new_max ):
+    value = clamp(value, old_min, old_max)
+    old_range = old_max - old_min
+    if old_range == 0:
+        new_value = new_min
+    else:
+        new_range = new_max - new_min
+        new_value = (((value - old_min) * new_range) / old_range) + new_min
 
+    return new_value
 
 def clamp(value, minimum, maximum):
     return min(max(value, minimum), maximum)

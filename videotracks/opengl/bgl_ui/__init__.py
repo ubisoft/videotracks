@@ -12,6 +12,7 @@ class BGLCanvas:
         self._widgets: list[ BGLWidget ] = list ( )
         self._region = BGLRegion ( crop_left, crop_bottom, crop_right, crop_top )
         self._region.transform = BGLTransform ( ) if transform is None else transform
+        self._last_widget_handled = None
 
     def addWidget ( self, widget: BGLWidget ):
         self._widgets.append ( widget )
@@ -27,8 +28,16 @@ class BGLCanvas:
 
     def handle_event ( self, region: bpy.types.Region, event : bpy.types.Event) -> bool:
         self._region.bl_region = region
+        # First do the last widget which handled something so it has priority.
+        if self._last_widget_handled is not None:
+            if self._last_widget_handled.handle_event ( self._region, event ):
+                return True
+
         for wdgt in self._widgets:
+            if wdgt is self._last_widget_handled: # Handled first
+                continue
             if wdgt.handle_event ( self._region, event ):
+                self._last_widget_handled = wdgt
                 return True
 
         return False
@@ -44,6 +53,7 @@ class BGL_UIOperatorBase ( bpy.types.Operator ):
         self.context = None
 
         self._canvas = list ( ) # type: list[BGLCanvas]
+        self._last_handled_canvas = None
 
     def add_canva ( self, canva ):
         self._canvas.append ( canva )
@@ -79,8 +89,15 @@ class BGL_UIOperatorBase ( bpy.types.Operator ):
 
         region, _ = get_region_at_xy ( context, event.mouse_x, event.mouse_y  )
         if region is not None:
+            if self._last_handled_canvas is not None:
+                if self._last_handled_canvas.handle_event ( region, event ):
+                    return { "RUNNING_MODAL" }
+
             for canva in self._canvas:
+                if canva is self._last_handled_canvas: # Handled first.
+                    continue
                 if canva.handle_event ( region, event ):
+                    self._last_handled_canvas = canva
                     return { "RUNNING_MODAL" }
 
         if self.should_cancel ( ):

@@ -4,44 +4,41 @@
 Reflexion:
 
 Maybe geometry should not have a defined position. The widgets are responsible for drawings and also have a position. This is redondant.
+
+Move Shader draw calls in here part in there
 """
 
 from typing import Callable, Union
 
 import math
 from gpu_extras.batch import batch_for_shader
-import bpy, blf
+import bpy, blf, bgl
 from mathutils import Vector
 
-from .types import BGLColor, BGLBound, BGLRegion, BGLCoord, BGLPropValue
-
+from .types import BGLColor, BGLBound, BGLRegion, BGLCoord, BGLPropValue, BGLProp, BGLImageManager
+from .shaders import IMAGE_SHADER_2D, UNIFORM_SHADER_2D
 
 class BGLGeometry:
-    def __init__ ( self, position: Union[ BGLCoord, Callable ] = BGLCoord ( ) ):
-        self._position = BGLPropValue ( position )
-
-    @property
-    def position ( self ):
-        return  self._position.value
-
-    @position.setter
-    def position ( self, value ):
-        self._position = BGLPropValue ( value )
+    position = BGLProp ( BGLCoord ( ) )
+    def __init__ ( self ):
+        pass
 
     def get_bound ( self, region: BGLRegion = None ) -> BGLBound:
-        pass
+        return BGLBound ( )
 
     def is_over ( self, position: BGLCoord, region: BGLRegion ) -> bool:
-        pass
+        return False
 
-    def draw ( self, shader, region: BGLRegion ):
+    def draw ( self, region: BGLRegion ):
         pass
 
 
 
 class BGLRect ( BGLGeometry ):
-    def __init__ ( self, position, width, height ):
-        BGLGeometry.__init__ ( self, position )
+    color = BGLProp ( BGLColor ( .1, .4, .4 ) )
+
+    def __init__ ( self, width, height ):
+        BGLGeometry.__init__ ( self )
         self.width = width
         self.height = height
 
@@ -56,26 +53,31 @@ class BGLRect ( BGLGeometry ):
 
     def is_over( self, position, region: BGLRegion ) -> bool:
         bound = self.get_bound ( region )
-        if  bound.min.x <= position.x < bound.max.x and bound.min.y <= position.y <= bound.max.y:
+        if  bound.min.x <= position.x <= bound.max.x and bound.min.y <= position.y <= bound.max.y:
             return True
 
         return False
 
-    def draw ( self, shader, region: BGLRegion ):
-        bound = self.get_bound ( region )
+    def draw ( self, region: BGLRegion ):
+        UNIFORM_SHADER_2D.bind ( )
+        UNIFORM_SHADER_2D.uniform_float ( "color", self.color )
 
-        batch = batch_for_shader ( shader, "TRIS", { "pos": [ Vector ( list ( bound.min ) ),
+        bound = self.get_bound ( region )
+        batch = batch_for_shader ( UNIFORM_SHADER_2D, "TRIS", { "pos": [ Vector ( list ( bound.min ) ),
                                                               Vector ( [ bound.max.x, bound.min.y ] ),
                                                               Vector ( list ( bound.max ) ),
                                                               Vector ( [ bound.min.x, bound.max.y ] ) ] },
                                    indices = [ ( 0, 1, 3 ), ( 1, 2, 3 ) ] )
-        batch.draw ( shader )
+        bgl.glEnable ( bgl.GL_BLEND )
+        batch.draw ( UNIFORM_SHADER_2D )
+        bgl.glDisable ( bgl.GL_BLEND )
 
 
 
 class BGLCircle ( BGLGeometry ):
-    def __init__ ( self, position: BGLCoord, radius, division = 12 ):
-        BGLGeometry.__init__ ( self, position )
+    color = BGLProp (BGLColor ( ) )
+    def __init__ ( self, radius, division = 12 ):
+        BGLGeometry.__init__ ( self )
         self.radius = radius
         self._division = max ( division, 4 )
 
@@ -95,7 +97,7 @@ class BGLCircle ( BGLGeometry ):
 
         return False
 
-    def draw ( self, shader, region: BGLRegion ):
+    def draw ( self, region: BGLRegion ):
         points = list ( )
         indices = list ( )
         num_pts = self._division
@@ -110,14 +112,17 @@ class BGLCircle ( BGLGeometry ):
             indices.append ( ( 0, i + 1 ,  i + 2 ) )
         indices.append ( ( 0, num_pts, 1 ) ) # Last Face
 
-        batch = batch_for_shader ( shader, "TRIS", { "pos": points }, indices = indices )
-        batch.draw ( shader )
+        UNIFORM_SHADER_2D.bind ( )
+        UNIFORM_SHADER_2D.uniform_float ( "color", self.color )
+
+        batch = batch_for_shader ( UNIFORM_SHADER_2D, "TRIS", { "pos": points }, indices = indices )
+        batch.draw ( UNIFORM_SHADER_2D )
 
 
 
 class BGLText ( BGLGeometry ):
-    def __init__ ( self, position: BGLCoord, size = 11, text = "Label", color = None, center_text = False ):
-        BGLGeometry.__init__ ( self, position )
+    def __init__ ( self, size = 11, text = "Label", color = None, center_text = False ):
+        BGLGeometry.__init__ ( self )
         self.size = size
         self._text = BGLPropValue ( text )
         self._color = BGLPropValue ( BGLColor ( 1, 1, 1 ) if color is None else color )
@@ -167,9 +172,31 @@ class BGLText ( BGLGeometry ):
 
         return False
 
-    def draw ( self, shader, region ):
+    def draw ( self, region ):
         blf.size ( 0, self.size, 72 )
         bound = self.get_bound ( region )
         if region.bound.fully_contains ( bound ):
             blf.position ( 0, bound.min.x, bound.min.y, 0 )
             blf.draw ( 0, self.text )
+
+
+class BGLTexture ( BGLRect ):
+    image = BGLProp ( None ) # BGLImageManager.BGLImage
+
+    def __init__( self, width, height, image ):
+        BGLRect.__init__ ( self, width, height )
+        self.image = image
+
+    def draw( self, region: BGLRegion ):
+        bound = self.get_bound ( region )
+        batch = batch_for_shader ( IMAGE_SHADER_2D, "TRIS", { "pos": [ Vector ( list ( bound.min ) ),
+                                                              Vector ( [ bound.max.x, bound.min.y ] ),
+                                                              Vector ( list ( bound.max ) ),
+                                                              Vector ( [ bound.min.x, bound.max.y ] ) ], "texCoord": ((0, 0), (1, 0), (1, 1), (0, 1)) },
+                                   indices = [ ( 0, 1, 3 ), ( 1, 2, 3 ) ] )
+
+        bgl.glActiveTexture ( bgl.GL_TEXTURE0 )
+        bgl.glBindTexture ( bgl.GL_TEXTURE_2D, self.image.texture_id )
+        IMAGE_SHADER_2D.bind ( )
+        IMAGE_SHADER_2D.uniform_int ( "image", 0 )
+        batch.draw ( IMAGE_SHADER_2D )

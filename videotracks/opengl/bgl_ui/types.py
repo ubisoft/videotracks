@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-import math
+import os, math
+from pathlib import Path
+from typing import Union, Callable, Any
 
-import bpy
+import bpy, bgl
 from .utils import clamp, clamp_to_region
 
 
@@ -39,13 +41,56 @@ class BGLCoord ( BGLType ):
         return iter ( ( self.x, self.y ) )
 
     def __add__ ( self, other ):
-        return BGLCoord ( self.x + other.x, self.y + other.y )
+        v1 = self.x
+        v2 = self.y
+        try:
+            i = iter ( other )
+            v1 += next ( i, 0 )
+            v2 += next ( i, 0 )
+        except TypeError:
+            v1 += other
+            v2 += other
+
+        return BGLCoord ( v1, v2 )
+
+    def __mul__(self, other):
+        v1 = self.x
+        v2 = self.y
+        try:
+            i = iter ( other )
+            v1 *= next ( i, 0 )
+            v2 *= next ( i, 0 )
+        except TypeError:
+            v1 *= other
+            v2 *= other
+
+        return BGLCoord ( v1, v2 )
 
     def __sub__ ( self, other ):
-        return BGLCoord ( self.x - other.x, self.y - other.y )
+        v1 = self.x
+        v2 = self.y
+        try:
+            i = iter ( other )
+            v1 -= next ( i, 0 )
+            v2 -= next ( i, 0 )
+        except TypeError:
+            v1 -= other
+            v2 -= other
 
-    def __pow__ ( self, power, modulo=None ):
-        return BGLCoord ( self.x ** power, self.y ** power )
+        return BGLCoord ( v1, v2 )
+
+    def __pow__ ( self, other, modulo=None ):
+        v1 = self.x
+        v2 = self.y
+        try:
+            i = iter ( other )
+            v1 **= next ( i, 0 )
+            v2 **= next ( i, 0 )
+        except TypeError:
+            v1 **= other
+            v2 **= other
+
+        return BGLCoord ( v1, v2 )
 
     def __repr__(self):
         return f"{type ( self ).__name__} ( {self.x}, {self.y} )"
@@ -117,16 +162,53 @@ class BGLColor ( BGLType ):
         return f"{type ( self ).__name__} ( {self.r}, {self.g}, {self.b}, {self.a} )"
 
 
+class BGLImage:
+    # Should not be instanciated manually
+
+    def __init__ ( self, image_preview ):
+        width, height = image_preview.image_size
+        self._texture_id = bgl.Buffer ( bgl.GL_INT, 1 )
+        self.pixel_buffer = bgl.Buffer ( bgl.GL_FLOAT, width * height * 4, list ( image_preview.image_pixels_float ) )
+
+        bgl.glGenTextures ( 1, self._texture_id )
+        bgl.glBindTexture ( bgl.GL_TEXTURE_2D, self._texture_id[ 0 ] )
+        bgl.glTexImage2D ( bgl.GL_TEXTURE_2D, 0, bgl.GL_RGB, width, height, 0, bgl.GL_RGBA, bgl.GL_FLOAT, self.pixel_buffer )
+
+        bgl.glTexParameteri ( bgl.GL_TEXTURE_2D, bgl.GL_TEXTURE_MIN_FILTER, bgl.GL_LINEAR )
+        bgl.glTexParameteri ( bgl.GL_TEXTURE_2D, bgl.GL_TEXTURE_MAG_FILTER, bgl.GL_LINEAR )
+
+    def __del__ ( self ):
+        bgl.glDeleteTextures ( 1, self._texture_id )
+
+    @property
+    def texture_id ( self ):
+        return self._texture_id[ 0 ]
+
+
+
+class BGLImageManager:
+    pcoll = bpy.utils.previews.new ( )
+
+    def __init__ ( self ): pass
+
+    def load_image ( self, path ):
+        p = Path ( path )
+        return BGLImage ( self.pcoll.load ( p.stem, str ( p ), 'IMAGE' ) )
+
+    def __del__ ( self ):
+        bpy.utils.previews.remove ( self.pcoll )
+
+
 
 class BGLBound:
     def __init__ ( self, min_position = None, max_position = None):
         if min_position is None:
-            self.min = BGLCoord ( -99999, -99999 )
+            self.min = BGLCoord ( )
         else:
             self.min = min_position
 
         if max_position is None:
-            self.max = BGLCoord ( 99999, 99999 )
+            self.max = BGLCoord ( )
         else:
             self.max = max_position
 
@@ -162,6 +244,17 @@ class BGLBound:
 
         return False
 
+    def __add__ ( self, other ):
+        return BGLBound ( BGLCoord ( min ( self.min.x, other.min.x ), min ( self.min.y, other.min.y ) ),
+                          BGLCoord ( max ( self.max.x, other.max.x ), max ( self.max.y, other.max.y ) ) )
+
+    def __iadd__ ( self, other ):
+        self.min.x = min ( self.min.x, other.min.x )
+        self.min.y = min ( self.min.y, other.min.y )
+        self.max.x = max ( self.max.x, other.max.x )
+        self.max.y = max ( self.max.y, other.max.y )
+
+        return self
 
 
 class BGLTransform:
@@ -190,6 +283,7 @@ class BGLViewToRegion ( BGLTransform ):
         return new_pos
 
 
+
 class BGLRegion:
     def __init__ ( self, crop_left = 0, crop_bottom = 0, crop_right = 0, crop_top = 0 ):
         self._crops = ( crop_left, crop_bottom, crop_right, crop_top )
@@ -210,7 +304,15 @@ class BGLRegion:
 
 
 
+###
+# Container types for properties
+###
+
 class BGLPropValue:
+    """
+    Data object which either encapsulate values as function or static value.
+    Hence you can assign either non callable or callable objects.
+    """
     def __init__( self, value ):
         if isinstance ( value, BGLPropValue ):
             self._value = value._value
@@ -226,13 +328,46 @@ class BGLPropValue:
 
     @value.setter
     def value ( self, value ):
-        self._value = value
+        if isinstance ( value, BGLPropValue ):
+            self._value = lambda o = value: o ( )
+        else:
+            self._value = value
 
-    def __add__ ( self, other ):
-        return BGLPropValue ( lambda s = self, o = other: s.value + o.value )
 
-    def __sub__ ( self, other ):
-        return BGLPropValue ( lambda s = self, o = other: s.value - o.value )
+    def __call__( self ):
+        return self.value
 
-    def __pow__(self, power, modulo=None):
-        return BGLPropValue ( lambda s = self, p = power: s.value ** p )
+
+
+class BGLProp:
+    """
+    This is the class that should be used when providing public attributes on widgets.
+    This a descriptor so attribute should be defined at class level.
+
+    This forbid referencing the BGLPropValue to another.
+    Assignment constructs a new BGLPropValue instance instead, also preventing type being changed.
+
+    .. info::
+
+            Advantages of the getter return BGLPropValue vs actual BGLPropValue.value
+            + easy link of two property: a.prop = b.prop instead of a.prop = lambda o = b: b.prop
+            + Can have special methods on BGLPropValue like operator overloading
+            - need to manually query the value using either toto.value or toto(). Which can be confusing in some cases.
+
+    """
+    def __init__ ( self, default_value = None ):
+        self._default_value = BGLPropValue ( default_value )
+
+    def __set_name__ ( self, owner, name ):
+        self._name = name
+
+    def __set__ ( self, obj, value ):
+        if not self._name in obj.__dict__:
+             obj.__dict__[ self._name ] = BGLPropValue ( None )
+        obj.__dict__[ self._name ].value = value
+
+    def __get__ ( self, obj, type = None ) -> Any:
+        if not self._name in obj.__dict__:
+            self.__set__ ( obj, self._default_value ( ) )
+
+        return  obj.__dict__.get ( self._name ).value
