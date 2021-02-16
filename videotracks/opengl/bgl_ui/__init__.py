@@ -24,7 +24,7 @@ class BGLCanvas:
         self._region.bl_region = region
         for wdgt in self._widgets:
             if wdgt.visible:
-                wdgt.draw ( self._region )
+                wdgt._draw ( self._region )
 
     def handle_event ( self, region: bpy.types.Region, event : bpy.types.Event) -> bool:
         self._region.bl_region = region
@@ -33,10 +33,10 @@ class BGLCanvas:
             if self._last_widget_handled.handle_event ( self._region, event ):
                 return True
 
-        for wdgt in self._widgets:
+        for wdgt in reversed ( self._widgets ): # LAst defined widget have the priority
             if wdgt is self._last_widget_handled: # Handled first
                 continue
-            if wdgt.handle_event ( self._region, event ):
+            if wdgt._handle_event ( self._region, event ):
                 self._last_widget_handled = wdgt
                 return True
 
@@ -93,7 +93,7 @@ class BGL_UIOperatorBase ( bpy.types.Operator ):
                 if self._last_handled_canvas.handle_event ( region, event ):
                     return { "RUNNING_MODAL" }
 
-            for canva in self._canvas:
+            for canva in reversed ( self._canvas ): # traversal is reversed because last layers are actually drawn on top so we give them mouse priority.
                 if canva is self._last_handled_canvas: # Handled first.
                     continue
                 if canva.handle_event ( region, event ):

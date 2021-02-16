@@ -23,7 +23,7 @@ def clamp(value, minimum, maximum):
 
 def clamp_to_region(x, y, region, bound ):
     l_x, l_y = region.view2d.region_to_view ( bound.min.x, bound.min.y )
-    h_x, h_y = region.view2d.region_to_view (bound.max.x -1, bound.max.y - 1 )
+    h_x, h_y = region.view2d.region_to_view (bound.max.x, bound.max.y )
     return clamp(x, l_x, h_x), clamp(y, l_y, h_y)
 
 

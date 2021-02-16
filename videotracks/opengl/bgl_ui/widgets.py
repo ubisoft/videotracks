@@ -22,8 +22,18 @@ class BGLWidget:
     def get_bound ( self, region: BGLRegion ):
         return BGLBound ( )
 
+    def _draw ( self, region: BGLRegion ):
+        if region.bound.do_overlap ( self.get_bound ( region ) ):
+            self.draw ( region )
+
     def draw ( self, region: BGLRegion ):
         pass
+
+    def _handle_event ( self, region: BGLRegion, event : bpy.types.Event ) -> bool:
+        if region.bound.do_overlap ( self.get_bound ( region ) ):
+            return self.handle_event ( region, event )
+
+        return False
 
     def handle_event ( self, region: BGLRegion, event : bpy.types.Event ) -> bool:
         return False
@@ -83,6 +93,7 @@ class BGLButton ( BGLWidget ):
                 elif event.value == "RELEASE":
                     if self._is_pushed:
                         self._on_clicked_callback ( )
+                        return True
                     self._is_pushed = False
 
         elif event.type == "MOUSEMOVE":
@@ -95,7 +106,6 @@ class BGLButton ( BGLWidget ):
 
 
     def draw ( self, region ):
-
         self._geometry.draw ( region )
         self._text_geometry.draw ( region )
 
@@ -128,7 +138,7 @@ class BGLSlider ( BGLWidget ):
     def __init__ ( self, position, width, height ):
         BGLWidget.__init__ ( self )
         self.position = position
-        self.on_value_changed: Callable[ [ Any ], None ] = _nop
+        self.on_value_changed: Callable[ [ Any ], None ] = None
 
         self._back_geo = BGLRect ( width, height )
         self._back_geo.position = position
@@ -139,14 +149,16 @@ class BGLSlider ( BGLWidget ):
         self._focused = False
 
 
-
     def _update_value_mouse_interaction ( self, mouse_pos, region ):
         """
         Update geometry and sets the value.
         """
         bound = self._back_geo.get_bound ( region )
         val = utils.remap ( mouse_pos.x, bound.min.x, bound.max.x, self.min, self.max )
-        self.on_value_changed ( val )
+        if self.on_value_changed is None:
+            self.value = val
+        else:
+            self.on_value_changed ( val )
 
     def handle_event( self, region, event : bpy.types.Event) -> bool:
 
@@ -172,7 +184,7 @@ class BGLSlider ( BGLWidget ):
                     res = True
             elif event.value == "RELEASE":
                 self._focused = False
-
+        print ( "slider", res)
         return res
 
     def get_bound( self, region ):

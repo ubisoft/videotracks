@@ -236,13 +236,15 @@ class BGLBound:
 
         return False
 
-    def partially_contains ( self, bound: "BGLBound" ):
-        if self.min.x <= bound.min.x <=self.max.x and self.min.y <= bound.min.y <=self.max.y:
-            return True
-        elif self.min.x <= bound.max.x <=self.max.x and self.min.y <= bound.max.y <=self.max.y:
-            return True
+    def do_overlap ( self, bound: "BGLBound" ):
+        if self.min.x >= bound.max.x or bound.min.x >= self.max.x:
+            return False
 
-        return False
+         # If one rectangle is above other
+        if self.min.y >= bound.max.y or bound.min.y >= self.max.y:
+            return False
+
+        return True
 
     def __add__ ( self, other ):
         return BGLBound ( BGLCoord ( min ( self.min.x, other.min.x ), min ( self.min.y, other.min.y ) ),
@@ -354,6 +356,7 @@ class BGLProp:
             + Can have special methods on BGLPropValue like operator overloading
             - need to manually query the value using either toto.value or toto(). Which can be confusing in some cases.
 
+            currently switched to BGLPropValue.value way of doing.
     """
     def __init__ ( self, default_value = None ):
         self._default_value = BGLPropValue ( default_value )

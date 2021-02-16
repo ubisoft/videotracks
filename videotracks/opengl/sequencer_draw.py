@@ -151,15 +151,7 @@ class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
 
     def build_ui( self ):
         props = bpy.context.scene.UAS_video_tracks_props
-        self.track_count = len ( props.tracks )
-
-        canva = BGLCanvas ( BGLViewToRegion ( apply_to_x = False ), 0, 11, 11, 22 )
-        self.add_canva ( canva )
-        rect = BGLRect ( 9999999, 1 )
-        track_selected_frame = BGLGeometryStamp ( lambda prop =  props: BGLCoord ( 0, prop.selected_track_index ), rect )
-        rect.color = lambda prop = props: BGLColor ( prop.tracks[prop.selected_track_index_inverted].color[ 0 ],
-                                                                     prop.tracks[prop.selected_track_index_inverted].color[ 1 ],
-                                                                     prop.tracks[prop.selected_track_index_inverted].color[ 2 ], .5 )
+        self.track_count = len ( props.tracks ) # used for rebuilding ui
 
         canva = BGLCanvas ( BGLViewToRegion ( ), 0, 11, 11, 22 )
         self.add_canva ( canva )
@@ -177,44 +169,31 @@ class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
 
         canva = BGLCanvas ( BGLViewToRegion ( apply_to_x = False ), 0, 11, 11, 22 )
         self.add_canva ( canva )
+
+        rect = BGLRect ( 9999999, 1 )
+        track_selected_frame = BGLGeometryStamp ( lambda prop =  props: BGLCoord ( 0, prop.selected_track_index ), rect )
+        rect.color = lambda prop = props: BGLColor ( prop.tracks[prop.selected_track_index_inverted].color[ 0 ],
+                                                                     prop.tracks[prop.selected_track_index_inverted].color[ 1 ],
+                                                                     prop.tracks[prop.selected_track_index_inverted].color[ 2 ], .5 )
         canva.addWidget ( track_selected_frame )
+
         for i, track in enumerate(reversed(props.tracks)):
-            button = BGLButton ( BGLCoord ( 0, i + 1 ), 100, 1, lambda track=track: track.name )
+            pos = BGLCoord ( 0, i + 1 )
+            button = BGLButton ( pos, 100, 1, lambda track=track: track.name )
             button.clicked_callback = lambda prop = props, index = i: prop.setSelectedTrackByIndex ( index + 1 )
-            button.color = lambda track = track: BGLColor ( track.color[0 ], track.color[1 ], track.color[2 ] )
+            button.color = lambda track = track: BGLColor ( track.color[ 0 ], track.color[ 1 ], track.color[ 2 ] )
             canva.addWidget ( button )
+
+            slider = BGLSlider ( pos, 100, .2 )
+            slider.value = lambda t = track: t.opacity
+            def update_opacity ( v, t = track ): t.opacity = v
+            slider.on_value_changed = update_opacity
+            canva.addWidget ( slider )
+            break
 
         img_man = BGLImageManager ( )
         img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )
-        canva = BGLCanvas ( None, 0, 11, 11, 22 )
-        self.add_canva ( canva )
-        main_layout = BGLLayoutH ( )
-        main_layout.position = BGLCoord ( 0, 200 )
-        main_layout.fill_region = True
-        b = BGLButton ( BGLCoord ( 250, 150 ), 75, 30,
-                        lambda prop = props: "Nothing selected" if prop.selected_track_index_inverted < 0 else props.tracks[
-                            prop.selected_track_index_inverted ].name )
-        #main_layout.add_widget ( b )
 
-        b = BGLButton ( BGLCoord ( 250, 150 ), 75, 30,
-                        lambda prop = props: "Nothing selected" if prop.selected_track_index_inverted < 0 else props.tracks[
-                            prop.selected_track_index_inverted ].name )
-        main_layout.add_widget ( b )
-
-        image_geo = BGLTexture ( 64, 64, img )
-        main_layout.add_widget ( BGLGeometryStamp ( BGLCoord ( 250, 150 ), image_geo ) )
-
-        canva.addWidget ( main_layout )
-
-        def set_resolution ( v ): bpy.context.scene.render.resolution_percentage = v
-
-        canva = BGLCanvas ( BGLViewToRegion ( ), 0, 11, 11, 22 )
-        self.add_canva ( canva )
-        slider = BGLSlider ( BGLCoord ( 10, 1 ), 150, 1 )
-        slider.front_color = slider.back_color ** .5
-        slider.value = lambda: bpy.context.scene.render.resolution_percentage
-        slider.on_value_changed = set_resolution
-        canva.addWidget ( slider )
 
     def space_type ( self ):
         return bpy.types.SpaceSequenceEditor
