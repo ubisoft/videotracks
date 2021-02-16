@@ -184,7 +184,7 @@ class BGLSlider ( BGLWidget ):
                     res = True
             elif event.value == "RELEASE":
                 self._focused = False
-        print ( "slider", res)
+
         return res
 
     def get_bound( self, region ):
@@ -248,7 +248,7 @@ class BGLLayoutH ( BGLLayoutBase ):
             for wdgt in self._widgets:
                 total_widgets_width += wdgt.get_bound ( region ).width
             free_space = region.bound.width - total_widgets_width
-            spacing = max ( free_space / ( len ( self._widgets) - 1 ), self.spacing )
+            spacing = max ( free_space / max ( 1, ( len ( self._widgets) - 1 ) ), self.spacing )
 
         for wdgt in self._widgets:
             wdgt.position = BGLCoord ( *pos )
@@ -271,7 +271,7 @@ class BGLLayoutV ( BGLLayoutBase ):
             for wdgt in self._widgets:
                 total_widgets_height += wdgt.get_bound ( region ).height
             free_space = region.bound.height - total_widgets_height
-            spacing = max ( free_space / ( len ( self._widgets) - 1 ), self.spacing )
+            spacing = max ( free_space / max ( 1, ( len ( self._widgets) - 1 ) ), self.spacing )
 
         for wdgt in self._widgets:
             wdgt.position = BGLCoord ( *pos )

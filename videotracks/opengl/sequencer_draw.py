@@ -189,7 +189,7 @@ class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
             def update_opacity ( v, t = track ): t.opacity = v
             slider.on_value_changed = update_opacity
             canva.addWidget ( slider )
-            break
+            
 
         img_man = BGLImageManager ( )
         img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )

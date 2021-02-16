@@ -157,7 +157,7 @@ class BGLText ( BGLGeometry ):
         text_width, text_height = blf.dimensions ( 0, self.text )
         pos = self.position
         if region is not None:
-            pos = region.transform.apply_transform ( region, self.position, False )
+            pos = region.transform.apply_transform ( region, self.position, True )
         if self.center_text:
             half_width = text_width * .5
             half_height = text_height * .5
@@ -178,6 +178,7 @@ class BGLText ( BGLGeometry ):
         if region.bound.fully_contains ( bound ):
             blf.position ( 0, bound.min.x, bound.min.y, 0 )
             blf.draw ( 0, self.text )
+
 
 
 class BGLTexture ( BGLRect ):
