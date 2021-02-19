@@ -158,11 +158,11 @@ class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
         size = 100000
 
         b = BGLRect ( size, size * 2 )
-        b.color = BGLColor ( 1, 0, 0, .75 )
+        b.color = BGLColor ( .1, .0, 0, .75 )
         frame_range_left = BGLGeometryStamp ( lambda: BGLCoord ( -size + bpy.context.scene.frame_start, -size ), b )
 
         b = BGLRect ( size, size * 2 )
-        b.color = BGLColor ( 1, 0, 0, .75 )
+        b.color = BGLColor ( .1, 0, 0, .75 )
         frame_range_right = BGLGeometryStamp ( lambda: BGLCoord ( bpy.context.scene.frame_end, -size ), b )
         canva.addWidget ( frame_range_left )
         canva.addWidget ( frame_range_right )
@@ -178,22 +178,32 @@ class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
         canva.addWidget ( track_selected_frame )
 
         for i, track in enumerate(reversed(props.tracks)):
+            width = 100
             pos = BGLCoord ( 0, i + 1 )
-            button = BGLButton ( pos, 100, 1, lambda track=track: track.name )
+            button = BGLButton ( pos, width, 1, lambda track=track: track.name )
             button.clicked_callback = lambda prop = props, index = i: prop.setSelectedTrackByIndex ( index + 1 )
             button.color = lambda track = track: BGLColor ( track.color[ 0 ], track.color[ 1 ], track.color[ 2 ] )
             canva.addWidget ( button )
 
-            slider = BGLSlider ( pos, 100, .2 )
+            slider_height = 0.2
+            slider = BGLSlider ( pos, width, slider_height )
             slider.value = lambda t = track: t.opacity
             def update_opacity ( v, t = track ): t.opacity = v
             slider.on_value_changed = update_opacity
             canva.addWidget ( slider )
-            
+
+            pos = BGLCoord ( pos.x, pos.y + slider_height )
+            enabled_btn = BGLButton ( pos, 10, 1 - slider_height, "" )
+            def update_enabled ( t = track ): t.enabled = not t.enabled
+            enabled_btn.clicked_callback = update_enabled
+            enabled_btn.color = lambda t = track: BGLColor ( .7, 1, .7 ) if t.enabled else BGLColor ( .2, .05, .05 )
+            canva.addWidget ( enabled_btn )
+
 
         img_man = BGLImageManager ( )
-        img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )
+        #img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )
 
+        #canva.addWidget ( BGLGeometryStamp ( BGLCoord ( 0, 3), BGLTexture ( 100, 1, img ) ) )
 
     def space_type ( self ):
         return bpy.types.SpaceSequenceEditor

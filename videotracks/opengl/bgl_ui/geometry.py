@@ -6,6 +6,9 @@ Reflexion:
 Maybe geometry should not have a defined position. The widgets are responsible for drawings and also have a position. This is redondant.
 
 Move Shader draw calls in here part in there
+
+Todo:
+    - allow caching of batch so we don't recreate them at each draw call. Maybe via setting a callback to a BGLProp.
 """
 
 from typing import Callable, Union
@@ -16,7 +19,7 @@ import bpy, blf, bgl
 from mathutils import Vector
 
 from .types import BGLColor, BGLBound, BGLRegion, BGLCoord, BGLPropValue, BGLProp, BGLImageManager
-from .shaders import IMAGE_SHADER_2D, UNIFORM_SHADER_2D
+from .shaders import BGLImageShader, BGLUniformShader
 
 class BGLGeometry:
     position = BGLProp ( BGLCoord ( ) )
@@ -59,19 +62,16 @@ class BGLRect ( BGLGeometry ):
         return False
 
     def draw ( self, region: BGLRegion ):
-        UNIFORM_SHADER_2D.bind ( )
-        UNIFORM_SHADER_2D.uniform_float ( "color", self.color )
-
         bound = self.get_bound ( region )
-        batch = batch_for_shader ( UNIFORM_SHADER_2D, "TRIS", { "pos": [ Vector ( list ( bound.min ) ),
+        batch = BGLUniformShader.create_batch ( "TRIS", { "pos": [ Vector ( list ( bound.min ) ),
                                                               Vector ( [ bound.max.x, bound.min.y ] ),
                                                               Vector ( list ( bound.max ) ),
                                                               Vector ( [ bound.min.x, bound.max.y ] ) ] },
-                                   indices = [ ( 0, 1, 3 ), ( 1, 2, 3 ) ] )
-        bgl.glEnable ( bgl.GL_BLEND )
-        batch.draw ( UNIFORM_SHADER_2D )
-        bgl.glDisable ( bgl.GL_BLEND )
+                                               indices = [ ( 0, 1, 3 ), ( 1, 2, 3 ) ] )
 
+        with BGLUniformShader ( ) as shader:
+            shader.set_color ( self.color )
+            shader.draw_batch ( batch )
 
 
 class BGLCircle ( BGLGeometry ):
@@ -112,11 +112,10 @@ class BGLCircle ( BGLGeometry ):
             indices.append ( ( 0, i + 1 ,  i + 2 ) )
         indices.append ( ( 0, num_pts, 1 ) ) # Last Face
 
-        UNIFORM_SHADER_2D.bind ( )
-        UNIFORM_SHADER_2D.uniform_float ( "color", self.color )
-
-        batch = batch_for_shader ( UNIFORM_SHADER_2D, "TRIS", { "pos": points }, indices = indices )
-        batch.draw ( UNIFORM_SHADER_2D )
+        batch = BGLUniformShader.create_batch ( "TRIS",  { "pos": points }, indices = indices)
+        with BGLUniformShader ( ) as shader:
+            shader.set_color ( self.color )
+            shader.draw_batch ( batch )
 
 
 
@@ -190,14 +189,12 @@ class BGLTexture ( BGLRect ):
 
     def draw( self, region: BGLRegion ):
         bound = self.get_bound ( region )
-        batch = batch_for_shader ( IMAGE_SHADER_2D, "TRIS", { "pos": [ Vector ( list ( bound.min ) ),
+        batch =  BGLImageShader.create_batch ( "TRIS", { "pos": [ Vector ( list ( bound.min ) ),
                                                               Vector ( [ bound.max.x, bound.min.y ] ),
                                                               Vector ( list ( bound.max ) ),
                                                               Vector ( [ bound.min.x, bound.max.y ] ) ], "texCoord": ((0, 0), (1, 0), (1, 1), (0, 1)) },
-                                   indices = [ ( 0, 1, 3 ), ( 1, 2, 3 ) ] )
+                                               indices = [ ( 0, 1, 3 ), ( 1, 2, 3 ) ] )
 
-        bgl.glActiveTexture ( bgl.GL_TEXTURE0 )
-        bgl.glBindTexture ( bgl.GL_TEXTURE_2D, self.image.texture_id )
-        IMAGE_SHADER_2D.bind ( )
-        IMAGE_SHADER_2D.uniform_int ( "image", 0 )
-        batch.draw ( IMAGE_SHADER_2D )
+        with BGLImageShader ( ) as shader:
+            shader.set_image ( self.image )
+            shader.draw_batch ( batch )

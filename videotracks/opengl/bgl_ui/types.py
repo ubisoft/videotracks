@@ -7,27 +7,9 @@ import bpy, bgl
 from .utils import clamp, clamp_to_region
 
 
-class BGLType:
-    def __init__(self):
-        pass
 
-    def __iter__(self):
-        raise NotImplementedError ( )
-
-    def __add__(self, other):
-        raise NotImplementedError ( )
-
-    def __sub__ ( self, other ):
-        raise NotImplementedError ( )
-
-    def __pow__(self, power, modulo=None):
-        raise NotImplementedError ( )
-
-
-
-class BGLCoord ( BGLType ):
+class BGLCoord:
     def __init__( self, x = 0, y = 0 ):
-        BGLType.__init__( self )
         self.x = x
         self.y = y
 
@@ -97,9 +79,8 @@ class BGLCoord ( BGLType ):
 
 
 
-class BGLColor ( BGLType ):
+class BGLColor:
     def __init__( self, r = 1., g = 1., b = 1., a = 1. ):
-        BGLType.__init__ ( self )
         self._r = r
         self._g = g
         self._b = b
