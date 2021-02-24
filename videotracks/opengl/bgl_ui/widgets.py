@@ -16,7 +16,10 @@ class BGLWidget:
     position = BGLProp ( BGLCoord ( ) )
     visible = BGLProp ( True )
 
-    def __init__ ( self ):
+    def __init__ ( self, **prop_values ):
+        for k, v in prop_values.items ( ):
+            setattr ( self, k, v )
+
         self.debug = True
 
     def get_bound ( self, region: BGLRegion ):
@@ -45,29 +48,31 @@ class BGLWidget:
 
 
 class BGLButton ( BGLWidget ):
+    width = BGLProp ( 50 )
+    height = BGLProp ( 100 )
     color = BGLProp ( BGLColor ( .5, .5, .5 )  )
     highlight_color = BGLProp ( BGLColor ( 1, 1, 1 )  )
     text = BGLProp ( "Button" )
+    icon = BGLProp ( None ) # BGLImage
 
-    def __init__( self, position: BGLCoord, width, height, text = "Button" ):
-        BGLWidget.__init__ ( self )
-        self.position = position
-        self._width = width
-        self._height = height
+    def __init__( self, **prop_values ):
+        BGLWidget.__init__ ( self, **prop_values )
 
         self.highlight_color = lambda s = self: s.color ** .8
         self._highlighted = False
 
-        self._geometry = BGLRect ( width, height )
+        self._geometry = BGLRect ( width = lambda: self.width, height = lambda: self.height )
         self._geometry.color = lambda: self.highlight_color if self._highlighted else self.color
         self._geometry.position = lambda: self.position
-        self._text_geometry = BGLText ( text = text, center_text = True )
+        self._text_geometry = BGLText ( text = lambda: self.text, centered = True )
         self._text_geometry.position = lambda : self._geometry.get_bound ( ).center
 
+        #icon_size = min ( height, width )
+        #self._icon_geometry = BGLTexture ( 50, 1 )
+        #self._icon_geometry.image = lambda: self.icon
+        #self._icon_geometry.position = lambda: self._geometry.position #+ BGLCoord ( 0, icon_size *.5 )
 
         self._on_clicked_callback = _nop
-
-        self._prev_click_time = 0
         self._is_pushed = False
 
     @property
@@ -107,6 +112,7 @@ class BGLButton ( BGLWidget ):
 
     def draw ( self, region ):
         self._geometry.draw ( region )
+        #self._icon_geometry.draw ( region )
         self._text_geometry.draw ( region )
 
 
@@ -114,10 +120,8 @@ class BGLButton ( BGLWidget ):
 class BGLGeometryStamp ( BGLWidget ):
     geometry = BGLProp ( None )
     color = BGLProp ( BGLColor ( ) )
-    def __init__ ( self, position, geometry ): # Currently no position since the geometry have one as well.
-        BGLWidget.__init__ ( self )
-        self.position = position
-        self.geometry = geometry
+    def __init__ ( self, **prop_values ): # Currently no position since the geometry have one as well.
+        BGLWidget.__init__ ( self, **prop_values )
         self.geometry.position = lambda self = self: self.position
 
     def get_bound( self, region ):
@@ -129,23 +133,24 @@ class BGLGeometryStamp ( BGLWidget ):
 
 
 class BGLSlider ( BGLWidget ):
+    width = BGLProp ( 10 )
+    height = BGLProp ( 4 )
     min = BGLProp ( 0 )
     max = BGLProp ( 100 )
     value = BGLProp ( 50 )
-    back_color = BGLProp ( BGLColor ( .1, .1 , .3 ) )
-    front_color = BGLProp ( BGLColor ( .4, .4 , .9 ) )
+    back_color = BGLProp ( BGLColor ( .01, .01 , .01 ) )
+    front_color = BGLProp ( BGLColor ( .9, .9 , .9 ) )
 
-    def __init__ ( self, position, width, height ):
-        BGLWidget.__init__ ( self )
-        self.position = position
+    def __init__ ( self, **prop_values ):
+        BGLWidget.__init__ ( self, **prop_values )
         self.on_value_changed: Callable[ [ Any ], None ] = None
 
-        self._back_geo = BGLRect ( width, height )
-        self._back_geo.position = position
-        self._front_geo = BGLRect ( width * .5, height )
-        self._front_geo.position = position
-        self._back_geo.color = self.back_color
-        self._front_geo.color = self.front_color
+        self._back_geo = BGLRect ( width = lambda: self.width, height = lambda: self.height )
+        self._back_geo.position = lambda: self.position
+        self._front_geo = BGLRect ( width = lambda: self.width * .5, height = lambda: self.height )
+        self._front_geo.position = lambda: self.position
+        self._back_geo.color = lambda: self.back_color
+        self._front_geo.color = lambda: self.front_color
         self._focused = False
 
 
@@ -199,8 +204,8 @@ class BGLSlider ( BGLWidget ):
 
 
 class BGLLayoutBase ( BGLWidget ):
-    def __init__ ( self ):
-        BGLWidget.__init__ ( self )
+    def __init__ ( self, **prop_values ):
+        BGLWidget.__init__ ( self, **prop_values )
         self._widgets: List[ BGLWidget ] = list ( )
 
     def add_widget ( self, widget ):
@@ -233,10 +238,8 @@ class BGLLayoutBase ( BGLWidget ):
 
 
 class BGLLayoutH ( BGLLayoutBase ):
-    def __init__ ( self ):
-        BGLLayoutBase.__init__ ( self )
-        self.spacing = 5
-        self.fill_region = False
+    spacing = BGLProp ( 5 )
+    fill_region = BGLProp ( False )
 
     def layout_widgets ( self, region ):
         pos = BGLCoord ( *self.position )
@@ -257,10 +260,8 @@ class BGLLayoutH ( BGLLayoutBase ):
 
 
 class BGLLayoutV ( BGLLayoutBase ):
-    def __init__ ( self ):
-        BGLLayoutBase.__init__ ( self )
-        self.spacing = 5
-        self._fill_region = False
+    spacing = BGLProp ( 5 )
+    fill_region = BGLProp ( False )
 
     def layout_widgets ( self, region ):
         pos = BGLCoord ( *self.position )

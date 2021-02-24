@@ -157,50 +157,61 @@ class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
         self.add_canva ( canva )
         size = 100000
 
-        b = BGLRect ( size, size * 2 )
+        b = BGLRect ( width = size, height = size * 2 )
         b.color = BGLColor ( .1, .0, 0, .75 )
-        frame_range_left = BGLGeometryStamp ( lambda: BGLCoord ( -size + bpy.context.scene.frame_start, -size ), b )
+        frame_range_left = BGLGeometryStamp ( position = lambda: BGLCoord ( -size + bpy.context.scene.frame_start, -size ), geometry = b )
 
-        b = BGLRect ( size, size * 2 )
+        b = BGLRect ( width = size, height = size * 2 )
         b.color = BGLColor ( .1, 0, 0, .75 )
-        frame_range_right = BGLGeometryStamp ( lambda: BGLCoord ( bpy.context.scene.frame_end, -size ), b )
+        frame_range_right = BGLGeometryStamp ( position = lambda: BGLCoord ( bpy.context.scene.frame_end, -size ), geometry = b )
         canva.addWidget ( frame_range_left )
         canva.addWidget ( frame_range_right )
 
         canva = BGLCanvas ( BGLViewToRegion ( apply_to_x = False ), 0, 11, 11, 22 )
         self.add_canva ( canva )
 
-        rect = BGLRect ( 9999999, 1 )
-        track_selected_frame = BGLGeometryStamp ( lambda prop =  props: BGLCoord ( 0, prop.selected_track_index ), rect )
+        rect = BGLRect ( width = 9999999, height = 1 )
+        track_selected_frame = BGLGeometryStamp ( position = lambda prop =  props: BGLCoord ( 0, prop.selected_track_index ), geometry = rect )
         rect.color = lambda prop = props: BGLColor ( prop.tracks[prop.selected_track_index_inverted].color[ 0 ],
                                                                      prop.tracks[prop.selected_track_index_inverted].color[ 1 ],
                                                                      prop.tracks[prop.selected_track_index_inverted].color[ 2 ], .5 )
         canva.addWidget ( track_selected_frame )
 
+        img_man = BGLImageManager ( )
+        img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )
         for i, track in enumerate(reversed(props.tracks)):
             width = 100
             pos = BGLCoord ( 0, i + 1 )
-            button = BGLButton ( pos, width, 1, lambda track=track: track.name )
+            button = BGLButton ( position = pos,
+                                 width = width,
+                                 height = 1,
+                                 text = lambda track=track: track.name,
+                                 color = lambda track = track: BGLColor ( track.color[ 0 ], track.color[ 1 ], track.color[ 2 ] ),
+                                 icon = img )
+
             button.clicked_callback = lambda prop = props, index = i: prop.setSelectedTrackByIndex ( index + 1 )
-            button.color = lambda track = track: BGLColor ( track.color[ 0 ], track.color[ 1 ], track.color[ 2 ] )
             canva.addWidget ( button )
 
             slider_height = 0.2
-            slider = BGLSlider ( pos, width, slider_height )
+            slider = BGLSlider ( position = pos, width = width, height = slider_height )
             slider.value = lambda t = track: t.opacity
+            slider.front_color = lambda t = track: BGLColor.blended ( BGLColor ( .4, .4, 1 ), BGLColor ( .1, .1, .4 ), t.opacity / 100. )
             def update_opacity ( v, t = track ): t.opacity = v
             slider.on_value_changed = update_opacity
             canva.addWidget ( slider )
 
             pos = BGLCoord ( pos.x, pos.y + slider_height )
-            enabled_btn = BGLButton ( pos, 10, 1 - slider_height, "" )
+            enabled_btn = BGLButton ( position = pos,
+                                      width = 10,
+                                      height = 1 - slider_height,
+                                      text = "",
+                                      color = lambda t = track: BGLColor ( .7, 1, .7 ) if t.enabled else BGLColor ( .2, .05, .05 ) )
             def update_enabled ( t = track ): t.enabled = not t.enabled
             enabled_btn.clicked_callback = update_enabled
-            enabled_btn.color = lambda t = track: BGLColor ( .7, 1, .7 ) if t.enabled else BGLColor ( .2, .05, .05 )
             canva.addWidget ( enabled_btn )
 
 
-        img_man = BGLImageManager ( )
+        #img_man = BGLImageManager ( )
         #img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )
 
         #canva.addWidget ( BGLGeometryStamp ( BGLCoord ( 0, 3), BGLTexture ( 100, 1, img ) ) )

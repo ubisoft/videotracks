@@ -118,6 +118,19 @@ class BGLColor:
     def a ( self, a ):
         self._a = a
 
+    @staticmethod
+    def blended ( color_a: "BGLColor", color_b: "BGLColor", blend_factor = .5 ):
+        blend_factor = clamp ( blend_factor, 0., 1. )
+        new_color = BGLColor ( )
+        # out = alpha * c1 + (1 - alpha) * c2
+        blend_inv = 1 - blend_factor
+        new_color.r = blend_factor * color_a.r + blend_inv * color_b.r
+        new_color.g = blend_factor * color_a.g + blend_inv * color_b.g
+        new_color.b = blend_factor * color_a.b + blend_inv * color_b.b
+        new_color.a = blend_factor * color_a.a + blend_inv * color_b.a
+
+        return new_color
+
     def __iter__ ( self ):
         return iter ( ( self._r, self._g, self._b, self._a ) )
 

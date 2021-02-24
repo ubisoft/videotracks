@@ -23,8 +23,10 @@ from .shaders import BGLImageShader, BGLUniformShader
 
 class BGLGeometry:
     position = BGLProp ( BGLCoord ( ) )
-    def __init__ ( self ):
-        pass
+
+    def __init__ ( self, **prop_values ):
+        for k, v in prop_values.items ( ):
+            setattr ( self, k, v )
 
     def get_bound ( self, region: BGLRegion = None ) -> BGLBound:
         return BGLBound ( )
@@ -39,11 +41,8 @@ class BGLGeometry:
 
 class BGLRect ( BGLGeometry ):
     color = BGLProp ( BGLColor ( .1, .4, .4 ) )
-
-    def __init__ ( self, width, height ):
-        BGLGeometry.__init__ ( self )
-        self.width = width
-        self.height = height
+    width = BGLProp ( 10 )
+    height = BGLProp ( 10 )
 
     def get_bound ( self, region: BGLRegion = None ):
         lo = BGLCoord ( self.position.x, self.position.y )
@@ -75,11 +74,9 @@ class BGLRect ( BGLGeometry ):
 
 
 class BGLCircle ( BGLGeometry ):
-    color = BGLProp (BGLColor ( ) )
-    def __init__ ( self, radius, division = 12 ):
-        BGLGeometry.__init__ ( self )
-        self.radius = radius
-        self._division = max ( division, 4 )
+    color = BGLProp ( BGLColor ( ) )
+    radius = BGLProp ( 1 )
+    division = BGLProp ( 12 )
 
     def get_bound ( self, region: BGLRegion = None ):
         pos = self.position
@@ -100,7 +97,7 @@ class BGLCircle ( BGLGeometry ):
     def draw ( self, region: BGLRegion ):
         points = list ( )
         indices = list ( )
-        num_pts = self._division
+        num_pts = self.division
         step = math.pi * 2. / num_pts
         # first point in the list is origin.
         points.append ( Vector ( self.position ) )
@@ -120,44 +117,16 @@ class BGLCircle ( BGLGeometry ):
 
 
 class BGLText ( BGLGeometry ):
-    def __init__ ( self, size = 11, text = "Label", color = None, center_text = False ):
-        BGLGeometry.__init__ ( self )
-        self.size = size
-        self._text = BGLPropValue ( text )
-        self._color = BGLPropValue ( BGLColor ( 1, 1, 1 ) if color is None else color )
-        self.center_text = center_text
-
-
-    @property
-    def text ( self ):
-        return  self._text.value
-
-    @text.setter
-    def text ( self, value ):
-        self._text.value = value
-
-    @property
-    def color ( self ):
-        return  self._color.value
-
-    @color.setter
-    def color ( self, value ):
-        self._color.value = value
-
-    @property
-    def height ( self ):
-        return blf.dimensions ( 0, self.text )[ 1 ]
-
-    @property
-    def width ( self ):
-        return blf.dimensions ( 0, self.text )[ 0 ]
+    size = BGLProp ( 11 )
+    text = BGLProp ( "Label" )
+    centered = BGLProp ( False )
 
     def get_bound ( self, region: BGLRegion = None ):
         text_width, text_height = blf.dimensions ( 0, self.text )
         pos = self.position
         if region is not None:
             pos = region.transform.apply_transform ( region, self.position, True )
-        if self.center_text:
+        if self.centered:
             half_width = text_width * .5
             half_height = text_height * .5
             return BGLBound ( BGLCoord ( pos.x - half_width, pos.y - half_height ), BGLCoord ( pos.x + half_width, pos.y + half_height ) )
@@ -182,12 +151,18 @@ class BGLText ( BGLGeometry ):
 
 class BGLTexture ( BGLRect ):
     image = BGLProp ( None ) # BGLImageManager.BGLImage
+    width = BGLProp ( 10 )
+    height = BGLProp ( 10 )
 
-    def __init__( self, width, height, image ):
-        BGLRect.__init__ ( self, width, height )
-        self.image = image
+    def get_bound ( self, region: BGLRegion = None ):
+        if self.image is None:
+            return BGLBound ( )
+        else:
+            return BGLRect.get_bound ( self, region )
 
     def draw( self, region: BGLRegion ):
+        if self.image is None:
+            return
         bound = self.get_bound ( region )
         batch =  BGLImageShader.create_batch ( "TRIS", { "pos": [ Vector ( list ( bound.min ) ),
                                                               Vector ( [ bound.max.x, bound.min.y ] ),
