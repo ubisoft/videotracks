@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, math
+from copy import deepcopy
 from pathlib import Path
 from typing import Union, Callable, Any
 
@@ -156,6 +157,7 @@ class BGLColor:
         return f"{type ( self ).__name__} ( {self.r}, {self.g}, {self.b}, {self.a} )"
 
 
+
 class BGLImage:
     # Should not be instanciated manually
 
@@ -177,20 +179,6 @@ class BGLImage:
     @property
     def texture_id ( self ):
         return self._texture_id[ 0 ]
-
-
-
-class BGLImageManager:
-    pcoll = bpy.utils.previews.new ( )
-
-    def __init__ ( self ): pass
-
-    def load_image ( self, path ):
-        p = Path ( path )
-        return BGLImage ( self.pcoll.load ( p.stem, str ( p ), 'IMAGE' ) )
-
-    def __del__ ( self ):
-        bpy.utils.previews.remove ( self.pcoll )
 
 
 
@@ -251,6 +239,21 @@ class BGLBound:
         self.max.y = max ( self.max.y, other.max.y )
 
         return self
+
+
+
+class BGLImageManager:
+    pcoll = bpy.utils.previews.new ( )
+
+    def __init__ ( self ): pass
+
+    def load_image ( self, path ):
+        p = Path ( path )
+        return BGLImage ( self.pcoll.load ( p.stem, str ( p ), 'IMAGE' ) )
+
+    def __del__ ( self ):
+        bpy.utils.previews.remove ( self.pcoll )
+
 
 
 class BGLTransform:
@@ -353,7 +356,7 @@ class BGLProp:
             currently switched to BGLPropValue.value way of doing.
     """
     def __init__ ( self, default_value = None ):
-        self._default_value = BGLPropValue ( default_value )
+        self._default_value = default_value
 
     def __set_name__ ( self, owner, name ):
         self._name = name
@@ -365,6 +368,6 @@ class BGLProp:
 
     def __get__ ( self, obj, type = None ) -> Any:
         if not self._name in obj.__dict__:
-            self.__set__ ( obj, self._default_value ( ) )
+            self.__set__ ( obj, deepcopy ( self._default_value ) )
 
         return  obj.__dict__.get ( self._name ).value

@@ -213,8 +213,13 @@ class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
 
         #img_man = BGLImageManager ( )
         #img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )
+        canva = BGLCanvas ( None, 0, 11, 11, 22 )
+        dock = BGLRegionDock ( dock_region = BGLRegionDock.DockRegion.TOP )
+        for i in range ( 4 ):
+            dock.add_widget ( BGLButton ( text = str ( i ), height = 30 ) )
 
-        #canva.addWidget ( BGLGeometryStamp ( BGLCoord ( 0, 3), BGLTexture ( 100, 1, img ) ) )
+        canva.addWidget ( dock )
+        self.add_canva ( canva )
 
     def space_type ( self ):
         return bpy.types.SpaceSequenceEditor

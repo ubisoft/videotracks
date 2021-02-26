@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from enum import Enum, auto
+
 import bpy, bgl
 from typing import Callable, Union, Tuple, Any, List
 
 from .types import BGLBound, BGLColor, BGLCoord, BGLRegion, BGLPropValue, BGLProp
 from.geometry import *
-from . import shaders
 from . import utils
 
 
@@ -50,7 +51,7 @@ class BGLWidget:
 class BGLButton ( BGLWidget ):
     width = BGLProp ( 50 )
     height = BGLProp ( 100 )
-    color = BGLProp ( BGLColor ( .5, .5, .5 )  )
+    color = BGLProp ( BGLColor ( .2, .2, .2 )  )
     highlight_color = BGLProp ( BGLColor ( 1, 1, 1 )  )
     text = BGLProp ( "Button" )
     icon = BGLProp ( None ) # BGLImage
@@ -277,3 +278,50 @@ class BGLLayoutV ( BGLLayoutBase ):
         for wdgt in self._widgets:
             wdgt.position = BGLCoord ( *pos )
             pos.y += wdgt.get_bound ( region ).height + spacing
+
+
+class BGLRegionDock ( BGLLayoutBase ):
+    class DockRegion ( Enum ):
+        TOP = auto ( )
+        BOTTOM = auto ( )
+        RIGHT = auto ( )
+        LEFT = auto ( )
+
+    dock_region = BGLProp ( DockRegion.LEFT )
+    relative_pos = BGLProp ( .5 )
+    def layout_widgets ( self, region ):
+        if not self._widgets:
+            return
+
+        widgets_height = 0
+        widgets_width = 0
+        for widget in self._widgets:
+            bound = widget.get_bound ( region )
+            widgets_height += bound.height
+            widgets_width += bound.width
+
+        if self.dock_region == self.DockRegion.RIGHT or self.dock_region == self.DockRegion.LEFT:
+            # compute initial placement of first widget
+            y_offset = utils.clamp ( utils.remap ( self.relative_pos, 0, 1, region.bound.min.y, region.bound.max.y ) - widgets_height * .5, region.bound.min.y, region.bound.max.y - widgets_height )
+            for widget in self._widgets:
+                bound = widget.get_bound ( region )
+                if self.dock_region == self.DockRegion.LEFT:
+                    widget.position.x = region.bound.min.x
+                else:
+                    widget.position.x = region.bound.max.x - bound.width
+
+                widget.position.y = y_offset
+                y_offset += bound.height
+
+        elif self.dock_region == self.DockRegion.TOP or self.dock_region == self.DockRegion.BOTTOM:
+            x_offset = utils.clamp ( utils.remap ( self.relative_pos, 0, 1, region.bound.min.x, region.bound.max.x ) - widgets_width * .5, region.bound.min.x, region.bound.max.x - widgets_width )
+
+            for widget in self._widgets:
+                bound = widget.get_bound ( region )
+                if self.dock_region == self.DockRegion.BOTTOM:
+                    widget.position.y = region.bound.min.y
+                else:
+                    widget.position.y = region.bound.max.y - bound.height
+
+                widget.position.x = x_offset
+                x_offset += bound.width
