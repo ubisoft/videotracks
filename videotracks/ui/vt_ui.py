@@ -196,7 +196,10 @@ class UAS_UL_VideoTracks_Items(bpy.types.UIList):
         # volume and opacity
         if vt_props.display_opacity_or_volume_in_tracklist:
             row.scale_x = 0.5
-            if "AUDIO" == item.trackType:
+            if "STANDARD" == item.trackType:
+                row.label(text=" ")
+                pass
+            elif "AUDIO" == item.trackType:
                 row.prop(item, "volume", text="")
             else:
                 row.prop(item, "opacity", text="")

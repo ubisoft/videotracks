@@ -7,7 +7,7 @@ import bpy
 
 from bpy.app.handlers import persistent
 
-from bpy.props import BoolProperty, IntProperty, FloatProperty
+from bpy.props import BoolProperty, IntProperty
 
 
 from .config import config
@@ -32,9 +32,10 @@ from .operators import about
 from .properties import addon_prefs
 
 from .tools import vse_render
-from .tools.markers_nav_bar import markers_nav_bar
 
-from .tools.markers_nav_bar import markers_nav_bar_addon_prefs
+from .tools import markers_nav_bar
+
+# from .tools.markers_nav_bar import markers_nav_bar_addon_prefs
 
 from .ui import vt_ui
 
@@ -53,7 +54,7 @@ bl_info = {
     "author": "Julien Blervaque (aka Werwack)",
     "description": "Introduce tracks to the Blender VSE - Ubisoft Animation Studio",
     "blender": (2, 90, 0),
-    "version": (0, 1, 1),
+    "version": (0, 1, 2),
     "location": "View3D > UAS Video Tracks",
     "wiki_url": "https://gitlab-ncsa.ubisoft.org/animation-studio/blender/videotracks-addon/-/wikis/home",
     "warning": "BETA Version",
@@ -304,7 +305,7 @@ def register():
     # operators
     prefs.register()
 
-    markers_nav_bar_addon_prefs.register()
+    # markers_nav_bar_addon_prefs.register()
     markers_nav_bar.register()
 
     otio.register()
@@ -394,7 +395,7 @@ def unregister():
     otio.unregister()
     utils_operators.unregister()
     markers_nav_bar.unregister()
-    markers_nav_bar_addon_prefs.unregister()
+    # markers_nav_bar_addon_prefs.unregister()
 
     #  utils_vse.unregister()
 

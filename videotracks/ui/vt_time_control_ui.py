@@ -8,6 +8,7 @@ from ..operators import tracks
 
 import videotracks.config as config
 from videotracks.utils import utils
+from videotracks.utils import utils_markers
 
 from .vt_ui import UAS_PT_VideoTracks
 
@@ -42,7 +43,7 @@ class UAS_PT_VideoTracksTimeControl(Panel):
         subRow = row.row(align=True)
         subRow.operator("uas_video_tracks.go_to_marker", text="", icon="REW").goToMode = "FIRST"
         subRow.operator("uas_video_tracks.go_to_marker", text="", icon="TRIA_LEFT").goToMode = "PREVIOUS"
-        currentMarker = utils.getMarkerAtFrame(scene, scene.frame_current)
+        currentMarker = utils_markers.getMarkerAtFrame(scene, scene.frame_current)
         if currentMarker is not None:
             row.label(text=f"Marker: {currentMarker.name}")
             subRow = row.row(align=True)

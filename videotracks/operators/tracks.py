@@ -35,8 +35,23 @@ def _list_takes(self, context):
 class UAS_VideoTracks_TrackAdd(Operator):
     bl_idname = "uas_video_tracks.add_track"
     bl_label = "Add New Track"
-    bl_description = "Add a new track starting at the current frame" "\nThe new track is put after the selected track"
+    bl_description = (
+        "Add a new track starting at the current frame"
+        "\nThe new track is inserted right above the selected track\nShift + Click: Add a track channel only,\nCtrl + Click: Add a track header only"
+    )
     bl_options = {"INTERNAL", "UNDO"}
+
+    addMode: EnumProperty(
+        name="Add Mode",
+        description="Specifies the type of operation to do on tracks",
+        items=(
+            ("CHANNEL_AND_HEADER", "Channel and Header", "Add a new channel with a header"),
+            ("CHANNEL", "Channel", "Add a channel only"),
+            ("HEADER", "Header", "Add a track header only"),
+        ),
+        default="CHANNEL_AND_HEADER",
+        options=set(),
+    )
 
     name: StringProperty(name="Name", default="New Track")
     insertAtChannel: IntProperty(name="Insert at Channel", default=1)
@@ -57,14 +72,15 @@ class UAS_VideoTracks_TrackAdd(Operator):
         name="Track Type",
         description="Type of the track",
         items=(
-            ("STANDARD", "Standard", ""),
-            ("AUDIO", "Audio", ""),
-            ("VIDEO", "Video", ""),
+            ("STANDARD", "Standard", "Default VSE Track. Contains strips of various kinds"),
+            ("AUDIO", "Audio", "Track for audio strips"),
+            ("VIDEO", "Video", "Track for video strips"),
+            ("FX", "FX", "Track for FX strips (effects, transforms, transitions..."),
             ("CAM_FROM_SCENE", "Camera From Scene", ""),
             ("SHOT_CAMERAS", "Shot Manager Cameras", "Cameras from Shot Manager"),
             ("RENDERED_SHOTS", "Rendered Shots", ""),
             ("CAM_BG", "Camera Backgrounds", ""),
-            ("CUSTOM", "Custom", ""),
+            #  ("CUSTOM", "Custom", ""),
         ),
         default="STANDARD",
         options=set(),
@@ -79,6 +95,19 @@ class UAS_VideoTracks_TrackAdd(Operator):
     )
 
     def invoke(self, context, event):
+
+        self.addMode = "CHANNEL_AND_HEADER"
+        if event.shift and not event.ctrl and not event.alt:
+            self.addMode = "CHANNEL"
+        elif event.ctrl and not event.shift and not event.alt:
+            self.addMode = "HEADER"
+        # elif event.shift and event.ctrl and not event.alt:
+        #     enableMode = "INVERT"
+        # elif event.alt and not event.shift and not event.ctrl:
+        #     enableMode = "ENABLEONLYCSELECTED"
+        # elif not event.alt and not event.shift and not event.ctrl:
+        #     enableMode = "ENABLEALL" if prefs.toggleShotsEnabledState else "DISABLEALL"
+
         wm = context.window_manager
         scene = context.scene
         vt_props = scene.UAS_video_tracks_props

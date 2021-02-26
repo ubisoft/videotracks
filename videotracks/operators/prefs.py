@@ -17,9 +17,13 @@ class UAS_MT_VideoTracks_Prefs_MainMenu(Menu):
         layout = self.layout
 
         row = layout.row(align=True)
-        row.operator("uas_video_tracks.general_prefs", text="Preferences...")
-        row = layout.row(align=True)
-        row.operator("uas_video_tracks.project_settings_prefs", text="Project Settings...")
+        row.operator("preferences.addon_show", text="Add-on Preferences...").module = "videotracks"
+
+        # row = layout.row(align=True)
+        # row.operator("uas_video_tracks.general_prefs", text="Preferences...")
+
+        # row = layout.row(align=True)
+        # row.operator("uas_video_tracks.project_settings_prefs", text="Project Settings...")
 
         layout.separator()
         row = layout.row(align=True)

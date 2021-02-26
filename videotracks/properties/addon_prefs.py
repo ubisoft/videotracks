@@ -63,13 +63,13 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
     # markers ###
     ##################
 
-    mnavbar_use_filter: BoolProperty(
-        name="Filter Markers", default=False,
-    )
+    # mnavbar_use_filter: BoolProperty(
+    #     name="Filter Markers", default=False,
+    # )
 
-    mnavbar_filter_text: StringProperty(
-        name="Filter Text", default="",
-    )
+    # mnavbar_filter_text: StringProperty(
+    #     name="Filter Text", default="",
+    # )
 
 
 _classes = (UAS_VideoTracks_AddonPrefs,)

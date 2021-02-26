@@ -1,10 +1,12 @@
 import bpy
 
-from videotracks.utils import utils
+from videotracks.utils import utils_markers
 
 
 def draw_markers_nav_bar(self, context):
     scene = context.scene
+    prefs = context.preferences.addons["videotracks"].preferences
+
     layout = self.layout
 
     row = layout.row(align=False)
@@ -21,10 +23,13 @@ def draw_markers_nav_bar(self, context):
     subRow.operator("uas_video_tracks.go_to_marker", text="", icon="TRIA_LEFT").goToMode = "PREVIOUS"
 
     subRow = row.row(align=True)
+    subRow.prop(prefs, "mnavbar_use_view_frame")
+
+    subRow = row.row(align=True)
     subRow.operator("uas_video_tracks.go_to_marker", text="", icon="TRIA_RIGHT").goToMode = "NEXT"
     subRow.operator("uas_video_tracks.go_to_marker", text="", icon="FF").goToMode = "LAST"
 
-    currentMarker = utils.getMarkerAtFrame(scene, scene.frame_current)
+    currentMarker = utils_markers.getMarkerAtFrame(scene, scene.frame_current)
     if currentMarker is not None:
         row.label(text=f"Marker: {currentMarker.name}")
         subRow = row.row(align=True)
@@ -33,14 +38,11 @@ def draw_markers_nav_bar(self, context):
     else:
         row.label(text="Marker: -")
         subRow = row.row(align=True)
-        subRow.operator(
-            "uas_video_tracks.add_marker", text="", icon="ADD"
-        ).markerName = f"F_{scene.frame_current}"
+        subRow.operator("uas_video_tracks.add_marker", text="", icon="ADD").markerName = f"F_{scene.frame_current}"
         subSubRow = subRow.row(align=True)
         subSubRow.enabled = False
         subSubRow.operator("uas_video_tracks.delete_marker", text="", icon="X")
 
-    prefs = context.preferences.addons["videotracks"].preferences
     subRow = row.row(align=True)
     subRow.prop(prefs, "mnavbar_use_filter", text="", icon="FILTER")
     subSubRow = subRow.row(align=True)

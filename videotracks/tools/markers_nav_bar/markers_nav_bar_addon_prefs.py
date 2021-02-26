@@ -1,6 +1,6 @@
 import bpy
 from bpy.types import AddonPreferences
-from bpy.props import StringProperty, BoolProperty, StringProperty
+from bpy.props import StringProperty, BoolProperty
 
 
 class UAS_markers_nav_bar_addon_prefs(AddonPreferences):
@@ -11,6 +11,7 @@ class UAS_markers_nav_bar_addon_prefs(AddonPreferences):
 
     # this must match the add-on name, use '__package__'
     # when defining this in a submodule of a python package
+    # bl_idname = "__package__"
     bl_idname = "videotracks"
 
     ##################
@@ -25,6 +26,14 @@ class UAS_markers_nav_bar_addon_prefs(AddonPreferences):
 
     mnavbar_filter_text: StringProperty(
         name="Filter Text", default="",
+    )
+
+    def _update_mnavbar_use_view_frame(self, context):
+        bpy.ops.sequencer.view_frame()
+        print("\n*** mnavbar_use_view_frame. New state: ", self.mnavbar_use_view_frame)
+
+    mnavbar_use_view_frame: BoolProperty(
+        name="View Frame", default=True, update=_update_mnavbar_use_view_frame,
     )
 
 
