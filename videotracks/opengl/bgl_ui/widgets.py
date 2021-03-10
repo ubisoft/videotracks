@@ -165,7 +165,8 @@ class BGLCheckBox ( BGLWidget ):
     @clicked_callback.setter
     def clicked_callback ( self, callback: Callable[ [ bool ], None ] ):
         if callback is None:
-            self._on_clicked_callback = _nop
+            def update_check ( s ): self.checked = s
+            self._on_clicked_callback = update_check
         else:
             self._on_clicked_callback = callback
 
@@ -181,8 +182,7 @@ class BGLCheckBox ( BGLWidget ):
                     self._is_pushed = True
                 elif event.value == "RELEASE":
                     if self._is_pushed:
-                        self.checked = not self.checked
-                        self._on_clicked_callback ( self.checked )
+                        self._on_clicked_callback ( not self.checked )
                         return True
                     self._is_pushed = False
 
