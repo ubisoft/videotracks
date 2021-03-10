@@ -217,6 +217,14 @@ class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
         dock = BGLRegionDock ( dock_region = BGLRegionDock.DockRegion.TOP )
         for i in range ( 4 ):
             dock.add_widget ( BGLButton ( text = str ( i ), height = 30 ) )
+            l = BGLLayoutV  ( )
+            for j in range ( 3 ):
+                c = BGLCheckBox ( text = "tototo" )
+                c.checked = lambda: bpy.context.scene.render.use_border
+                def checked_state_changed ( state ): bpy.context.scene.render.use_border = state
+                c.clicked_callback = checked_state_changed
+                l.add_widget ( c )
+            dock.add_widget ( l )
 
         canva.addWidget ( dock )
         self.add_canva ( canva )

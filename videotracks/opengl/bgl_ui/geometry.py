@@ -121,6 +121,14 @@ class BGLText ( BGLGeometry ):
     text = BGLProp ( "Label" )
     centered = BGLProp ( False )
 
+    @property
+    def height ( self ):
+        return  blf.dimensions ( 0, self.text )[ 1 ]
+
+    @property
+    def width ( self ):
+        return  blf.dimensions ( 0, self.text )[ 0 ]
+
     def get_bound ( self, region: BGLRegion = None ):
         text_width, text_height = blf.dimensions ( 0, self.text )
         pos = self.position
@@ -144,7 +152,7 @@ class BGLText ( BGLGeometry ):
         blf.size ( 0, self.size, 72 )
         bound = self.get_bound ( region )
         if region.bound.fully_contains ( bound ):
-            blf.position ( 0, bound.min.x, bound.min.y, 0 )
+            blf.position ( 0, bound.min.x, bound.min.y + bound.height * .5, 0 )
             blf.draw ( 0, self.text )
 
 

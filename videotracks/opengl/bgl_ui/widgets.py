@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from enum import Enum, auto
 
 import bpy, bgl
@@ -81,7 +82,7 @@ class BGLButton ( BGLWidget ):
         return self._on_clicked_callback
 
     @clicked_callback.setter
-    def clicked_callback ( self, callback: Callable[ [ "BLButton" ], None ] ):
+    def clicked_callback ( self, callback: Callable[ [ ], None ] ):
         if callback is None:
             self._on_clicked_callback = _nop
         else:
@@ -131,6 +132,74 @@ class BGLGeometryStamp ( BGLWidget ):
     def draw ( self, region: BGLRegion ):
         self.geometry.draw ( region )
 
+
+
+class BGLCheckBox ( BGLWidget ):
+    checked = BGLProp ( False )
+    text = BGLProp ( "" )
+    size = BGLProp ( 18 )
+    color = BGLProp ( BGLColor (  0., 0.4, 1 ) )
+    def __init__ ( self, **prop_values ):
+        BGLWidget.__init__ ( self, **prop_values )
+        self._text_geo = BGLText ( text = lambda : self.text )
+
+        self._bg_rect = BGLRect ( width = lambda: self.size, height = lambda: self.size, color =  BGLColor (  0.01, 0.01, 0.01 ) )
+        self._fg_rect = BGLRect ( width = lambda: self.size - 2,
+                                  height = lambda: self.size - 2,
+                                  color =  lambda: self.color ** .1 if self._highlighted else self.color )
+
+        self._bg_rect.position = lambda: self.position
+        self._fg_rect.position = lambda: self.position + BGLCoord ( 1, 1 )
+
+        self._text_geo.position = lambda: self.position + BGLCoord ( self.size + 4, self._text_geo.height * .5 )
+
+        self._highlighted = False
+        self._is_pushed = False
+
+        self._on_clicked_callback = _nop
+
+    @property
+    def clicked_callback ( self ):
+        return self._on_clicked_callback
+
+    @clicked_callback.setter
+    def clicked_callback ( self, callback: Callable[ [ bool ], None ] ):
+        if callback is None:
+            self._on_clicked_callback = _nop
+        else:
+            self._on_clicked_callback = callback
+
+    def get_bound ( self, region: BGLRegion ):
+        return self._bg_rect.get_bound ( region ) + self._text_geo.get_bound ( region )
+
+
+    def handle_event( self, region, event : bpy.types.Event) -> bool:
+        mouse_pos = region.mouse_to_region ( BGLCoord ( event.mouse_x, event.mouse_y ) )
+        if event.type == "LEFTMOUSE":
+            if self._bg_rect.is_over ( mouse_pos, region ):
+                if event.value == "PRESS":
+                    self._is_pushed = True
+                elif event.value == "RELEASE":
+                    if self._is_pushed:
+                        self.checked = not self.checked
+                        self._on_clicked_callback ( self.checked )
+                        return True
+                    self._is_pushed = False
+
+        elif event.type == "MOUSEMOVE":
+            if self._bg_rect.is_over ( mouse_pos, region ):
+                self._highlighted = True
+            else:
+                self._highlighted = False
+
+        return False
+
+
+    def draw ( self, region: BGLRegion ):
+        self._bg_rect.draw ( region )
+        if self.checked:
+            self._fg_rect.draw ( region )
+        self._text_geo.draw ( region )
 
 
 class BGLSlider ( BGLWidget ):
@@ -203,6 +272,7 @@ class BGLSlider ( BGLWidget ):
         self._front_geo.draw ( region )
 
 
+#---------------- LAYOUT WIDGETS ------------------#
 
 class BGLLayoutBase ( BGLWidget ):
     def __init__ ( self, **prop_values ):
