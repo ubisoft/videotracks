@@ -41,7 +41,11 @@ class UAS_VideoTracks_GoToMarker(Operator):
                 scene.frame_set(marker.frame)
 
             if prefs.mnavbar_use_view_frame:
-                bpy.ops.sequencer.view_frame()
+                try:
+                    bpy.ops.sequencer.view_frame()
+                except Exception as e:
+                    # context is timeline, not VSE
+                    pass
 
         return {"FINISHED"}
 
@@ -74,10 +78,33 @@ class UAS_VideoTracks_DeleteMarker(Operator):
         return {"FINISHED"}
 
 
+class UAS_VideoTracks_ViewFrame(Operator):
+    bl_idname = "uas_video_tracks.view_frame"
+    bl_label = "View Frame"
+    bl_description = """Reframe the time range displayed into the timeline to preverse the visibility of the time cursor.
+    \nAdditional settings are located in the Video Tracks add-on preferences, in the Preferences panel"""
+    bl_options = {"INTERNAL"}
+    """This operator provides a more useful control of the framing than just using the property prefs.mnavbar_use_view_frame
+    """
+
+    def invoke(self, context, event):
+        prefs = context.preferences.addons["videotracks"].preferences
+        if not prefs.mnavbar_use_view_frame:
+            if prefs.mnavbar_use_view_frame:
+                try:
+                    bpy.ops.sequencer.view_frame()
+                except Exception as e:
+                    # context is timeline, not VSE
+                    pass
+        prefs.mnavbar_use_view_frame = not prefs.mnavbar_use_view_frame
+        return {"FINISHED"}
+
+
 _classes = (
     UAS_VideoTracks_GoToMarker,
     UAS_VideoTracks_AddMarker,
     UAS_VideoTracks_DeleteMarker,
+    UAS_VideoTracks_ViewFrame,
 )
 
 

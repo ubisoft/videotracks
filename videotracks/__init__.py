@@ -298,6 +298,7 @@ def register():
     #     bpy.utils.register_class(cls)
 
     addon_prefs.register()
+    markers_nav_bar.register()
 
     utils_operators.register()
     #   utils_vse.register()
@@ -306,7 +307,6 @@ def register():
     prefs.register()
 
     # markers_nav_bar_addon_prefs.register()
-    markers_nav_bar.register()
 
     otio.register()
     vse_render.register()
