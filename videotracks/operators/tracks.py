@@ -28,7 +28,6 @@ def _list_takes(self, context):
     if not len(res):
         # res = None
         res.append(("NOTAKE", "No Take Found", ""))
-    #     print("Toto")
     return res
 
 

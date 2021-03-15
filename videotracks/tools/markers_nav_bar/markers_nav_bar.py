@@ -7,24 +7,31 @@ from . import icons
 def draw_markers_nav_bar_in_timeline(self, context):
     prefs = context.preferences.addons["videotracks"].preferences
     if prefs.mnavbar_display_in_timeline:
-        draw_markers_nav_bar(self, context)
+        row = self.layout.row(align=False)
+        row.separator(factor=3)
+        row.alignment = "RIGHT"
+        draw_markers_nav_bar(context, row)
 
 
 def draw_markers_nav_bar_in_vse(self, context):
     prefs = context.preferences.addons["videotracks"].preferences
     if prefs.mnavbar_display_in_vse:
-        draw_markers_nav_bar(self, context)
+        row = self.layout.row(align=False)
+        row.separator(factor=3)
+        row.alignment = "RIGHT"
+        draw_markers_nav_bar(context, row)
 
 
-def draw_markers_nav_bar(self, context):
+def draw_markers_nav_bar(context, layout):
     scene = context.scene
     prefs = context.preferences.addons["videotracks"].preferences
 
-    layout = self.layout
+    # layout = self.layout
 
     row = layout.row(align=False)
-    row.separator(factor=3)
-    row.alignment = "RIGHT"
+    # row.separator(factor=3)
+    # row.alignment = "RIGHT"
+
     # row.label(text="toto dsf trterte")
     # row.operator("bpy.ops.time.view_all")
 
@@ -69,8 +76,8 @@ def draw_markers_nav_bar(self, context):
 
 
 # _classes = (
-#     UAS_VideoTracks_SetTimeRangeStart,
-#     UAS_VideoTracks_SetTimeRangeEnd,
+#     TimeControl_SetTimeRangeStart,
+#     TimeControl_SetTimeRangeEnd,
 #     UAS_VideoTracks_FrameTimeRange,
 # )
 

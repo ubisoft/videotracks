@@ -59,8 +59,6 @@ class UAS_PT_VideoTracks(Panel):
         row.separator(factor=1)
         row.menu("UAS_MT_Video_Tracks_prefs_mainmenu", icon="PREFERENCES", text="")
 
-        # row.separator(factor=3)
-
     def draw(self, context):
         layout = self.layout
         scene = context.scene

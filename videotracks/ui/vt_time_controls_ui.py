@@ -12,21 +12,83 @@ from videotracks.utils import utils_markers
 
 from .vt_ui import UAS_PT_VideoTracks
 
+from videotracks.tools.markers_nav_bar.markers_nav_bar import draw_markers_nav_bar
 
 ######
 # Time control panel #
 ######
 
 
-class UAS_PT_VideoTracksTimeControl(Panel):
-    bl_idname = "UAS_PT_VideoTracksTimeControlPanel"
-    bl_label = "Time Control"
+# class UAS_PT_VideoTracksTimeControlsInTimeline(Panel):
+#     bl_idname = "UAS_PT_VideoTracksTimeControlsPanelInTimeline"
+#     bl_label = "Time Control"
+#     bl_description = "Time Control Options"
+#     bl_space_type = "TIMELINE_EDITOR"
+#     bl_region_type = "UI"
+#     bl_category = "Time Controls"
+#     #  bl_parent_id = "UAS_PT_Video_Tracks"
+#     # bl_options = {"DEFAULT_CLOSED"}
+
+#     @classmethod
+#     def poll(cls, context):
+#         prefs = context.preferences.addons["videotracks"].preferences
+#         return prefs.tcmnavbars_display_in_timeline
+
+#     def draw(self, context):
+#         scene = context.scene
+
+
+class UAS_PT_VideoTracksTimeControlsInVSE(Panel):
+    bl_idname = "UAS_PT_VideoTracksTimeControlsPanelInVSE"
+    bl_label = "UAS Time Controls   V. " + utils.addonVersion("UAS Video Tracks")[0]
     bl_description = "Time Control Options"
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
-    bl_category = "Video Tracks"
+    bl_category = "Time Controls"
     #  bl_parent_id = "UAS_PT_Video_Tracks"
     # bl_options = {"DEFAULT_CLOSED"}
+
+    @classmethod
+    def poll(cls, context):
+        prefs = context.preferences.addons["videotracks"].preferences
+        return prefs.tcmnavbars_display_in_vse
+
+    def draw_header(self, context):
+        props = context.scene.UAS_video_tracks_props
+        layout = self.layout
+        layout.emboss = "NONE"
+
+        row = layout.row(align=True)
+
+        # if context.window_manager.UAS_video_shot_manager_displayAbout:
+        #     row.alert = True
+        # else:
+        #     row.alert = False
+
+        icon = config.vt_icons_col["General_Ubisoft_32"]
+        row.operator("uas_video_tracks.about", text="", icon_value=icon.icon_id)
+
+    def draw_header_preset(self, context):
+        layout = self.layout
+        layout.emboss = "NONE"
+
+        row = layout.row(align=True)
+
+        # row.operator("utils.launchrender", text="", icon="RENDER_STILL").renderMode = "STILL"
+        # row.operator("utils.launchrender", text="", icon="RENDER_ANIMATION").renderMode = "ANIMATION"
+
+        #    row.operator("render.opengl", text="", icon='IMAGE_DATA')
+        #   row.operator("render.opengl", text="", icon='RENDER_ANIMATION').animation = True
+        #    row.operator("screen.screen_full_area", text ="", icon = 'FULLSCREEN_ENTER').use_hide_panels=False
+
+        # row.separator(factor=2)
+        icon = config.vt_icons_col["General_Explorer_32"]
+        row.operator("uas_video_tracks.open_explorer", text="", icon_value=icon.icon_id).path = bpy.path.abspath(
+            bpy.data.filepath
+        )
+
+        row.separator(factor=1)
+        row.menu("UAS_MT_Video_Tracks_prefs_mainmenu", icon="PREFERENCES", text="")
 
     def draw(self, context):
         scene = context.scene
@@ -40,40 +102,14 @@ class UAS_PT_VideoTracksTimeControl(Panel):
         layout.label(text="Markers:")
         box = layout.box()
         row = box.row()
-        subRow = row.row(align=True)
-        subRow.operator("uas_video_tracks.go_to_marker", text="", icon="REW").goToMode = "FIRST"
-        subRow.operator("uas_video_tracks.go_to_marker", text="", icon="TRIA_LEFT").goToMode = "PREVIOUS"
-        currentMarker = utils_markers.getMarkerAtFrame(scene, scene.frame_current)
-        if currentMarker is not None:
-            row.label(text=f"Marker: {currentMarker.name}")
-            subRow = row.row(align=True)
-            subRow.operator("uas_video_tracks.add_marker", text="", icon="SYNTAX_OFF").markerName = currentMarker.name
-            subRow.operator("uas_video_tracks.delete_marker", text="", icon="X")
-        else:
-            row.label(text="Marker: -")
-            subRow = row.row(align=True)
-            subRow.operator("uas_video_tracks.add_marker", text="", icon="ADD").markerName = f"F_{scene.frame_current}"
-            subSubRow = subRow.row(align=True)
-            subSubRow.enabled = False
-            subSubRow.operator("uas_video_tracks.delete_marker", text="", icon="X")
-
-        subRow = row.row(align=True)
-        subRow.operator("uas_video_tracks.go_to_marker", text="", icon="TRIA_RIGHT").goToMode = "NEXT"
-        subRow.operator("uas_video_tracks.go_to_marker", text="", icon="FF").goToMode = "LAST"
-
-        prefs = context.preferences.addons["videotracks"].preferences
-        subRow = row.row(align=True)
-        subRow.prop(prefs, "mnavbar_use_filter", text="", icon="FILTER")
-        subSubRow = subRow.row(align=True)
-        subSubRow.enabled = prefs.mnavbar_use_filter
-        subSubRow.prop(prefs, "mnavbar_filter_text", text="")
+        draw_markers_nav_bar(context, row)
 
         #########################################
         # Zoom
         #########################################
 
         # layout.separator(factor=1)
-        layout.label(text="Zoom:")
+        layout.label(text="VSE Zoom:")
 
         box = layout.box()
         row = box.row()
@@ -129,7 +165,10 @@ class UAS_PT_VideoTracksTimeControl(Panel):
             row.label(text=f"Duration: {scene.frame_end - scene.frame_start + 1}")
 
 
-_classes = (UAS_PT_VideoTracksTimeControl,)
+_classes = (
+    #  UAS_PT_VideoTracksTimeControlsInTimeline,
+    UAS_PT_VideoTracksTimeControlsInVSE,
+)
 
 
 def register():

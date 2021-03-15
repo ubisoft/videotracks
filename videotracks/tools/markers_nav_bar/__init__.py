@@ -15,7 +15,8 @@ def register():
 
 def unregister():
 
+    print("Unregister Marker nav")
     markers_nav_bar.unregister()
     operators.unregister()
     markers_nav_bar_addon_prefs.unregister()
-    icons.register()
+    icons.unregister()

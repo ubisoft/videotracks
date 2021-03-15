@@ -23,7 +23,7 @@ from .properties import vt_props
 # from .ui.vsm_ui import UAS_PT_VideoTracks
 from .ui import vt_ui
 from .ui import vt_panels_ui
-from .ui import vt_time_control_ui
+from .ui import vt_time_controls_ui
 
 
 from .operators import about
@@ -34,8 +34,7 @@ from .properties import addon_prefs
 from .tools import vse_render
 
 from .tools import markers_nav_bar
-
-# from .tools.markers_nav_bar import markers_nav_bar_addon_prefs
+from .tools import time_controls_bar
 
 from .ui import vt_ui
 
@@ -297,8 +296,12 @@ def register():
     # for cls in classes:
     #     bpy.utils.register_class(cls)
 
+    otio.register()
+
     addon_prefs.register()
+
     markers_nav_bar.register()
+    time_controls_bar.register()
 
     utils_operators.register()
     #   utils_vse.register()
@@ -308,7 +311,6 @@ def register():
 
     # markers_nav_bar_addon_prefs.register()
 
-    otio.register()
     vse_render.register()
     # utils_render.register()
     # viewport_3d.register()
@@ -327,9 +329,9 @@ def register():
     # ui
     vt_ui.register()
     vt_panels_ui.register()
-    vt_time_control_ui.register()
+    vt_time_controls_ui.register()
 
-    sequencer_draw.register()
+    #  sequencer_draw.register()
 
     about.register()
 
@@ -371,12 +373,12 @@ def unregister():
     # rrs specific
     # rrs_vsm_tools.unregister()
 
-    try:
-        sequencer_draw.unregister()
-    except Exception as e:
-        print("Error in Unregister sequencer_draw")
+    # try:
+    #     sequencer_draw.unregister()
+    # except Exception as e:
+    #     print("Error (handled) in Unregister sequencer_draw")
 
-    vt_time_control_ui.unregister()
+    vt_time_controls_ui.unregister()
     vt_panels_ui.unregister()
     vt_ui.unregister()
     vt_tools.unregister()
@@ -392,11 +394,12 @@ def unregister():
     # ui
     about.unregister()
 
-    otio.unregister()
     utils_operators.unregister()
+    time_controls_bar.unregister()
     markers_nav_bar.unregister()
     # markers_nav_bar_addon_prefs.unregister()
 
+    otio.unregister()
     #  utils_vse.unregister()
 
     # for cls in reversed(classes):

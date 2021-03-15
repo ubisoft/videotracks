@@ -2,6 +2,10 @@ import bpy
 from bpy.types import Operator
 from bpy.props import FloatProperty
 
+"""
+wkip debug - used to check the bar display
+"""
+
 
 class MyCustomMenu(bpy.types.Menu):
     bl_idname = "OBJECT_MT_my_custom_menu"
@@ -31,8 +35,8 @@ def draw_item(self, context):
     layout.menu(MyCustomMenu.bl_idname)
 
 
-class UAS_VideoTracks_SetTimeRangeStart(Operator):
-    bl_idname = "uas_video_tracks.set_time_range_start"
+class TimeControlsBar_SetTimeRangeStart(Operator):
+    bl_idname = "time_controls_bar.set_time_range_start"
     bl_label = "Set Start Range"
     bl_description = "Set the end time range with the curent time value"
     bl_options = {"INTERNAL"}
@@ -57,8 +61,8 @@ class UAS_VideoTracks_SetTimeRangeStart(Operator):
         return {"FINISHED"}
 
 
-class UAS_VideoTracks_SetTimeRangeEnd(Operator):
-    bl_idname = "uas_video_tracks.set_time_range_end"
+class TimeControlsBar_SetTimeRangeEnd(Operator):
+    bl_idname = "time_controls_bar.set_time_range_end"
     bl_label = "Set End Range"
     bl_description = "Set the end time range with the curent time value"
     bl_options = {"INTERNAL"}
@@ -83,8 +87,11 @@ class UAS_VideoTracks_SetTimeRangeEnd(Operator):
         return {"FINISHED"}
 
 
-class UAS_VideoTracks_FrameTimeRange(Operator):
-    bl_idname = "uas_video_tracks.frame_time_range"
+###
+# wkip has a duplicate in General.py
+###
+class TimeControlsBar_FrameTimeRange(Operator):
+    bl_idname = "time_controls_bar.frame_time_range"
     bl_label = "Frame Time Range"
     bl_description = "Change the VSE zoom value to fit the scene time range"
     bl_options = {"INTERNAL"}
@@ -100,7 +107,7 @@ class UAS_VideoTracks_FrameTimeRange(Operator):
 
     def execute(self, context):
         scene = context.scene
-        props = scene.UAS_shot_manager_props
+        return {"FINISHED"}
 
         def _setTimeRange(time_start, time_end):
             ctx = context.copy()
@@ -167,16 +174,16 @@ def draw_op_item(self, context):
     row.separator(factor=3)
     row.alignment = "RIGHT"
     # row.label(text="toto dsf trterte")
-    # row.operator("bpy.ops.time.view_all")
-    row.operator("uas_video_tracks.set_time_range_start", text="", icon="TRIA_UP_BAR")
-    row.operator("uas_video_tracks.frame_time_range", text="", icon="CENTER_ONLY")
-    row.operator("uas_video_tracks.set_time_range_end", text="", icon="TRIA_UP_BAR")
+    row.operator("bpy.ops.time.view_all")
+    # row.operator("time_controls_bar.set_time_range_start", text="", icon="TRIA_UP_BAR")
+    # row.operator("time_controls_bar.frame_time_range", text="", icon="CENTER_ONLY")
+    # row.operator("time_controls_bar.set_time_range_end", text="", icon="TRIA_UP_BAR")
 
 
 _classes = (
-    UAS_VideoTracks_SetTimeRangeStart,
-    UAS_VideoTracks_SetTimeRangeEnd,
-    UAS_VideoTracks_FrameTimeRange,
+    TimeControlsBar_SetTimeRangeStart,
+    TimeControlsBar_SetTimeRangeEnd,
+    TimeControlsBar_FrameTimeRange,
 )
 
 
@@ -187,10 +194,11 @@ def register():
     # lets add ourselves to the main header
     # bpy.types.TIME_MT_editor_menus.prepend(draw_op_item)
 
-    bpy.types.TIME_MT_editor_menus.append(draw_op_item)
 
-    # vse
-    # bpy.types.SEQUENCER_HT_header.append(draw_op_item)
+#  bpy.types.TIME_MT_editor_menus.append(draw_op_item)
+
+# vse
+# bpy.types.SEQUENCER_HT_header.append(draw_op_item)
 
 
 #   bpy.types.TIME_HT_editor_buttons.append(draw_op_item)
@@ -199,10 +207,12 @@ def register():
 
 
 def unregister():
+    print("Unregister Time Controls bar operators")
     for cls in reversed(_classes):
         bpy.utils.unregister_class(cls)
 
-    bpy.types.TIME_MT_editor_menus.remove(draw_op_item)
+
+#  bpy.types.TIME_MT_editor_menus.remove(draw_op_item)
 
 
 # bpy.types.TIME_MT_editor_menus.remove(draw_op_item)

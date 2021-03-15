@@ -24,7 +24,6 @@ def register():
 def unregister():
 
     global icons_col
-    print("Unregister Marker nav icons")
 
     try:
         bpy.utils.previews.remove(icons_col)
