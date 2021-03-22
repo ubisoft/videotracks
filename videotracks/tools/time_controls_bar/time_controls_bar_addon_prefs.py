@@ -4,13 +4,7 @@ from bpy.props import StringProperty, BoolProperty
 
 
 def draw_time_controls_bar_settings(self, context, layout):
-    # def draw(self, context):
-    scene = context.scene
     prefs = context.preferences.addons["videotracks"].preferences
-
-    row = layout.row()
-    row.separator()
-    row.label(text="Time Controls Bar:")
 
     row = layout.row()
     row.separator()

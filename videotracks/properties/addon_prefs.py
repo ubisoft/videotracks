@@ -7,6 +7,8 @@ from ..config import config
 from videotracks.tools.markers_nav_bar.markers_nav_bar_addon_prefs import draw_markers_nav_bar_settings
 from videotracks.tools.time_controls_bar.time_controls_bar_addon_prefs import draw_time_controls_bar_settings
 
+from videotracks.utils.utils_ui import collapsable_panel
+
 
 class UAS_VideoTracks_AddonPrefs(AddonPreferences):
     """
@@ -38,6 +40,8 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
     ##################
     # Markers Nav Bar Settings ###
     ##################
+
+    mnavbar_pref_panel_opened: BoolProperty(default=False,)
 
     mnavbar_display_in_vse: BoolProperty(
         name="Display in VSE", description="Display Markers Nav Bar in the VSE toolbar", default=True,
@@ -78,6 +82,8 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
     # Time Controls Bar Settings ###
     ##################
 
+    tcbar_pref_panel_opened: BoolProperty(default=False,)
+
     tcbar_display_in_vse: BoolProperty(
         name="Display in VSE", description="Display Time Controls Bar in the VSE toolbar", default=True,
     )
@@ -115,8 +121,13 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
         # prefs = context.preferences.addons["videotracks"].preferences
         # prefs.draw_markers_nav_bar_settings(self, context)
 
-        draw_markers_nav_bar_settings(self, context, box)
-        draw_time_controls_bar_settings(self, context, box)
+        collapsable_panel(box, prefs, "mnavbar_pref_panel_opened", text="Markers Nav Bar")
+        if prefs.mnavbar_pref_panel_opened:
+            draw_markers_nav_bar_settings(self, context, box)
+
+        collapsable_panel(box, prefs, "tcbar_pref_panel_opened", text="Time Controls Bar")
+        if prefs.tcbar_pref_panel_opened:
+            draw_time_controls_bar_settings(self, context, box)
 
         row = layout.row()
         row.separator()

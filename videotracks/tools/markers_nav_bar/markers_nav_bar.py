@@ -90,7 +90,10 @@ def register():
     # bpy.types.TIME_MT_editor_menus.prepend(draw_op_item)
 
     bpy.types.TIME_MT_editor_menus.append(draw_markers_nav_bar_in_timeline)
-    bpy.types.SEQUENCER_HT_header.append(draw_markers_nav_bar_in_vse)
+    #   bpy.types.SEQUENCER_HT_header.append(draw_markers_nav_bar_in_vse)
+    #  bpy.types.SEQUENCER_HT_tool_header.append(draw_markers_nav_bar_in_vse)
+    #  bpy.types.SEQUENCER_MT_navigation.append(draw_markers_nav_bar_in_vse)
+    bpy.types.SEQUENCER_MT_editor_menus.append(draw_markers_nav_bar_in_vse)
 
 
 #   bpy.types.TIME_HT_editor_buttons.append(draw_op_item)
@@ -103,7 +106,9 @@ def unregister():
     #     bpy.utils.unregister_class(cls)
 
     bpy.types.TIME_MT_editor_menus.remove(draw_markers_nav_bar_in_timeline)
-    bpy.types.SEQUENCER_HT_header.remove(draw_markers_nav_bar_in_vse)
+    # bpy.types.SEQUENCER_HT_header.remove(draw_markers_nav_bar_in_vse)
+    # bpy.types.SEQUENCER_HT_tool_header.remove(draw_markers_nav_bar_in_vse)
+    bpy.types.SEQUENCER_MT_editor_menus.remove(draw_markers_nav_bar_in_vse)
 
 
 # if __name__ == "__main__":

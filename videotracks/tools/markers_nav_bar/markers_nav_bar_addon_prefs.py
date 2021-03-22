@@ -4,13 +4,7 @@ from bpy.props import StringProperty, BoolProperty
 
 
 def draw_markers_nav_bar_settings(self, context, layout):
-    # def draw(self, context):
-    scene = context.scene
     prefs = context.preferences.addons["videotracks"].preferences
-
-    row = layout.row()
-    row.separator()
-    row.label(text="Markers Nav Bar:")
 
     row = layout.row()
     row.separator()
