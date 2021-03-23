@@ -21,13 +21,17 @@ def _list_scenes(self, context):
 
 def _list_takes(self, context):
     res = list()
-    # print("*** self.sceneName: ", self.sceneName)
-    for i, take in enumerate([c for c in bpy.data.scenes[self.sceneName].UAS_shot_manager_props.takes]):
-        item = (take.name, take.name, "")
-        res.append(item)
-    if not len(res):
-        # res = None
-        res.append(("NOTAKE", "No Take Found", ""))
+    print("*** self.sceneName: ", self.sceneName)
+    # if getattr(bpy.data.scenes[self.sceneName], "UAS_shot_manager_props", None) is not None:
+    #     #   print("\n   Shot Manager instance found in scene " + scn.name)
+    #     sm_props = scn.UAS_shot_manager_props
+
+    #     for i, take in enumerate([c for c in bpy.data.scenes[self.sceneName].UAS_shot_manager_props.takes]):
+    #         item = (take.name, take.name, "")
+    #         res.append(item)
+    #     if not len(res):
+    #         # res = None
+    #         res.append(("NOTAKE", "No Take Found", ""))
     return res
 
 
@@ -53,7 +57,7 @@ class UAS_VideoTracks_TrackAdd(Operator):
     )
 
     name: StringProperty(name="Name", default="New Track")
-    insertAtChannel: IntProperty(name="Insert at Channel", default=1)
+    insertAtChannel: IntProperty(name="Insert at Channel", min=1, max=32, default=1)
 
     color: FloatVectorProperty(
         name="Color",
@@ -86,7 +90,7 @@ class UAS_VideoTracks_TrackAdd(Operator):
     )
 
     sceneName: EnumProperty(
-        items=_list_scenes, name="Takes", description="Select a take",  # update=_current_take_changed
+        items=_list_scenes, name="Scenes", description="Select a scene",  # update=_current_take_changed
     )
 
     sceneTakeName: EnumProperty(
