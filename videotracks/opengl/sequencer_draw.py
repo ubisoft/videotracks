@@ -156,9 +156,124 @@ def draw_sequencer():
     draw_channel_name(props.tracks, view_boundaries)
 
 
+from .bgl_ui import BGL_UIOperatorBase, BGLCanvas
+from .bgl_ui.widgets import *
+from .bgl_ui.geometry import *
+from .bgl_ui.types import BGLViewToRegion
+
+
+class UAS_VideoTracks_TracksOverlay ( BGL_UIOperatorBase ):
+    bl_idname = "uas_video_tracks.tracks_overlay"
+    bl_label = "Draw tracks overlay."
+    bl_options = { "REGISTER", "INTERNAL" }
+
+    def __init__ ( self ):
+        BGL_UIOperatorBase.__init__ ( self )
+
+    def build_ui( self ):
+        props = bpy.context.scene.UAS_video_tracks_props
+        self.track_count = len ( props.tracks ) # used for rebuilding ui
+
+        canva = BGLCanvas ( BGLViewToRegion ( ), 0, 11, 11, 22 )
+        self.add_canva ( canva )
+        size = 100000
+
+        b = BGLRect ( width = size, height = size * 2 )
+        b.color = BGLColor ( .1, .0, 0, .75 )
+        frame_range_left = BGLGeometryStamp ( position = lambda: BGLCoord ( -size + bpy.context.scene.frame_start, -size ), geometry = b )
+
+        b = BGLRect ( width = size, height = size * 2 )
+        b.color = BGLColor ( .1, 0, 0, .75 )
+        frame_range_right = BGLGeometryStamp ( position = lambda: BGLCoord ( bpy.context.scene.frame_end, -size ), geometry = b )
+        canva.addWidget ( frame_range_left )
+        canva.addWidget ( frame_range_right )
+
+        canva = BGLCanvas ( BGLViewToRegion ( apply_to_x = False ), 0, 11, 11, 22 )
+        self.add_canva ( canva )
+
+        rect = BGLRect ( width = 9999999, height = 1 )
+        track_selected_frame = BGLGeometryStamp ( position = lambda prop =  props: BGLCoord ( 0, prop.selected_track_index ), geometry = rect )
+        rect.color = lambda prop = props: BGLColor ( prop.tracks[prop.selected_track_index_inverted].color[ 0 ],
+                                                                     prop.tracks[prop.selected_track_index_inverted].color[ 1 ],
+                                                                     prop.tracks[prop.selected_track_index_inverted].color[ 2 ], .5 )
+        canva.addWidget ( track_selected_frame )
+
+        img_man = BGLImageManager ( )
+        img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )
+        for i, track in enumerate(reversed(props.tracks)):
+            width = 100
+            pos = BGLCoord ( 0, i + 1 )
+            button = BGLButton ( position = pos,
+                                 width = width,
+                                 height = 1,
+                                 text = lambda track=track: track.name,
+                                 color = lambda track = track: BGLColor ( track.color[ 0 ], track.color[ 1 ], track.color[ 2 ] ),
+                                 icon = img )
+
+            button.clicked_callback = lambda prop = props, index = i: prop.setSelectedTrackByIndex ( index + 1 )
+            canva.addWidget ( button )
+
+            slider_height = 0.2
+            slider = BGLSlider ( position = pos, width = width, height = slider_height )
+            slider.value = lambda t = track: t.opacity
+            slider.front_color = lambda t = track: BGLColor.blended ( BGLColor ( .4, .4, 1 ), BGLColor ( .1, .1, .4 ), t.opacity / 100. )
+            def update_opacity ( v, t = track ): t.opacity = v
+            slider.on_value_changed = update_opacity
+            canva.addWidget ( slider )
+
+            pos = BGLCoord ( pos.x, pos.y + slider_height )
+            enabled_btn = BGLButton ( position = pos,
+                                      width = 10,
+                                      height = 1 - slider_height,
+                                      text = "",
+                                      color = lambda t = track: BGLColor ( .7, 1, .7 ) if t.enabled else BGLColor ( .2, .05, .05 ) )
+            def update_enabled ( t = track ): t.enabled = not t.enabled
+            enabled_btn.clicked_callback = update_enabled
+            canva.addWidget ( enabled_btn )
+
+
+        #img_man = BGLImageManager ( )
+        #img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )
+        canva = BGLCanvas ( None, 0, 11, 11, 22 )
+        dock = BGLRegionDock ( dock_region = BGLRegionDock.DockRegion.TOP )
+        for i in range ( 4 ):
+            dock.add_widget ( BGLButton ( text = str ( i ), height = 30 ) )
+            l = BGLLayoutV  ( )
+            for j in range ( 3 ):
+                c = BGLCheckBox ( text = "tototo" )
+                c.checked = lambda: bpy.context.scene.render.use_border
+                def checked_state_changed ( state ): bpy.context.scene.render.use_border = state
+                c.clicked_callback = checked_state_changed
+                l.add_widget ( c )
+            dock.add_widget ( l )
+
+        canva.addWidget ( dock )
+        self.add_canva ( canva )
+
+    def space_type ( self ):
+        return bpy.types.SpaceSequenceEditor
+
+    def should_cancel ( self ):
+        return False
+
+    def should_rebuild_ui( self ) -> bool:
+        props = bpy.context.scene.UAS_video_tracks_props
+        if len ( props.tracks ) != self.track_count:
+            return True
+        else:
+            return False
+
+
+
+_classes = ( UAS_VideoTracks_TracksOverlay, )
+
 def register():
-    bpy.types.SpaceSequenceEditor.draw_handler_add(draw_sequencer, (), "WINDOW", "POST_PIXEL")
+    for cls in _classes:
+        bpy.utils.register_class ( cls )
+    #bpy.types.SpaceSequenceEditor.draw_handler_add(draw_sequencer, (), "WINDOW", "POST_PIXEL")
 
 
 def unregister():
-    bpy.types.SpaceSequenceEditor.draw_handler_remove(draw_sequencer, "WINDOW")
+    for cls in reversed ( _classes ):
+        bpy.utils.unregister_class ( cls )
+    #bpy.types.SpaceSequenceEditor.draw_handler_remove(draw_sequencer, "WINDOW")
