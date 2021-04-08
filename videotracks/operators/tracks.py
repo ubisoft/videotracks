@@ -560,8 +560,6 @@ class UAS_VideoTracks_UpdateTracksList(Operator):
 
     def invoke(self, context, event):
         context.scene.UAS_video_tracks_props.updateTracksList(context.scene)
-        # wkip
-        bpy.ops.uas_video_tracks.tracks_overlay("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 

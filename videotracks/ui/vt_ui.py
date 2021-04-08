@@ -72,7 +72,7 @@ class UAS_PT_VideoTracks(Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        # vt_props = scene.UAS_video_tracks_props
+        vt_props = scene.UAS_video_tracks_props
         prefs = context.preferences.addons["videotracks"].preferences
 
         if not vt_props.isInitialized:
