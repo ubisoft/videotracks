@@ -236,20 +236,6 @@ def checkDataVersion_post_load_handler(self, context):
             if lowerSceneVersion < props.version()[1]:
                 props.dataVersion = props.version()[1]
 
-    props = bpy.context.scene.UAS_shot_manager_props
-    if props is not None:
-        if props.display_shotname_in_3dviewport:
-            try:
-                bpy.ops.uas_video_tracks.draw_cameras_ui("INVOKE_DEFAULT")
-            except Exception as e:
-                print("Paf in draw cameras ui  *")
-
-        if props.display_hud_in_3dviewport:
-            try:
-                bpy.ops.uas_video_tracks.draw_hud("INVOKE_DEFAULT")
-            except Exception as e:
-                print("Paf in draw hud  *")
-
 
 def register():
 
@@ -343,7 +329,7 @@ def register():
     vt_panels_ui.register()
     vt_time_controls_ui.register()
 
-    #  sequencer_draw.register()
+    sequencer_draw.register()
 
     about.register()
 
