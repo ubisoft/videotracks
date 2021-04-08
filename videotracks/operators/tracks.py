@@ -21,7 +21,7 @@ def _list_scenes(self, context):
 
 def _list_takes(self, context):
     res = list()
-    print("*** self.sceneName: ", self.sceneName)
+    # print("*** self.sceneName: ", self.sceneName)
     # if getattr(bpy.data.scenes[self.sceneName], "UAS_shot_manager_props", None) is not None:
     #     #   print("\n   Shot Manager instance found in scene " + scn.name)
     #     sm_props = scn.UAS_shot_manager_props
@@ -44,7 +44,7 @@ class UAS_VideoTracks_TrackAdd(Operator):
     )
     bl_options = {"INTERNAL", "UNDO"}
 
-    addMode: EnumProperty(
+    mode: EnumProperty(
         name="Add Mode",
         description="Specifies the type of operation to do on tracks",
         items=(
@@ -99,11 +99,11 @@ class UAS_VideoTracks_TrackAdd(Operator):
 
     def invoke(self, context, event):
 
-        self.addMode = "CHANNEL_AND_HEADER"
+        self.mode = "CHANNEL_AND_HEADER"
         if event.shift and not event.ctrl and not event.alt:
-            self.addMode = "CHANNEL"
+            self.mode = "CHANNEL"
         elif event.ctrl and not event.shift and not event.alt:
-            self.addMode = "HEADER"
+            self.mode = "HEADER"
         # elif event.shift and event.ctrl and not event.alt:
         #     enableMode = "INVERT"
         # elif event.alt and not event.shift and not event.ctrl:
@@ -111,6 +111,7 @@ class UAS_VideoTracks_TrackAdd(Operator):
         # elif not event.alt and not event.shift and not event.ctrl:
         #     enableMode = "ENABLEALL" if prefs.toggleShotsEnabledState else "DISABLEALL"
 
+        print(f"Add channel mode: {self.mode}")
         wm = context.window_manager
         scene = context.scene
         vt_props = scene.UAS_video_tracks_props
@@ -128,6 +129,7 @@ class UAS_VideoTracks_TrackAdd(Operator):
             self.sceneName = sceneNames[0][0]
 
         takeNames = _list_takes(self, context)
+        print(f" * * * * takeNames: {takeNames}")
         if len(takeNames):
             self.sceneTakeName = (takeNames[0])[0]
 
@@ -140,6 +142,7 @@ class UAS_VideoTracks_TrackAdd(Operator):
 
     def draw(self, context):
         layout = self.layout
+        layout.prop(self, "mode")
 
         box = layout.box()
         row = box.row(align=True)
@@ -196,6 +199,7 @@ class UAS_VideoTracks_TrackAdd(Operator):
         col = [self.color[0], self.color[1], self.color[2], 1]
 
         vt_props.addTrack(
+            mode=self.mode,
             atIndex=newTrackInd,
             name=vt_props.getUniqueTrackName(self.name),
             color=col,
@@ -212,8 +216,23 @@ class UAS_VideoTracks_TrackAdd(Operator):
 class UAS_VideoTracks_TrackDuplicate(Operator):
     bl_idname = "uas_video_tracks.duplicate_track"
     bl_label = "Duplicate Selected Track"
-    bl_description = "Duplicate the track selected in the track list." "\nThe new track is put after the selected track"
+    bl_description = (
+        "Duplicate the track selected in the track list."
+        "\nThe new track is inserted right above the selected track\nShift + Click: Duplicate the track channel only,\nCtrl + Click: Duplicate the track header only"
+    )
     bl_options = {"INTERNAL", "UNDO"}
+
+    mode: EnumProperty(
+        name="Duplicate Mode",
+        description="Specifies the type of operation to do on tracks",
+        items=(
+            ("CHANNEL_AND_HEADER", "Channel and Header", "Duplicate the specified channel with a header"),
+            ("CHANNEL", "Channel", "Duplicate the channel only"),
+            ("HEADER", "Header", "Duplicate the track header only"),
+        ),
+        default="CHANNEL_AND_HEADER",
+        options=set(),
+    )
 
     name: StringProperty(name="Name")
     addToEndOfList: BoolProperty(name="Add At The End Of The List")
@@ -226,9 +245,26 @@ class UAS_VideoTracks_TrackDuplicate(Operator):
 
         return True
 
+    def invoke(self, context, event):
+        #    currentTrack = context.scene.uas_video_tracks_props.getCurrentTrack()
+        selectedTrack = context.scene.UAS_video_tracks_props.getSelectedTrack()
+        if selectedTrack is None:
+            return {"CANCELLED"}
+        self.name = selectedTrack.name + "_copy"
+
+        self.mode = "CHANNEL_AND_HEADER"
+        if event.shift and not event.ctrl and not event.alt:
+            self.mode = "CHANNEL"
+        elif event.ctrl and not event.shift and not event.alt:
+            self.mode = "HEADER"
+        print(f"Add channel mode: {self.mode}")
+
+        return context.window_manager.invoke_props_dialog(self)
+
     def draw(self, context):
         layout = self.layout
         scene = context.scene
+        layout.prop(self, "mode")
 
         box = layout.box()
         row = box.row(align=True)
@@ -244,7 +280,7 @@ class UAS_VideoTracks_TrackDuplicate(Operator):
         grid_flow = row.grid_flow(align=True, row_major=True, columns=1, even_columns=False)
         # grid_flow.separator( factor=0.5)
         grid_flow.use_property_split = True
-        grid_flow.prop(self, "startAtCurrentTime")
+        #   grid_flow.prop(self, "startAtCurrentTime")
         grid_flow.prop(self, "addToEndOfList")
 
         layout.separator()
@@ -258,21 +294,13 @@ class UAS_VideoTracks_TrackDuplicate(Operator):
             return {"CANCELLED"}
 
         newTrackInd = len(vt_props.getTracks()) if self.addToEndOfList else selectedTrackInd + 1
-        newTrack = vt_props.copyTrack(selectedTrack, atIndex=newTrackInd)
+        newTrack = vt_props.copyTrack(selectedTrack, mode=self.mode, atIndex=selectedTrackInd, toIndex=newTrackInd)
 
         newTrack.name = vt_props.getUniqueTrackName(self.name)
 
         vt_props.setSelectedTrackByIndex(newTrackInd)
 
         return {"FINISHED"}
-
-    def invoke(self, context, event):
-        #    currentTrack = context.scene.uas_video_tracks_props.getCurrentTrack()
-        selectedTrack = context.scene.UAS_video_tracks_props.getSelectedTrack()
-        if selectedTrack is None:
-            return {"CANCELLED"}
-        self.name = selectedTrack.name + "_copy"
-        return context.window_manager.invoke_props_dialog(self)
 
 
 class UAS_VideoTracks_MoveTrackUpDown(Operator):
@@ -281,8 +309,23 @@ class UAS_VideoTracks_MoveTrackUpDown(Operator):
 
     bl_idname = "uas_video_tracks.move_treack_up_down"
     bl_label = "Move Track Up of Down"
-    bl_description = "Move track up or down in the track stack"
+    bl_description = (
+        "Move track up or down in the track stack"
+        "\nShift + Click: Move the track channel only,\nCtrl + Click: Movetrack header only"
+    )
     bl_options = {"INTERNAL", "UNDO"}
+
+    mode: EnumProperty(
+        name="Move Mode",
+        description="Specifies the type of operation to do on tracks",
+        items=(
+            ("CHANNEL_AND_HEADER", "Channel and Header", "Move channel and header"),
+            ("CHANNEL", "Channel", "Move the channel only"),
+            ("HEADER", "Header", "Move the header only"),
+        ),
+        default="CHANNEL_AND_HEADER",
+        options=set(),
+    )
 
     action: bpy.props.EnumProperty(items=(("UP", "Up", ""), ("DOWN", "Down", "")))
 
@@ -290,10 +333,30 @@ class UAS_VideoTracks_MoveTrackUpDown(Operator):
     def description(self, context, properties):
         descr = "_"
         if "UP" == properties.action:
-            descr = "Move track up in the track stack"
+            descr = (
+                "Move track up in the track stack"
+                "\nShift + Click: Move the track channel only,\nCtrl + Click: Move the track header only"
+            )
         elif "DOWN" == properties.action:
-            descr = "Move track down in the track stack"
+            descr = (
+                "Move track down in the track stack"
+                "\nShift + Click: Move the track channel only,\nCtrl + Click: Move the track header only"
+            )
         return descr
+
+    def invoke(self, context, event):
+        selectedTrack = context.scene.UAS_video_tracks_props.getSelectedTrack()
+        if selectedTrack is None:
+            return {"CANCELLED"}
+
+        self.mode = "CHANNEL_AND_HEADER"
+        if event.shift and not event.ctrl and not event.alt:
+            self.mode = "CHANNEL"
+        elif event.ctrl and not event.shift and not event.alt:
+            self.mode = "HEADER"
+        print(f"Add channel mode: {self.mode}")
+
+        return self.execute(context)
 
     def execute(self, context):
         scene = context.scene
@@ -304,7 +367,7 @@ class UAS_VideoTracks_MoveTrackUpDown(Operator):
         selectedTrackInd = vt_props.getSelectedTrackIndex()
 
         if self.action == "DOWN" and selectedTrackInd > 1:
-            movedTrack = vt_props.moveTrackFromIndexToIndex(selectedTrackInd, selectedTrackInd - 1)
+            movedTrack = vt_props.moveTrackFromIndexToIndex(selectedTrackInd, selectedTrackInd - 1, mode=self.mode)
             print(f"MovedTrack: {movedTrack.name}")
             # context.window_manager.UAS_vse_render.swapChannels(
             #     scene, numTracks - selectedTrackInd, numTracks - selectedTrackInd - 1
@@ -313,7 +376,7 @@ class UAS_VideoTracks_MoveTrackUpDown(Operator):
             vt_props.setSelectedTrackByIndex(selectedTrackInd - 1)
 
         elif self.action == "UP" and selectedTrackInd < numTracks:
-            movedTrack = vt_props.moveTrackFromIndexToIndex(selectedTrackInd, selectedTrackInd + 1)
+            movedTrack = vt_props.moveTrackFromIndexToIndex(selectedTrackInd, selectedTrackInd + 1, mode=self.mode)
             print(f"MovedTrack: {movedTrack.name}")
             # context.window_manager.UAS_vse_render.swapChannels(
             #     scene, numTracks - selectedTrackInd, numTracks - selectedTrackInd + 1
@@ -327,8 +390,23 @@ class UAS_VideoTracks_MoveTrackUpDown(Operator):
 class UAS_VideoTracks_RemoveTrack(Operator):
     bl_idname = "uas_video_tracks.remove_track"
     bl_label = "Remove Selected Track"
-    bl_description = "Remove the track selected in the track list."
+    bl_description = (
+        "Remove the track selected in the track list."
+        "\nShift + Click: Remove the track channel only,\nCtrl + Click: Remove the track header only"
+    )
     bl_options = {"INTERNAL", "UNDO"}
+
+    mode: EnumProperty(
+        name="Remove Mode",
+        description="Specifies the type of operation to do on tracks",
+        items=(
+            ("CHANNEL_AND_HEADER", "Channel and Header", "Remove the channel and the header"),
+            ("CHANNEL", "Channel", "Remove channel only"),
+            ("HEADER", "Header", "Remove track header only"),
+        ),
+        default="CHANNEL_AND_HEADER",
+        options=set(),
+    )
 
     @classmethod
     def poll(cls, context):
@@ -337,6 +415,14 @@ class UAS_VideoTracks_RemoveTrack(Operator):
     def invoke(self, context, event):
         scene = context.scene
         vt_props = scene.UAS_video_tracks_props
+
+        self.mode = "CHANNEL_AND_HEADER"
+        if event.shift and not event.ctrl and not event.alt:
+            self.mode = "CHANNEL"
+        elif event.ctrl and not event.shift and not event.alt:
+            self.mode = "HEADER"
+        print(f"Add channel mode: {self.mode}")
+
         selectedTrackInd = vt_props.getSelectedTrackIndex()
         if 0 < selectedTrackInd:
             track = vt_props.getTrackByIndex(selectedTrackInd)
