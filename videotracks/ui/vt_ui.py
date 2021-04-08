@@ -28,6 +28,8 @@ from videotracks.utils import utils
 from videotracks.properties import vt_props
 from videotracks.operators import tracks
 
+from videotracks.utils.utils_ui import collapsable_panel
+
 import videotracks.config as config
 
 
@@ -44,18 +46,11 @@ class UAS_PT_VideoTracks(Panel):
     bl_category = "Video Tracks"
 
     def draw_header(self, context):
-        props = context.scene.UAS_video_tracks_props
         layout = self.layout
         layout.emboss = "NONE"
 
         row = layout.row(align=True)
-
-        # if context.window_manager.UAS_video_shot_manager_displayAbout:
-        #     row.alert = True
-        # else:
-        #     row.alert = False
-
-        icon = config.vt_icons_col["General_Ubisoft_32"]
+        icon = config.vt_icons_col["VideoTracks_32"]
         row.operator("uas_video_tracks.about", text="", icon_value=icon.icon_id)
 
     def draw_header_preset(self, context):
@@ -63,15 +58,11 @@ class UAS_PT_VideoTracks(Panel):
         layout.emboss = "NONE"
 
         row = layout.row(align=True)
+        if config.uasDebug:
+            subRow = row.row()
+            subRow.alert = True
+            subRow.label(text="Debug")
 
-        # row.operator("utils.launchrender", text="", icon="RENDER_STILL").renderMode = "STILL"
-        # row.operator("utils.launchrender", text="", icon="RENDER_ANIMATION").renderMode = "ANIMATION"
-
-        #    row.operator("render.opengl", text="", icon='IMAGE_DATA')
-        #   row.operator("render.opengl", text="", icon='RENDER_ANIMATION').animation = True
-        #    row.operator("screen.screen_full_area", text ="", icon = 'FULLSCREEN_ENTER').use_hide_panels=False
-
-        # row.separator(factor=2)
         icon = config.vt_icons_col["General_Explorer_32"]
         row.operator("uas_video_tracks.open_explorer", text="", icon_value=icon.icon_id).path = bpy.path.abspath(
             bpy.data.filepath
@@ -80,14 +71,12 @@ class UAS_PT_VideoTracks(Panel):
         row.separator(factor=1)
         row.menu("UAS_MT_Video_Tracks_prefs_mainmenu", icon="PREFERENCES", text="")
 
-        # row.separator(factor=3)
-
     def draw(self, context):
         layout = self.layout
         scene = context.scene
         vt_props = scene.UAS_video_tracks_props
+        prefs = context.preferences.addons["videotracks"].preferences
 
-        # if not "UAS_shot_manager_props" in context.scene:
         if not vt_props.isInitialized:
             layout.separator()
             row = layout.row()
@@ -101,24 +90,11 @@ class UAS_PT_VideoTracks(Panel):
         # scene warnings
         ################
 
-        if config.uasDebug:
-            row = layout.row()
-            subRow = row.row()
-            subRow.alert = True
-            subRow.label(text=" " + ("  Debug  " if config.uasDebug else ""))
-
-        row = layout.row()
         vseFirstFrame = scene.frame_start
         if vseFirstFrame != 0:
-            # wkip RRS Specific
-            if not (
-                scene.name.startswith("Act01_Seq")
-                or scene.name.startswith("Act02_Seq")
-                or scene.name.startswith("Act03_Seq")
-            ):
-                subRow = row.row()
-                subRow.alert = True
-                subRow.label(text=f" ***    First Frame is not 0 !!!: {vseFirstFrame}    *** ")
+            row = layout.row()
+            row.alert = True
+            row.label(text=f" ***    First Frame is not 0 !!!: {vseFirstFrame}    *** ")
 
         #########################################
         # Tools
@@ -143,34 +119,47 @@ class UAS_PT_VideoTracks(Panel):
         # Tracks
         #########################################
 
-        layout.separator(factor=2)
-        row = layout.row()
-        row.label(text="Tracks:")
+        # layout.separator(factor=2)
+        titleRow = layout.row()
+        collapsable_panel(titleRow, prefs, "tracks_list_panel_opened", text="Tracks")
+        if prefs.tracks_list_panel_opened:
+            row = layout.row()
 
-        if config.uasDebug:
-            row.prop(vt_props, "numTracks")
-        row.operator("uas_video_tracks.update_tracks_list", text="", icon="FILE_REFRESH")
-        subRow = row.row(align=True)
-        if config.uasDebug:
-            subRow.operator("uas_video_tracks.clear_all")
-        subRow.menu("UAS_MT_Video_Tracks_clear_menu", icon="TRIA_RIGHT", text="")
+            if config.uasDebug:
+                row.prop(vt_props, "numTracks")
+            row.operator("uas_video_tracks.update_tracks_list", text="", icon="FILE_REFRESH")
+            subRow = row.row(align=True)
+            if config.uasDebug:
+                subRow.operator("uas_video_tracks.clear_all")
+            subRow.menu("UAS_MT_Video_Tracks_clear_menu", icon="TRIA_RIGHT", text="")
 
-        box = layout.box()
-        row = box.row()
-        templateList = row.template_list(
-            "UAS_UL_VideoTracks_Items", "", vt_props, "tracks", vt_props, "selected_track_index_inverted", rows=6,
-        )
+            box = layout.box()
+            row = box.row()
+            templateList = row.template_list(
+                "UAS_UL_VideoTracks_Items", "", vt_props, "tracks", vt_props, "selected_track_index_inverted", rows=6,
+            )
 
-        col = row.column(align=True)
-        if config.uasDebug:
-            col.operator("uas_video_tracks.add_track", icon="ADD", text="")
-            col.operator("uas_video_tracks.duplicate_track", icon="DUPLICATE", text="")
-            col.operator("uas_video_tracks.remove_track", icon="REMOVE", text="")
+            col = row.column(align=True)
+            if config.uasDebug:
+                col.operator("uas_video_tracks.add_track", icon="ADD", text="")
+                col.operator("uas_video_tracks.duplicate_track", icon="DUPLICATE", text="")
+                col.operator("uas_video_tracks.remove_track", icon="REMOVE", text="")
+                col.separator()
+            col.operator("uas_video_tracks.move_treack_up_down", icon="TRIA_UP", text="").action = "UP"
+            col.operator("uas_video_tracks.move_treack_up_down", icon="TRIA_DOWN", text="").action = "DOWN"
             col.separator()
-        col.operator("uas_video_tracks.move_treack_up_down", icon="TRIA_UP", text="").action = "UP"
-        col.operator("uas_video_tracks.move_treack_up_down", icon="TRIA_DOWN", text="").action = "DOWN"
-        col.separator()
-        col.menu("UAS_MT_Video_Tracks_toolsmenu", icon="TOOL_SETTINGS", text="")
+            col.menu("UAS_MT_Video_Tracks_toolsmenu", icon="TOOL_SETTINGS", text="")
+        else:
+            subRow = titleRow.row(align=True)
+            if config.uasDebug:
+                subRow.operator("uas_video_tracks.add_track", icon="ADD", text="")
+                subRow.operator("uas_video_tracks.duplicate_track", icon="DUPLICATE", text="")
+                subRow.operator("uas_video_tracks.remove_track", icon="REMOVE", text="")
+                subRow.separator()
+            subRow.operator("uas_video_tracks.move_treack_up_down", icon="TRIA_UP", text="").action = "UP"
+            subRow.operator("uas_video_tracks.move_treack_up_down", icon="TRIA_DOWN", text="").action = "DOWN"
+            subRow.separator()
+            subRow.menu("UAS_MT_Video_Tracks_toolsmenu", icon="TOOL_SETTINGS", text="")
 
     # layout.separator ( factor = 1 )
 
@@ -217,7 +206,10 @@ class UAS_UL_VideoTracks_Items(bpy.types.UIList):
         # volume and opacity
         if vt_props.display_opacity_or_volume_in_tracklist:
             row.scale_x = 0.5
-            if "AUDIO" == item.trackType:
+            if "STANDARD" == item.trackType:
+                row.label(text=" ")
+                pass
+            elif "AUDIO" == item.trackType:
                 row.prop(item, "volume", text="")
             else:
                 row.prop(item, "opacity", text="")

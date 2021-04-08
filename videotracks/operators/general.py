@@ -51,73 +51,6 @@ class UAS_VideoTracks_SelectedToActive(Operator):
 
 
 ####################
-# Markers
-####################
-
-
-class UAS_VideoTracks_GoToMarker(Operator):
-    bl_idname = "uas_video_tracks.go_to_marker"
-    bl_label = "Go To Marker"
-    bl_description = "Go to the specified marker"
-    bl_options = {"INTERNAL"}
-
-    goToMode: StringProperty(
-        name="Go To Mode", description="Go to the specified marker. Can be FIRST, PREVIOUS, NEXT, LAST", default="NEXT"
-    )
-
-    def invoke(self, context, event):
-        scene = context.scene
-        prefs = context.preferences.addons["videotracks"].preferences
-        marker = None
-
-        filterText = "" if not prefs.mnavbar_use_filter else prefs.mnavbar_filter_text
-
-        if len(scene.timeline_markers):
-            # print(self.goToMode)
-            if "FIRST" == self.goToMode:
-                marker = utils.getFirstMarker(scene, scene.frame_current, filter=filterText)
-            elif "PREVIOUS" == self.goToMode:
-                marker = utils.getMarkerBeforeFrame(scene, scene.frame_current, filter=filterText)
-            elif "NEXT" == self.goToMode:
-                marker = utils.getMarkerAfterFrame(scene, scene.frame_current, filter=filterText)
-            elif "LAST" == self.goToMode:
-                marker = utils.getLastMarker(scene, scene.frame_current, filter=filterText)
-
-            if marker is not None:
-                scene.frame_set(marker.frame)
-
-        return {"FINISHED"}
-
-
-class UAS_VideoTracks_AddMarker(Operator):
-    bl_idname = "uas_video_tracks.add_marker"
-    bl_label = "Add / Rename Marker"
-    bl_description = "Add or rename a marker at the specified frame"
-    bl_options = {"INTERNAL", "UNDO"}
-
-    markerName: StringProperty(name="New Marker Name", default="")
-
-    def invoke(self, context, event):
-        wm = context.window_manager
-        return wm.invoke_props_dialog(self)
-
-    def execute(self, context):
-        utils.addMarkerAtFrame(context.scene, context.scene.frame_current, self.markerName)
-        return {"FINISHED"}
-
-
-class UAS_VideoTracks_DeleteMarker(Operator):
-    bl_idname = "uas_video_tracks.delete_marker"
-    bl_label = "Delete Marker"
-    bl_description = "Delete the marker at the specified frame"
-    bl_options = {"INTERNAL", "UNDO"}
-
-    def invoke(self, context, event):
-        utils.deleteMarkerAtFrame(context.scene, context.scene.frame_current)
-        return {"FINISHED"}
-
-
-####################
 # Track specific Select and Zoom
 ####################
 
@@ -432,9 +365,6 @@ class UAS_VideoTracks_FrameTimeRange(Operator):
 
 _classes = (
     UAS_VideoTracks_SelectedToActive,
-    UAS_VideoTracks_GoToMarker,
-    UAS_VideoTracks_AddMarker,
-    UAS_VideoTracks_DeleteMarker,
     UAS_VideoTracks_TrackSelectAndZoomView,
     UAS_VideoTracks_SelectTrackFromClipSelection,
     UAS_VideoTracks_ZoomView,

@@ -28,7 +28,7 @@ import bpy
 
 from bpy.app.handlers import persistent
 
-from bpy.props import BoolProperty, IntProperty, FloatProperty
+from bpy.props import BoolProperty, IntProperty
 
 
 from .config import config
@@ -44,7 +44,7 @@ from .properties import vt_props
 # from .ui.vsm_ui import UAS_PT_VideoTracks
 from .ui import vt_ui
 from .ui import vt_panels_ui
-from .ui import vt_time_control_ui
+from .ui import vt_time_controls_ui
 
 
 from .operators import about
@@ -53,9 +53,9 @@ from .operators import about
 from .properties import addon_prefs
 
 from .tools import vse_render
-from .tools.markers_nav_bar import markers_nav_bar
 
-from .tools.markers_nav_bar import markers_nav_bar_addon_prefs
+from .tools import markers_nav_bar
+from .tools import time_controls_bar
 
 from .ui import vt_ui
 
@@ -74,7 +74,7 @@ bl_info = {
     "author": "Julien Blervaque (aka Werwack)",
     "description": "Introduce tracks to the Blender VSE - Ubisoft Animation Studio",
     "blender": (2, 90, 0),
-    "version": (0, 1, 1),
+    "version": (0, 1, 2),
     "location": "View3D > UAS Video Tracks",
     "wiki_url": "https://gitlab-ncsa.ubisoft.org/animation-studio/blender/videotracks-addon/-/wikis/home",
     "warning": "BETA Version",
@@ -166,7 +166,6 @@ def checkDataVersion_post_load_handler(self, context):
         lowerSceneVersion = -1
         for scn in bpy.data.scenes:
 
-            # if "UAS_shot_manager_props" in scn:
             if getattr(bpy.context.scene, "UAS_shot_manager_props", None) is not None:
                 #   print("\n   Shot Manager instance found in scene " + scn.name)
                 props = scn.UAS_shot_manager_props
@@ -317,26 +316,21 @@ def register():
     # for cls in classes:
     #     bpy.utils.register_class(cls)
 
+    otio.register()
+
     addon_prefs.register()
+
+    markers_nav_bar.register()
+    time_controls_bar.register()
 
     utils_operators.register()
     #   utils_vse.register()
 
     # operators
     prefs.register()
+    # markers_nav_bar_addon_prefs.register()
 
-    markers_nav_bar_addon_prefs.register()
-    markers_nav_bar.register()
-
-    otio.register()
     vse_render.register()
-    # utils_render.register()
-    # viewport_3d.register()
-    # videovideotracks.register()
-    # features.register()
-
-    # rrs specific
-    # rrs_vsm_tools.register()
 
     general.register()
 
@@ -347,27 +341,11 @@ def register():
     # ui
     vt_ui.register()
     vt_panels_ui.register()
-    vt_time_control_ui.register()
+    vt_time_controls_ui.register()
 
-    sequencer_draw.register()
+    #  sequencer_draw.register()
 
     about.register()
-
-    # declaration of properties that will not be saved in the scene:
-    ####################
-
-    # call in the code by context.window_manager.UAS_shot_manager_shots_play_mode etc
-
-    # bpy.types.WindowManager.UAS_shot_manager_display_timeline = BoolProperty(
-    #     name="display_timeline",
-    #     description="Display a timeline in the 3D Viewport with the shots in the specified order",
-    #     default=False,
-    #     update=timeline_valueChanged,
-    # )
-
-    # bpy.types.WindowManager.UAS_shot_manager_toggle_montage_interaction = BoolProperty(
-    #     name="montage_interaction", description="Disable or enable montage like timeline interaction", default=True,
-    # )
 
     if config.uasDebug:
         print(f"\n ------ UAS debug: {config.uasDebug} ------- ")
@@ -378,8 +356,6 @@ def unregister():
 
     print("\n*** --- Unregistering UAS Video Tracks Add-on --- ***\n")
 
-    #    bpy.context.scene.UAS_shot_manager_props.display_shotname_in_3dviewport = False
-
     # utils_handlers.removeAllHandlerOccurences(
     #     checkDataVersion_post_load_handler, handlerCateg=bpy.app.handlers.load_post
     # )
@@ -388,15 +364,11 @@ def unregister():
     # if config.uasDebug:
     #     sm_debug.unregister()
 
-    # rrs specific
-    # rrs_vsm_tools.unregister()
-
     try:
         sequencer_draw.unregister()
     except Exception as e:
-        print("Error in Unregister sequencer_draw")
-
-    vt_time_control_ui.unregister()
+        print("Error (handled) in Unregister sequencer_draw")
+    vt_time_controls_ui.unregister()
     vt_panels_ui.unregister()
     vt_ui.unregister()
     vt_tools.unregister()
@@ -407,25 +379,22 @@ def unregister():
 
     vse_render.unregister()
 
-    # rrs specific
-    #   rrs_vsm_tools.unregister()
     # ui
     about.unregister()
 
-    otio.unregister()
     utils_operators.unregister()
+    time_controls_bar.unregister()
     markers_nav_bar.unregister()
-    markers_nav_bar_addon_prefs.unregister()
+    # markers_nav_bar_addon_prefs.unregister()
 
+    addon_prefs.unregister()
+
+    otio.unregister()
     #  utils_vse.unregister()
 
     # for cls in reversed(classes):
     #     bpy.utils.unregister_class(cls)
 
-    # del bpy.types.WindowManager.UAS_shot_manager_shots_play_mode
-    # del bpy.types.WindowManager.UAS_shot_manager_display_timeline
-
-    #   del bpy.types.WindowManager.UAS_shot_manager_isInitialized
     del bpy.types.WindowManager.UAS_video_tracks_version
 
     config.releaseGlobalVariables()

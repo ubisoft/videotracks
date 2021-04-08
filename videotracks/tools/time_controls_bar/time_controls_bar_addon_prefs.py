@@ -1,30 +1,9 @@
-# GPLv3 License
-#
-# Copyright (C) 2021 Ubisoft
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-"""
-To do: module description here.
-"""
-
 import bpy
 from bpy.types import AddonPreferences
 from bpy.props import StringProperty, BoolProperty
 
 
-def draw_markers_nav_bar_settings(self, context, layout):
+def draw_time_controls_bar_settings(self, context, layout):
     prefs = context.preferences.addons["videotracks"].preferences
 
     row = layout.row()
@@ -33,15 +12,11 @@ def draw_markers_nav_bar_settings(self, context, layout):
 
     row = box.row(align=False)
     row.separator()
-    row.prop(prefs, "mnavbar_display_in_vse")
+    row.prop(prefs, "tcbar_display_in_vse")
 
     row = box.row(align=False)
     row.separator()
-    row.prop(prefs, "mnavbar_display_in_timeline")
-
-    row = box.row(align=False)
-    row.separator()
-    row.prop(prefs, "mnavbar_display_filter")
+    row.prop(prefs, "tcbar_display_in_timeline")
 
 
 ####################

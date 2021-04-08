@@ -126,7 +126,7 @@ class VideoTracks_Props(PropertyGroup):
             v = value
             while v > len(self.tracks):
                 atIndex = len(self.tracks) + 1
-                self.addTrack(name=f"Track {atIndex}", trackType="STANDARD", atIndex=atIndex)
+                self.addTrack(mode="HEADER", name=f"Track {atIndex}", trackType="STANDARD", atIndex=atIndex)
             self["numTracks"] = value
         else:
             self["numTracks"] = len(self.tracks)
@@ -239,6 +239,7 @@ class VideoTracks_Props(PropertyGroup):
 
     def addTrack(
         self,
+        mode="CHANNEL_AND_HEADER",
         atIndex=-1,
         name="defaultTrack",
         start=10,
@@ -252,63 +253,81 @@ class VideoTracks_Props(PropertyGroup):
     ):
         """ Add a new track after the selected track if possible or at the end of the track list otherwise
             Return the newly added track
+            mode can be: "CHANNEL_AND_HEADER", "CHANNEL", "HEADER"
         """
 
         newTrack = None
 
-        trackListInverted = self.tracks
+        if "CHANNEL_AND_HEADER" == mode or "HEADER" == mode:
+            trackListInverted = self.tracks
 
-        newTrack = trackListInverted.add()  # track is added at the end
-        newTrack.parentScene = self.getParentScene()
-        # print(f"****Add Track: newTrack.parentScene: {newTrack.parentScene}")
-        newTrack.name = name
-        newTrack.enabled = enabled
-        newTrack.trackType = trackType
+            newTrack = trackListInverted.add()  # track is added at the end
+            newTrack.parentScene = self.getParentScene()
+            # print(f"****Add Track: newTrack.parentScene: {newTrack.parentScene}")
+            newTrack.name = name
+            newTrack.enabled = enabled
+            newTrack.trackType = trackType
 
-        if color is None:
-            newTrack.setColorFromTrackType()
+            if color is None:
+                newTrack.setColorFromTrackType()
 
-        else:
-            newTrack.color = color
+            else:
+                newTrack.color = color
 
-        if "" != sceneName:
-            newTrack.shotManagerScene = bpy.data.scenes[sceneName]
-        if "" != sceneTakeName:
-            newTrack.sceneTakeName = sceneTakeName
+            if "" != sceneName:
+                newTrack.shotManagerScene = bpy.data.scenes[sceneName]
+            if "" != sceneTakeName:
+                newTrack.sceneTakeName = sceneTakeName
 
-        if -1 != atIndex:  # move track at specified index
-            # trackListInverted.move(len(trackList) - 1, len(trackList) - atIndex)
-            trackListInverted.move(len(trackListInverted) - 1, len(trackListInverted) - atIndex)
-            newTrack = trackListInverted[len(trackListInverted) - atIndex]
+            if -1 != atIndex:  # move track at specified index
+                # trackListInverted.move(len(trackList) - 1, len(trackList) - atIndex)
+                trackListInverted.move(len(trackListInverted) - 1, len(trackListInverted) - atIndex)
+                newTrack = trackListInverted[len(trackListInverted) - atIndex]
+
+        if "CHANNEL_AND_HEADER" == mode or "CHANNEL" == mode:
+            utils_vse.insertChannel(self.parentScene, atIndex)
 
         return newTrack
 
-    def copyTrack(self, track, atIndex=-1):
+    def copyTrack(self, track, mode="CHANNEL_AND_HEADER", atIndex=-1, toIndex=-1):
         """ Copy a track after the selected track if possible or at the end of the track list otherwise
             Return the newly added track
         """
-
+        print(f"copyTrack: mode: {mode}")
         newTrack = None
-        trackListInverted = self.tracks
+        if "CHANNEL_AND_HEADER" == mode or "HEADER" == mode:
+            trackListInverted = self.tracks
 
-        newTrack = trackListInverted.add()  # track is added at the end
-        newTrack.name = track.name
-        newTrack.enabled = track.enabled
-        newTrack.color = track.color
+            newTrack = trackListInverted.add()  # track is added at the end
+            newTrack.parentScene = track.parentScene
+            print(f"---Track source: {track.parentScene}, track copy:{newTrack.parentScene}")
+            newTrack.name = track.name
+            newTrack.enabled = track.enabled
+            newTrack.color = track.color
 
-        if -1 != atIndex:  # move track at specified index
-            # trackList.move(len(trackListInverted) - 1, atIndex)
-            trackListInverted.move(len(trackListInverted) - 1, len(trackListInverted) - atIndex)
-            newTrack = trackListInverted[len(trackListInverted) - atIndex]
+            if -1 != toIndex:  # move track at specified index
+                # trackList.move(len(trackListInverted) - 1, atIndex)
+                trackListInverted.move(len(trackListInverted) - 1, len(trackListInverted) - toIndex)
+                newTrack = trackListInverted[len(trackListInverted) - toIndex]
+
+        if "CHANNEL_AND_HEADER" == mode or "CHANNEL" == mode:
+            # toIndex = atIndex + 1
+            utils_vse.duplicateChannel(self.parentScene, atIndex, toIndex)
 
         return newTrack
 
-    def removeTrack(self, track):
+    def removeTrack(
+        self, track, mode="CHANNEL_AND_HEADER",
+    ):
         trackInd = self.getTrackIndex(track)
-        print(f"Remove TRack: Name: {track.name} at {trackInd}")
-        utils_vse.clearChannel(self.parentScene, trackInd)
-        trackListInverted = self.tracks
-        trackListInverted.remove(len(trackListInverted) - trackInd)
+        if "CHANNEL_AND_HEADER" == mode or "HEADER" == mode:
+            print(f"Remove TRack: Name: {track.name} at {trackInd}")
+            utils_vse.clearChannel(self.parentScene, trackInd)
+            trackListInverted = self.tracks
+            trackListInverted.remove(len(trackListInverted) - trackInd)
+
+        if "CHANNEL_AND_HEADER" == mode or "CHANNEL" == mode:
+            utils_vse.removeChannel(self.parentScene, trackInd)
 
     def setTrackInfo(
         self,
@@ -375,12 +394,20 @@ class VideoTracks_Props(PropertyGroup):
 
         # return trackInd
 
-    def moveTrackFromIndexToIndex(self, fromIndex, toIndex):
-        utils_vse.swapChannels(self.parentScene, fromIndex, toIndex)
+    def moveTrackFromIndexToIndex(
+        self, fromIndex, toIndex, mode="CHANNEL_AND_HEADER",
+    ):
         newTrack = None
-        trackListInverted = self.tracks
-        trackListInverted.move(len(trackListInverted) - fromIndex, len(trackListInverted) - toIndex)
-        newTrack = trackListInverted[len(trackListInverted) - toIndex]
+        if "CHANNEL_AND_HEADER" == mode or "HEADER" == mode:
+            trackListInverted = self.tracks
+            trackListInverted.move(len(trackListInverted) - fromIndex, len(trackListInverted) - toIndex)
+            newTrack = trackListInverted[len(trackListInverted) - toIndex]
+        else:
+            newTrack = self.getTrackByIndex(fromIndex)
+
+        if "CHANNEL_AND_HEADER" == mode or "CHANNEL" == mode:
+            utils_vse.swapChannels(self.parentScene, fromIndex, toIndex)
+
         return newTrack
 
     def getTrackByIndex(self, trackIndex):

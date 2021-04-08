@@ -34,6 +34,7 @@ from videotracks.otio.imports import importToVSE
 # from videotracks.rrs_specific.montage.montage_otio import MontageOtio
 
 from videotracks.utils import utils
+from videotracks.utils import utils_markers
 
 from videotracks.config import config
 
@@ -383,7 +384,7 @@ class UAS_VideoTracks_OT_ExportContentbetweenMarkers(Operator):
         #       scene.render.filepath = output_filepath
         scene.render.use_file_extension = False
 
-        markers = utils.sortMarkers(scene.timeline_markers)
+        markers = utils_markers.sortMarkers(scene.timeline_markers)
 
         # print(f"markers: {markers}")
         if self.exportAsVideoFiles:

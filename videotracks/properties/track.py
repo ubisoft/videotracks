@@ -99,7 +99,7 @@ class UAS_VideoTracks_Track(PropertyGroup):
 
     opacity: IntProperty(
         name="Opacity",
-        description="Track opacity",
+        description="Video track opacity",
         min=0,
         max=100,
         get=_get_opacity,
@@ -123,7 +123,7 @@ class UAS_VideoTracks_Track(PropertyGroup):
 
     volume: FloatProperty(
         name="Volume",
-        description="Track volume",
+        description="Audio track volume",
         min=0.0,
         soft_max=2,
         max=5,
@@ -168,14 +168,15 @@ class UAS_VideoTracks_Track(PropertyGroup):
         name="Track Type",
         description="Type of the track",
         items=(
-            ("STANDARD", "Standard", ""),
-            ("AUDIO", "Audio", ""),
-            ("VIDEO", "Video", ""),
+            ("STANDARD", "Standard", "Default VSE Track. Contains strips of various kinds"),
+            ("AUDIO", "Audio", "Track for audio strips"),
+            ("VIDEO", "Video", "Track for video strips"),
+            ("FX", "FX", "Track for FX strips (effects, transforms, transitions..."),
             ("CAM_FROM_SCENE", "Camera From Scene", ""),
             ("SHOT_CAMERAS", "Shot Manager Cameras", "Cameras from Shot Manager"),
             ("RENDERED_SHOTS", "Rendered Shots", ""),
             ("CAM_BG", "Camera Backgrounds", ""),
-            ("CUSTOM", "Custom", ""),
+            #   ("CUSTOM", "Custom", ""),
         ),
         update=_update_trackType,
         default="STANDARD",
@@ -320,6 +321,8 @@ class UAS_VideoTracks_Track(PropertyGroup):
             self.color = (0.1, 0.5, 0.2, 1)
         elif "VIDEO" == self.trackType:
             self.color = (0.1, 0.2, 0.8, 1)
+        elif "FX" == self.trackType:
+            self.color = (0.3, 0.03, 0.25, 1)
         elif "CAM_FROM_SCENE" == self.trackType:
             self.color = (0.6, 0.5, 0.0, 1)
         elif "SHOT_CAMERAS" == self.trackType:

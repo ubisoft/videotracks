@@ -147,3 +147,50 @@ def setChannelVolume(scene, channelIndex, volume):
     for clip in channelClips:
         clip.volume = volume
 
+
+def insertChannel(scene, channelIndex):
+    numChannels = 32
+    for ch in range(numChannels, channelIndex - 1, -1):
+        channelClips = getChannelClips(scene, ch)
+
+        if 32 == ch and len(channelClips):
+            print("VSE Insert Channel: *** Clips in channel 32 will be removed ***")
+
+        for clip in channelClips:
+            clip.channel = ch + 1
+
+
+def duplicateChannel(scene, sourceChannelIndex, targetChannelIndex):
+    numChannels = 32
+    print(f"sourceChannelIndex: {sourceChannelIndex}, targetChannelIndex: {targetChannelIndex}")
+    if (
+        not 1 <= targetChannelIndex <= numChannels
+        or not 1 <= sourceChannelIndex <= numChannels
+        or sourceChannelIndex == targetChannelIndex
+    ):
+        return
+
+    srcChannelInd = sourceChannelIndex if sourceChannelIndex < targetChannelIndex else sourceChannelIndex + 1
+
+    insertChannel(scene, targetChannelIndex)
+    channelClips = getChannelClips(scene, srcChannelInd)
+    bpy.ops.sequencer.select_all(action="DESELECT")
+    for clip in channelClips:
+        clip.select = True
+    bpy.ops.sequencer.duplicate()
+
+    for c in scene.sequence_editor.sequences:
+        if c.select:
+            c.channel = targetChannelIndex
+
+
+def removeChannel(scene, channelIndex):
+    numChannels = 32
+
+    clearChannel(scene, channelIndex)
+
+    for ch in range(channelIndex + 1, numChannels + 1):
+        channelClips = getChannelClips(scene, ch)
+
+        for clip in channelClips:
+            clip.channel = ch - 1
