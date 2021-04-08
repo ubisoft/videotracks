@@ -23,8 +23,6 @@ import bpy
 from bpy.types import Operator
 from bpy.props import StringProperty, BoolProperty, FloatVectorProperty, EnumProperty, IntProperty
 
-from ..properties.track import UAS_VideoTracks_Track
-
 from random import uniform
 
 
@@ -284,7 +282,6 @@ class UAS_VideoTracks_TrackDuplicate(Operator):
 
     def draw(self, context):
         layout = self.layout
-        scene = context.scene
         layout.prop(self, "mode")
 
         box = layout.box()
@@ -464,7 +461,7 @@ class UAS_VideoTracks_TrackRemoveMultiple(Operator):
     def execute(self, context):
         scene = context.scene
         vt_props = scene.UAS_video_tracks_props
-        selectedTrackInd = vt_props.getSelectedTrackIndex()
+        # selectedTrackInd = vt_props.getSelectedTrackIndex()
 
         if "ALL" == self.action:
             print("ALL in remove multiple")
@@ -473,7 +470,7 @@ class UAS_VideoTracks_TrackRemoveMultiple(Operator):
             print(f"tracks: {tracks}")
             for t in tracks:
                 vt_props.removeTrack(t)
-                tracksCheck = vt_props.getTracks()
+                # tracksCheck = vt_props.getTracks()
 
             vt_props.setSelectedTrackByIndex(-1)
 
@@ -563,6 +560,8 @@ class UAS_VideoTracks_UpdateTracksList(Operator):
 
     def invoke(self, context, event):
         context.scene.UAS_video_tracks_props.updateTracksList(context.scene)
+        # wkip
+        bpy.ops.uas_video_tracks.tracks_overlay("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 

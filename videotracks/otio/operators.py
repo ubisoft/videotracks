@@ -22,7 +22,8 @@ To do: module description here.
 import os
 from pathlib import Path
 import json
-import subprocess, platform
+import subprocess
+import platform
 
 import bpy
 from bpy.types import Operator
@@ -318,7 +319,6 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
     def invoke(self, context, event):
         wm = context.window_manager
         scene = context.scene
-        props = scene.UAS_shot_manager_props
 
         # if "PREVIZ" == self.importStepMode:
         #     self.mediaHaveHandles = props.areShotHandlesUsed()
@@ -372,10 +372,10 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
         config.gMontageOtio = None
 
         if "" == self.otioFile:
-            print(f"*** Otio file not defined - Cannot open EDL file ***")
+            print("*** Otio file not defined - Cannot open EDL file ***")
             return {"CANCELLED"}
         if not Path(self.otioFile).exists():
-            print(f"*** Otio file not found - Cannot open EDL file ***")
+            print("*** Otio file not found - Cannot open EDL file ***")
             print(f"***      Otio file: {self.otioFile}")
             return {"CANCELLED"}
 
@@ -417,7 +417,7 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
                     config.gSeqEnumList.append((str(i), seq.get_name(), f"Import sequence {seq.get_name()}", i + 1))
             else:
                 config.gSeqEnumList.append(
-                    (str(0), " ** No Sequence in Ref Track **", f"No sequence found in the specifed reference track", 1)
+                    (str(0), " ** No Sequence in Ref Track **", "No sequence found in the specifed reference track", 1)
                 )
 
             if -1 != currentSeqIndex:
@@ -425,7 +425,6 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
             else:
                 self.sequenceList = config.gSeqEnumList[0][0]
             _logger.debug(f"self.sequenceList: {self.sequenceList}")
-
 
         wm.invoke_props_dialog(self, width=500)
         #    res = bpy.ops.uasotio.openfilebrowser("INVOKE_DEFAULT")
@@ -435,8 +434,6 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
         return {"RUNNING_MODAL"}
 
     def draw(self, context):
-        scene = context.scene
-        props = scene.UAS_shot_manager_props
 
         #########################
         #########################
@@ -649,7 +646,7 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
         print(
             f"\nCreateshotsfromotio Import Sequence Exec: {self.sequenceList}, {config.gSeqEnumList[int(self.sequenceList)]}"
         )
-        print(f"\n--------")
+        print("\n--------")
 
         # filename, extension = os.path.splitext(self.filepath)
         # print("ex Selected file:", self.filepath)
@@ -846,8 +843,6 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO(Operator):
 
     def invoke(self, context, event):
         wm = context.window_manager
-
-        from ..otio.imports import getSequenceListFromOtio
 
         wm.invoke_props_dialog(self, width=500)
         #    res = bpy.ops.uasotio.openfilebrowser("INVOKE_DEFAULT")

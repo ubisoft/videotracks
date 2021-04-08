@@ -22,11 +22,9 @@ To do: module description here.
 import bpy
 
 from bpy.types import Panel, Menu, Operator
-from bpy.props import IntProperty, EnumProperty, BoolProperty, FloatProperty, StringProperty
 
 from videotracks.utils import utils
 from videotracks.properties import vt_props
-from videotracks.operators import tracks
 
 from videotracks.utils.utils_ui import collapsable_panel
 
@@ -74,7 +72,7 @@ class UAS_PT_VideoTracks(Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        vt_props = scene.UAS_video_tracks_props
+        # vt_props = scene.UAS_video_tracks_props
         prefs = context.preferences.addons["videotracks"].preferences
 
         if not vt_props.isInitialized:
@@ -135,7 +133,7 @@ class UAS_PT_VideoTracks(Panel):
 
             box = layout.box()
             row = box.row()
-            templateList = row.template_list(
+            row.template_list(
                 "UAS_UL_VideoTracks_Items", "", vt_props, "tracks", vt_props, "selected_track_index_inverted", rows=6,
             )
 
@@ -193,7 +191,7 @@ class UAS_UL_VideoTracks_Items(bpy.types.UIList):
         row = layout.row(align=True)
         subRow = row.row(align=False)
         subRow.scale_x = 0.3
-        subRow.prop(item, "enabled", text=f" ")
+        subRow.prop(item, "enabled", text=" ")
         # subrow.separator(factor=0.2)
         row.label(text=f" {item.vseTrackIndex}: {item.name}")
 

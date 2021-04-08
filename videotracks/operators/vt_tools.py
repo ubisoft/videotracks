@@ -205,7 +205,7 @@ class UAS_VideoTracks_OT_Import_Edit_From_OTIO(Operator):
 
         if self.useEditResolution:
             if config.gMontageOtio._characteristics is None:
-                print(f" *** config.gMontageOtio._characteristics is None - EDL Edit resolution cannot be set *** ")
+                print(" *** config.gMontageOtio._characteristics is None - EDL Edit resolution cannot be set *** ")
             else:
                 characts = config.gMontageOtio.get_montage_characteristics()
                 if "resolution_x" in characts:
@@ -303,9 +303,6 @@ class UAS_VideoTracks_OT_PrintMontageInfo(Operator):
     bl_options = {"INTERNAL"}
 
     def execute(self, context):
-        scene = context.scene
-        props = scene.UAS_shot_manager_props
-
         config.gMontageOtio.printInfo()
 
         # sm_montage = MontageShotManager()
@@ -364,9 +361,6 @@ class UAS_VideoTracks_OT_ExportContentbetweenMarkers(Operator):
 
     def execute(self, context):
         scene = context.scene
-        props = scene.UAS_video_tracks_props
-
-        vse_render = bpy.context.window_manager.UAS_vse_render
 
         if not Path(self.outputDir).exists():
             print(f" *** Cannot export VSE content, path does not exist: {self.outputDir}")
@@ -388,7 +382,7 @@ class UAS_VideoTracks_OT_ExportContentbetweenMarkers(Operator):
 
         # print(f"markers: {markers}")
         if self.exportAsVideoFiles:
-            print(f"\n * Exporting video files:")
+            print("\n * Exporting video files:")
             for i, mrk in enumerate(markers):
                 if self.start <= markers[i].frame <= self.end:
                     if i < len(markers) - 1:

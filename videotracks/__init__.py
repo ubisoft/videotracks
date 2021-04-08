@@ -28,7 +28,7 @@ import bpy
 
 from bpy.app.handlers import persistent
 
-from bpy.props import BoolProperty, IntProperty
+from bpy.props import IntProperty
 
 
 from .config import config
@@ -56,8 +56,6 @@ from .tools import vse_render
 
 from .tools import markers_nav_bar
 from .tools import time_controls_bar
-
-from .ui import vt_ui
 
 from .utils import utils
 
@@ -203,7 +201,7 @@ def checkDataVersion_post_load_handler(self, context):
 
         if numScenesToUpgrade:
             print(
-                f"Shot Manager Data Version is lower than the current Shot Manager version - Upgrading data with patches..."
+                "Shot Manager Data Version is lower than the current Shot Manager version - Upgrading data with patches..."
             )
             # apply patch and apply new data version
             # wkip patch strategy to re-think. Collect the data versions and apply the respective patches?
