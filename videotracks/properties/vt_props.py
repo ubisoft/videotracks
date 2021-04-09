@@ -62,6 +62,7 @@ class VideoTracks_Props(PropertyGroup):
         # self.createRenderSettings()
         self.updateTracksList(self.parentScene)  # bad context
         bpy.ops.uas_video_tracks.tracks_overlay("INVOKE_DEFAULT")
+        print("Toto")
         self.isInitialized = True
 
     def get_isInitialized(self):

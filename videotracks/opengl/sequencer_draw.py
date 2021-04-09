@@ -206,7 +206,7 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
         canva.addWidget(track_selected_frame)
 
         img_man = BGLImageManager()
-        img = img_man.load_image(r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg")
+        # img = img_man.load_image(r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg")
         for i, track in enumerate(reversed(props.tracks)):
             width = 100
             pos = BGLCoord(0, i + 1)
@@ -216,7 +216,7 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
                 height=1,
                 text=lambda track=track: track.name,
                 color=lambda track=track: BGLColor(track.color[0], track.color[1], track.color[2]),
-                icon=img,
+                # icon=img,
             )
 
             button.clicked_callback = lambda prop=props, index=i: prop.setSelectedTrackByIndex(index + 1)
