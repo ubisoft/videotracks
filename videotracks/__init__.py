@@ -29,6 +29,7 @@ import bpy
 from bpy.app.handlers import persistent
 
 from bpy.props import IntProperty
+from bpy.props import BoolProperty
 
 
 from .config import config
@@ -272,6 +273,14 @@ def register():
 
     bpy.types.WindowManager.UAS_video_tracks_version = IntProperty(
         name="Add-on Version Int", description="Add-on version as integer", default=versionTupple[1]
+    )
+
+    def on_toggle_overlay_updated(self, context):
+        if self.UAS_video_tracks_overlay:
+            bpy.ops.uas_video_tracks.tracks_overlay("INVOKE_DEFAULT")
+
+    bpy.types.WindowManager.UAS_video_tracks_overlay = BoolProperty(
+        name = "Toggle Overlay", default = False, update = on_toggle_overlay_updated
     )
 
     # utils_handlers.removeAllHandlerOccurences(

@@ -87,6 +87,11 @@ class UAS_PT_VideoTracks(Panel):
 
         # scene warnings
         ################
+        layout.prop(context.window_manager,
+                    "UAS_video_tracks_overlay",
+                    icon = "VIEW3D",
+                    toggle = True,
+                    )
 
         vseFirstFrame = scene.frame_start
         if vseFirstFrame != 0:

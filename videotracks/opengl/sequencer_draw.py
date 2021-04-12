@@ -280,7 +280,7 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
         return bpy.types.SpaceSequenceEditor
 
     def should_cancel(self):
-        return False
+        return self.context.window_manager.UAS_video_tracks_overlay is False
 
     def should_rebuild_ui(self) -> bool:
         props = bpy.context.scene.UAS_video_tracks_props

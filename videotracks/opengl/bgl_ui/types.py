@@ -239,7 +239,8 @@ class BGLBound:
 
 
 class BGLImageManager:
-    pcoll = bpy.utils.previews.new()
+    def __init__ ( self ):
+        self.pcoll = bpy.utils.previews.new()
 
     def __init__(self):
         pass
