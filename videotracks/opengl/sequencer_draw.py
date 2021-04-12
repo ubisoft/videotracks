@@ -209,7 +209,8 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
         # img = img_man.load_image(r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg")
         for i, track in enumerate(reversed(props.tracks)):
             width = 100
-            pos = BGLCoord(0, i + 1)
+            channelDisplayWidth = 25
+            pos = BGLCoord(channelDisplayWidth, i + 1)
             button = BGLButton(
                 position=pos,
                 width=width,
@@ -250,26 +251,30 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
             enabled_btn.clicked_callback = update_enabled
             canva.addWidget(enabled_btn)
 
-        # img_man = BGLImageManager ( )
-        # img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )
-        canva = BGLCanvas(None, 0, 11, 11, 22)
-        dock = BGLRegionDock(dock_region=BGLRegionDock.DockRegion.TOP)
-        for i in range(4):
-            dock.add_widget(BGLButton(text=str(i), height=30))
-            l = BGLLayoutV()
-            for j in range(3):
-                c = BGLCheckBox(text="tototo")
-                c.checked = lambda: bpy.context.scene.render.use_border
+        ###############
+        # Debug for static buttons widget
+        ###############
+        ## img_man = BGLImageManager ( )
+        ## img = img_man.load_image ( r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg" )
 
-                def checked_state_changed(state):
-                    bpy.context.scene.render.use_border = state
+        # canva = BGLCanvas(None, 0, 11, 11, 22)
+        # dock = BGLRegionDock(dock_region=BGLRegionDock.DockRegion.TOP)
+        # for i in range(4):
+        #     dock.add_widget(BGLButton(text=str(i), height=30))
+        #     l = BGLLayoutV()
+        #     for j in range(3):
+        #         c = BGLCheckBox(text="tototo")
+        #         c.checked = lambda: bpy.context.scene.render.use_border
 
-                c.clicked_callback = checked_state_changed
-                l.add_widget(c)
-            dock.add_widget(l)
+        #         def checked_state_changed(state):
+        #             bpy.context.scene.render.use_border = state
 
-        canva.addWidget(dock)
-        self.add_canva(canva)
+        #         c.clicked_callback = checked_state_changed
+        #         l.add_widget(c)
+        #     dock.add_widget(l)
+
+        # canva.addWidget(dock)
+        # self.add_canva(canva)
 
     def space_type(self):
         return bpy.types.SpaceSequenceEditor

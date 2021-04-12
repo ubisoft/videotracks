@@ -21,7 +21,7 @@ To do: module description here.
 
 import bpy
 from bpy.types import AddonPreferences
-from bpy.props import StringProperty, BoolProperty, FloatProperty
+from bpy.props import StringProperty, BoolProperty, FloatProperty, FloatVectorProperty
 
 from videotracks.tools.markers_nav_bar.markers_nav_bar_addon_prefs import draw_markers_nav_bar_settings
 from videotracks.tools.time_controls_bar.time_controls_bar_addon_prefs import draw_time_controls_bar_settings
@@ -61,6 +61,19 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
     showTrackHeaders: BoolProperty(default=True)
     trackHeaderWidth: FloatProperty(default=5.0)
     trackHeadeOpacity: FloatProperty(default=0.9)
+
+    trackHeaderColor: FloatVectorProperty(
+        name="Track Color",
+        description="Color of the track header",
+        subtype="COLOR",
+        size=3,
+        min=0.0,
+        max=1.0,
+        precision=2,
+        # get=_get_color,
+        # set=_set_color,
+        default=[0.9, 0.0, 0.0],
+    )
 
     ##################
     # Markers Nav Bar Settings ###
@@ -183,6 +196,7 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
         box.prop(self, "showTrackHeaders")
         box.prop(self, "trackHeaderWidth")
         box.prop(self, "trackHeadeOpacity")
+        box.prop(self, "trackHeaderColor")
 
     # layout.label(
     #     text="Temporary preference values (for dialogs for instance) are only visible when global variable uasDebug is True."

@@ -21,15 +21,8 @@ To do: module description here.
 
 import bpy
 
-from bpy.types import Panel, Menu, Operator
-from bpy.props import IntProperty, EnumProperty, BoolProperty, FloatProperty, StringProperty
-
-from videotracks.properties import vt_props
-from videotracks.operators import tracks
-
-import videotracks.config as config
-
-from .vt_ui import UAS_PT_VideoTracks
+from bpy.types import Panel, Operator
+from bpy.props import StringProperty
 
 
 class UAS_VideoTracks_SelectStrip(Operator):

@@ -21,17 +21,10 @@ To do: module description here.
 
 import bpy
 
-from bpy.types import Panel, Menu, Operator
-from bpy.props import IntProperty, EnumProperty, BoolProperty, FloatProperty, StringProperty
-
-from ..properties import vt_props
-from ..operators import tracks
+from bpy.types import Panel
 
 import videotracks.config as config
 from videotracks.utils import utils
-from videotracks.utils import utils_markers
-
-from .vt_ui import UAS_PT_VideoTracks
 
 from videotracks.tools.markers_nav_bar.markers_nav_bar import draw_markers_nav_bar
 
