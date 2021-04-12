@@ -94,6 +94,8 @@ class UAS_PT_VideoTracks(Panel):
             row.alert = True
             row.label(text=f" ***    First Frame is not 0 !!!: {vseFirstFrame}    *** ")
 
+        layout.prop(prefs, "showTrackHeaders", text="Show Headers")
+
         #########################################
         # Tools
         #########################################
