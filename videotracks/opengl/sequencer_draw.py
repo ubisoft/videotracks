@@ -174,18 +174,30 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
         props = bpy.context.scene.UAS_video_tracks_props
         self.track_count = len(props.tracks)  # used for rebuilding ui
 
+        # colors
+        out_of_range_color = (BGLColor(0.1, 0.0, 0, 0.25)).to_sRGB()
+        # bgColor = BGLColor(0.258, 0.258, 0.258)
+        bgColorOri = BGLColor(0.258, 0.258, 0.258)
+        bgColor = BGLColor(bgColorOri.r + 0.03, bgColorOri.g + 0.03, bgColorOri.b + 0.03)
+        bgColor = BGLColor(0.258, 0.258, 0.258)
+        bgColorAlt = BGLColor(bgColor.r * 0.9, bgColor.g * 0.9, bgColor.b * 0.9)
+        textColor = BGLColor(0.9, 0.9, 0.9)
+        selectedColor = BGLColor(0.99, 0.99, 0.99, 0.2)
+
         canva = BGLCanvas(BGLViewToRegion(), 0, 11, 11, 22)
         self.add_canva(canva)
         size = 100000
 
+        # Out of time range colored areas
+        #################################
         b = BGLRect(width=size, height=size * 2)
-        b.color = BGLColor(0.1, 0.0, 0, 0.75)
+        b.color = out_of_range_color
         frame_range_left = BGLGeometryStamp(
             position=lambda: BGLCoord(-size + bpy.context.scene.frame_start, -size), geometry=b
         )
 
         b = BGLRect(width=size, height=size * 2)
-        b.color = BGLColor(0.1, 0, 0, 0.75)
+        b.color = out_of_range_color
         frame_range_right = BGLGeometryStamp(position=lambda: BGLCoord(bpy.context.scene.frame_end, -size), geometry=b)
         canva.addWidget(frame_range_left)
         canva.addWidget(frame_range_right)
@@ -193,38 +205,77 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
         canva = BGLCanvas(BGLViewToRegion(apply_to_x=False), 0, 11, 11, 22)
         self.add_canva(canva)
 
+        # selected track highlight
+        ##########################
         rect = BGLRect(width=9999999, height=1)
         track_selected_frame = BGLGeometryStamp(
             position=lambda prop=props: BGLCoord(0, prop.selected_track_index), geometry=rect
         )
-        rect.color = lambda prop=props: BGLColor(
-            prop.tracks[prop.selected_track_index_inverted].color[0],
-            prop.tracks[prop.selected_track_index_inverted].color[1],
-            prop.tracks[prop.selected_track_index_inverted].color[2],
-            0.5,
-        )
+        rect.color = lambda prop=props: selectedColor
+        # rect.color = lambda prop=props: BGLColor(
+        #     prop.tracks[prop.selected_track_index_inverted].color[0],
+        #     prop.tracks[prop.selected_track_index_inverted].color[1],
+        #     prop.tracks[prop.selected_track_index_inverted].color[2],
+        #     0.2,
+        # )
         canva.addWidget(track_selected_frame)
 
         img_man = BGLImageManager()
         # img = img_man.load_image(r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg")
+
+        display_slider = False
+        header_width = 200
+        channelDisplayWidth = 25
+
         for i, track in enumerate(reversed(props.tracks)):
-            width = 100
-            channelDisplayWidth = 25
-            pos = BGLCoord(channelDisplayWidth, i + 1)
+
+            # header BG button
+            ##################
+            pos = BGLCoord(0, i + 1)
+
+            # wkip marche pas!!!!!!!!!!!!
+            header_color = bgColor if 0 == i % 2 else bgColorAlt
+            if i == (lambda prop=props: prop.selected_track_index):
+                # if i == props.selected_track_index:
+                header_color = BGLColor(header_color.r + 0.3, header_color.g + 0.3, header_color.b + 0.3)
+
             button = BGLButton(
                 position=pos,
-                width=width,
+                width=header_width,
                 height=1,
                 text=lambda track=track: track.name,
-                color=lambda track=track: BGLColor(track.color[0], track.color[1], track.color[2]),
+                color=header_color,
+                text_size=13,
+                text_color=textColor,
+                # color=lambda track=track: BGLColor(track.color[0], track.color[1], track.color[2]),
                 # icon=img,
             )
 
+            # button.text_size = lambda text_size=text_size: 18
             button.clicked_callback = lambda prop=props, index=i: prop.setSelectedTrackByIndex(index + 1)
             canva.addWidget(button)
 
+            # channel label
+            #################
+            # pos = BGLCoord(0, i + 1)
+            # label = BGLLabel(
+            #     position=pos,
+            #     width=channelDisplayWidth,
+            #     height=1,
+            #     text=str(i + 1) + ("  " if i < 9 else ""),
+            #     rotation=1.57,
+            #     text_size=15,
+            # )
+            pos = BGLCoord(0, i + 1)
+            label = BGLLabel(position=pos, width=channelDisplayWidth, height=1, text=str(i + 1), text_size=13,)
+            label.bgColor.a = 0.0
+            label.text_alignment = "CENTER"
+            canva.addWidget(label)
+
+            # track opacity slider
+            ######################
             slider_height = 0.2
-            slider = BGLSlider(position=pos, width=width, height=slider_height)
+            slider = BGLSlider(position=pos, width=header_width, height=slider_height)
             slider.value = lambda t=track: t.opacity
             slider.front_color = lambda t=track: BGLColor.blended(
                 BGLColor(0.4, 0.4, 1), BGLColor(0.1, 0.1, 0.4), t.opacity / 100.0
@@ -234,15 +285,18 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
                 t.opacity = v
 
             slider.on_value_changed = update_opacity
-            canva.addWidget(slider)
+            if display_slider:
+                canva.addWidget(slider)
 
-            pos = BGLCoord(pos.x, pos.y + slider_height)
+            # track enabled button
+            ######################
+            pos = BGLCoord(channelDisplayWidth + 26, pos.y + slider_height + 0.15)
             enabled_btn = BGLButton(
                 position=pos,
-                width=10,
-                height=1 - slider_height,
-                text="",
-                color=lambda t=track: BGLColor(0.7, 1, 0.7) if t.enabled else BGLColor(0.2, 0.05, 0.05),
+                width=20,
+                height=1 - slider_height - 2 * 0.15,
+                text="V",
+                color=lambda t=track: BGLColor(0.316, 0.465, 0.695) if t.enabled else BGLColor(0.398, 0.398, 0.398),
             )
 
             def update_enabled(t=track):
@@ -250,6 +304,27 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
 
             enabled_btn.clicked_callback = update_enabled
             canva.addWidget(enabled_btn)
+
+            # track color button
+            ####################
+            offset_from_side = 0.04
+            pos = BGLCoord(channelDisplayWidth + 6, i + 1 + offset_from_side)
+            # offset_from_side = 0.04
+            # pos = BGLCoord(header_width - 14, i + 1 + offset_from_side)
+            button = BGLButton(
+                position=pos,
+                width=12,
+                height=1 - offset_from_side * 2,
+                color=lambda track=track: (BGLColor(track.color[0], track.color[1], track.color[2])).to_linear(),
+                text="",
+                text_size=13,
+                text_color=textColor,
+                # icon=img,
+            )
+
+            # button.text_size = lambda text_size=text_size: 18
+            button.clicked_callback = lambda prop=props, index=i: prop.setSelectedTrackByIndex(index + 1)
+            canva.addWidget(button)
 
         ###############
         # Debug for static buttons widget

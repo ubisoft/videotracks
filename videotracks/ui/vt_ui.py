@@ -87,11 +87,9 @@ class UAS_PT_VideoTracks(Panel):
 
         # scene warnings
         ################
-        layout.prop(context.window_manager,
-                    "UAS_video_tracks_overlay",
-                    icon = "VIEW3D",
-                    toggle = True,
-                    )
+        layout.prop(
+            context.window_manager, "UAS_video_tracks_overlay", icon="VIEW3D", toggle=True,
+        )
 
         vseFirstFrame = scene.frame_start
         if vseFirstFrame != 0:
@@ -189,18 +187,27 @@ class UAS_UL_VideoTracks_Items(bpy.types.UIList):
             layout.alert = item.shotManagerScene is None
 
         row = layout.row(align=True)
+        subRow = row.row(align=False)
+        subRow.alignment = "LEFT"
+        subRow.enabled = False
+        subRow.scale_x = 0.8
+        subRow.label(text=f"{'  ' if item.vseTrackIndex < 10 else ''}{item.vseTrackIndex}")
 
         if vt_props.display_color_in_tracklist:
-            row.scale_x = 0.3
-            row.prop(item, "color", text="")
-            row.separator(factor=0.2)
+            subRow = layout.row(align=True)
+            row.scale_x = 0.5
+            # subRow.scale_x = 0.32
+            subRow.scale_x = 0.27
+            subRow.prop(item, "color", text="")
+            subRow.separator(factor=0.1)
 
         row = layout.row(align=True)
         subRow = row.row(align=False)
         subRow.scale_x = 0.3
         subRow.prop(item, "enabled", text=" ")
         # subrow.separator(factor=0.2)
-        row.label(text=f" {item.vseTrackIndex}: {item.name}")
+        # row.label(text=f" {item.vseTrackIndex}: {item.name}")
+        row.label(text=f" {item.name}")
 
         # c.operator("uas_video_tracks.set_current_shot", icon_value=icon.icon_id, text="").index = index
         # layout.separator(factor=0.1)
@@ -321,9 +328,17 @@ class UAS_PT_VideoTracks_TrackProperties(Panel):
             # name and color
             row = box.row()
             row.separator(factor=1.0)
-            row.prop(track, "name", text="Name")
+            # split = row.split(factor=0.9)
+            subRow = row.row()
+            subRow.scale_x = 3
+            subRow.prop(track, "name", text="Name")
+            #  split = row.split(factor=0.4)
+            #  split.alignment = "RIGHT"
+            #  subRow = split.row()
+            #  subRow.alignment = "RIGHT"
             row.prop(track, "color", text="")
             row.prop(vt_props, "display_color_in_tracklist", text="")
+            # subRow.separator(factor=0.1)
 
             row = box.row()
             row.separator(factor=1.0)

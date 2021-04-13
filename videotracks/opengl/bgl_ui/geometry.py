@@ -21,6 +21,8 @@ from mathutils import Vector
 from .types import BGLColor, BGLBound, BGLRegion, BGLCoord, BGLPropValue, BGLProp, BGLImageManager
 from .shaders import BGLImageShader, BGLUniformShader
 
+from videotracks.utils import utils
+
 
 class BGLGeometry:
     position = BGLProp(BGLCoord())
@@ -79,7 +81,8 @@ class BGLRect(BGLGeometry):
         )
 
         with BGLUniformShader() as shader:
-            shader.set_color(self.color)
+            # shader.set_color(utils.sRGBColor(self.color))
+            shader.set_color(self.color.to_sRGB())
             shader.draw_batch(batch)
 
 
@@ -130,6 +133,7 @@ class BGLCircle(BGLGeometry):
 class BGLText(BGLGeometry):
     size = BGLProp(11)
     text = BGLProp("Label")
+    color = BGLProp(BGLColor(0.9, 0.4, 0.4))
     centered = BGLProp(False)
 
     @property
@@ -161,12 +165,25 @@ class BGLText(BGLGeometry):
 
         return False
 
+    def drawAdv(self, region, rotation=0):
+        fontid = 0
+        # https://blenderartists.org/t/blf-clipping-aspect-rotation-shadow-blur/544985/4
+        if 0 != rotation:
+            blf.rotation(fontid, rotation)
+            blf.enable(fontid, blf.ROTATION)
+        self.draw(region)
+        if 0 != rotation:
+            blf.disable(fontid, blf.ROTATION)
+
     def draw(self, region):
-        blf.size(0, self.size, 72)
+        fontid = 0
+        blf.size(fontid, self.size, 72)
         bound = self.get_bound(region)
         if region.bound.fully_contains(bound):
-            blf.position(0, bound.min.x, bound.min.y + bound.height * 0.5, 0)
-            blf.draw(0, self.text)
+            blf.position(fontid, bound.min.x, bound.min.y + bound.height * 0.5, 0)
+            blf.color(fontid, self.color.r, self.color.g, self.color.b, 1.0)
+            # print(f" drawn text: {self.text}")
+            blf.draw(fontid, self.text)
 
 
 class BGLTexture(BGLRect):

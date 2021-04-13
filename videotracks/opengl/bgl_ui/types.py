@@ -118,6 +118,16 @@ class BGLColor:
     def a(self, a):
         self._a = a
 
+    def to_linear(self):
+        gamma = 0.45
+        # return BGLColor(pow(self._r, gamma), pow(self._g, gamma), pow(self._b, gamma), self._a * 1.0)
+        return BGLColor(pow(self._r, gamma), pow(self._g, gamma), pow(self._b, gamma), pow(self._a, gamma))
+
+    def to_sRGB(self):
+        gamma = 1.0 / 0.45
+        # return BGLColor(pow(self._r, gamma), pow(self._g, gamma), pow(self._b, gamma), self._a * 1.0)
+        return BGLColor(pow(self._r, gamma), pow(self._g, gamma), pow(self._b, gamma), pow(self._a, gamma))
+
     @staticmethod
     def blended(color_a: "BGLColor", color_b: "BGLColor", blend_factor=0.5):
         blend_factor = clamp(blend_factor, 0.0, 1.0)
@@ -173,6 +183,10 @@ class BGLImage:
 
 
 class BGLBound:
+    """
+    Origin min min is at bottom left corner
+    """
+
     def __init__(self, min_position=None, max_position=None):
         if min_position is None:
             self.min = BGLCoord()
@@ -195,6 +209,63 @@ class BGLBound:
     @property
     def center(self):
         return BGLCoord(self.min.x + self.width * 0.5, self.min.y + self.height * 0.5)
+
+    @property
+    def top_left(self):
+        return BGLCoord(self.min.x, self.max.y)
+
+    @property
+    def top_mid(self):
+        return BGLCoord(self.min.x + self.width * 0.5, self.max.y)
+
+    @property
+    def top_right(self):
+        return BGLCoord(self.max.x, self.max.y)
+
+    @property
+    def mid_right(self):
+        return BGLCoord(self.max.x, self.min.y + self.height * 0.5)
+
+    @property
+    def bottom_right(self):
+        return BGLCoord(self.max.x, self.min.y)
+
+    @property
+    def bottom_mid(self):
+        return BGLCoord(self.min.x + self.width * 0.5, self.min.y)
+
+    @property
+    def bottom_left(self):
+        return BGLCoord(self.min.x, self.min.y)
+
+    @property
+    def mid_left(self):
+        return BGLCoord(self.min.x, self.min.y + self.height * 0.5)
+
+    def get_point(self, mode):
+        """
+            return the coordinates of the specified point of the boundary box
+            mode can be: TOP_LEFT, TOP_MID, TOP_RIGHT, MID_RIGHT, BOTTOM_RIGHT, BOTTOM_MID, BOTTOM_LEFT, MID_LEFT, CENTER
+        """
+        if "TOP_LEFT" == mode:
+            return self.top_left
+        if "TOP_MID" == mode:
+            return self.top_mid
+        if "TOP_RIGHT" == mode:
+            return self.top_right
+        if "MID_RIGHT" == mode:
+            return self.mid_right
+        if "BOTTOM_RIGHT" == mode:
+            return self.bottom_right
+        if "BOTTOM_MID" == mode:
+            return self.bottom_mid
+        if "BOTTOM_LEFT" == mode:
+            return self.bottom_left
+        if "MID_LEFT" == mode:
+            return self.mid_left
+        if "CENTER" == mode:
+            return self.center
+        return
 
     def clamp(self, position: BGLCoord):
         return BGLCoord(clamp(position.x, self.min.x, self.max.x), clamp(position.y, self.min.y, self.max.y))
@@ -239,7 +310,7 @@ class BGLBound:
 
 
 class BGLImageManager:
-    def __init__ ( self ):
+    def __init__(self):
         self.pcoll = bpy.utils.previews.new()
 
     def __init__(self):

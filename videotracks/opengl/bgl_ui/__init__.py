@@ -112,9 +112,13 @@ class BGL_UIOperatorBase(bpy.types.Operator):
         return {"PASS_THROUGH"}
 
     def draw(self, context):
-        if self.should_draw():
-            for canva in self._canvas:
-                canva.draw(context.region)
+        # wkip pour effacer message
+        try:
+            if self.should_draw():
+                for canva in self._canvas:
+                    canva.draw(context.region)
+        except Exception:
+            pass
 
     def invoke(self, context, event):
         self.context = context

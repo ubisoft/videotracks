@@ -2,6 +2,10 @@
     "editor.formatOnSave": true,
     "python.pythonPath": ".venv\\Scripts\\python.exe",
     "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "120"
+    ],
     "python.testing.unittestArgs": [
         "-v",
         "-s",

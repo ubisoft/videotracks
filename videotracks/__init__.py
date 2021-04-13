@@ -280,7 +280,7 @@ def register():
             bpy.ops.uas_video_tracks.tracks_overlay("INVOKE_DEFAULT")
 
     bpy.types.WindowManager.UAS_video_tracks_overlay = BoolProperty(
-        name = "Toggle Overlay", default = False, update = on_toggle_overlay_updated
+        name="Toggle Overlay", default=False, update=on_toggle_overlay_updated
     )
 
     # utils_handlers.removeAllHandlerOccurences(
