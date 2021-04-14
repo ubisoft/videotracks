@@ -233,18 +233,19 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
             ##################
             pos = BGLCoord(0, i + 1)
 
-            # wkip marche pas!!!!!!!!!!!!
-            header_color = bgColor if 0 == i % 2 else bgColorAlt
-            if i == (lambda prop=props: prop.selected_track_index):
-                # if i == props.selected_track_index:
-                header_color = BGLColor(header_color.r + 0.3, header_color.g + 0.3, header_color.b + 0.3)
+            def get_header_color ( my_index = i + 1):
+                header_color = bgColor if 0 == my_index % 2 else bgColorAlt
+                if my_index == props.selected_track_index:
+                    header_color = BGLColor(header_color.r + 0.3, header_color.g + 0.3, header_color.b + 0.3)
+
+                return header_color
 
             button = BGLButton(
                 position=pos,
                 width=header_width,
                 height=1,
                 text=lambda track=track: track.name,
-                color=header_color,
+                color=get_header_color,
                 text_size=13,
                 text_color=textColor,
                 # color=lambda track=track: BGLColor(track.color[0], track.color[1], track.color[2]),
