@@ -86,6 +86,33 @@ class BGLRect(BGLGeometry):
             shader.draw_batch(batch)
 
 
+class BGLRectLine(BGLRect):
+    line_width = BGLProp(5)
+
+    def draw(self, region: BGLRegion):
+        bound = self.get_bound(region)
+        batch = BGLUniformShader.create_batch(
+            "LINES",
+            {
+                "pos": [
+                    Vector(list(bound.min)),
+                    Vector([bound.max.x, bound.min.y]),
+                    Vector(list(bound.max)),
+                    Vector([bound.min.x, bound.max.y]),
+                ]
+            },
+            indices=[(0, 1), (1, 2), (2, 3), (3, 0)],
+        )
+
+        with BGLUniformShader() as shader:
+            bgl.glLineWidth(self.line_width)
+            # shader.set_color(utils.sRGBColor(self.color))
+            # bgl.glLineWidth(5)
+            shader.set_color(self.color.to_sRGB())
+            shader.draw_batch(batch)
+            bgl.glLineWidth(1)
+
+
 class BGLCircle(BGLGeometry):
     color = BGLProp(BGLColor())
     radius = BGLProp(1)

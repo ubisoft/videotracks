@@ -62,6 +62,7 @@ class BGLLabel(BGLWidget):
     text_color = BGLProp(BGLColor(0.9, 0.9, 0.9))
 
     rotation = BGLProp(0)
+    # wkip to finish
     text_alignment = "CENTER"
 
     def __init__(self, **prop_values):
@@ -71,7 +72,9 @@ class BGLLabel(BGLWidget):
         self._geometry.color = lambda: self.bgColor
         self._geometry.position = lambda: self.position
 
-        self._text_geometry = BGLText(text=lambda: self.text, centered=True, color=self.text_color, size=self.text_size)
+        self._text_geometry = BGLText(
+            text=lambda: self.text, centered=False, color=self.text_color, size=self.text_size
+        )
 
         # for text with rotation:
         # self._text_geometry.position = lambda: self._geometry.get_bound().mid_right
@@ -97,6 +100,9 @@ class BGLButton(BGLWidget):
     color = BGLProp(BGLColor(0.2, 0.2, 0.2))
     highlight_color = BGLProp(BGLColor(1, 1, 1))
 
+    border_width = 0
+    border_color = BGLProp(BGLColor(0.2, 0.2, 0.2))
+
     text = BGLProp("Button")
     text_size = BGLProp(11)
     text_color = BGLProp(BGLColor(0.9, 0.9, 0.9))
@@ -109,9 +115,17 @@ class BGLButton(BGLWidget):
         self.highlight_color = lambda s=self: s.color ** 0.8
         self._highlighted = False
 
+        if self.border_width:
+            self._border_geometry = BGLRectLine(
+                width=lambda: self.width, height=lambda: self.height, line_width=lambda: self.border_width
+            )
+            self._border_geometry.color = lambda: self.border_color
+            self._border_geometry.position = lambda: self.position
+
         self._geometry = BGLRect(width=lambda: self.width, height=lambda: self.height)
         self._geometry.color = lambda: self.highlight_color if self._highlighted else self.color
         self._geometry.position = lambda: self.position
+
         self._text_geometry = BGLText(text=lambda: self.text, centered=True, color=self.text_color, size=self.text_size)
         self._text_geometry.position = lambda: self._geometry.get_bound().center
 
@@ -158,6 +172,8 @@ class BGLButton(BGLWidget):
         return False
 
     def draw(self, region):
+        if self.border_width:
+            self._border_geometry.draw(region)
         self._geometry.draw(region)
         # self._icon_geometry.draw ( region )
         self._text_geometry.draw(region)

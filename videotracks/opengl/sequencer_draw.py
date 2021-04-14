@@ -220,6 +220,15 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
         # )
         canva.addWidget(track_selected_frame)
 
+        # over track highlight
+        ######################
+        rect = BGLRect(width=9999999, height=1)
+        track_selected_frame = BGLGeometryStamp(
+            position=lambda prop=props: BGLCoord(0, prop.selected_track_index), geometry=rect
+        )
+        rect.color = lambda prop=props: selectedColor
+        canva.addWidget(track_selected_frame)
+
         img_man = BGLImageManager()
         # img = img_man.load_image(r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg")
 
@@ -233,7 +242,7 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
             ##################
             pos = BGLCoord(0, i + 1)
 
-            def get_header_color ( my_index = i + 1):
+            def get_header_color(my_index=i + 1):
                 header_color = bgColor if 0 == my_index % 2 else bgColorAlt
                 if my_index == props.selected_track_index:
                     header_color = BGLColor(header_color.r + 0.3, header_color.g + 0.3, header_color.b + 0.3)
@@ -244,7 +253,8 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
                 position=pos,
                 width=header_width,
                 height=1,
-                text=lambda track=track: track.name,
+                # text=lambda track=track: track.name,
+                text="",
                 color=get_header_color,
                 text_size=13,
                 text_color=textColor,
@@ -273,6 +283,26 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
             label.text_alignment = "CENTER"
             canva.addWidget(label)
 
+            # track name
+            #################
+            pos_x = 80
+            pos = BGLCoord(pos_x, i + 0.5)
+            track_label = BGLLabel(
+                position=pos,
+                width=header_width - pos_x - 5,
+                height=0.5,
+                text=lambda track=track: track.name,
+                color=get_header_color,
+                text_size=13,
+                text_color=textColor,
+                # color=lambda track=track: BGLColor(track.color[0], track.color[1], track.color[2]),
+                # icon=img,
+            )
+            track_label.bgColor.a = 0.0
+            # not used (yet...)
+            track_label.text_alignment = "BOTTOM_LEFT"
+            canva.addWidget(track_label)
+
             # track opacity slider
             ######################
             slider_height = 0.2
@@ -291,13 +321,14 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
 
             # track enabled button
             ######################
-            pos = BGLCoord(channelDisplayWidth + 26, pos.y + slider_height + 0.15)
+            pos = BGLCoord(channelDisplayWidth + 26, i + 1 + slider_height + 0.15)
             enabled_btn = BGLButton(
                 position=pos,
                 width=20,
                 height=1 - slider_height - 2 * 0.15,
                 text="V",
                 color=lambda t=track: BGLColor(0.316, 0.465, 0.695) if t.enabled else BGLColor(0.398, 0.398, 0.398),
+                border_width=2,
             )
 
             def update_enabled(t=track):
@@ -320,6 +351,7 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
                 text="",
                 text_size=13,
                 text_color=textColor,
+                border_width=2,
                 # icon=img,
             )
 
