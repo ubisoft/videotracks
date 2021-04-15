@@ -313,9 +313,6 @@ class BGLImageManager:
     def __init__(self):
         self.pcoll = bpy.utils.previews.new()
 
-    def __init__(self):
-        pass
-
     def load_image(self, path):
         p = Path(path)
         return BGLImage(self.pcoll.load(p.stem, str(p), "IMAGE"))

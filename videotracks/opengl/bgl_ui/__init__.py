@@ -36,9 +36,10 @@ class BGLCanvas:
         for wdgt in reversed(self._widgets):  # LAst defined widget have the priority
             if wdgt is self._last_widget_handled:  # Handled first
                 continue
-            if wdgt._handle_event(self._region, event):
-                self._last_widget_handled = wdgt
-                return True
+            if wdgt.visible:
+                if wdgt._handle_event(self._region, event):
+                    self._last_widget_handled = wdgt
+                    return True
 
         return False
 

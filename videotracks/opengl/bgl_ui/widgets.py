@@ -9,6 +9,11 @@ from .types import BGLBound, BGLColor, BGLCoord, BGLRegion, BGLPropValue, BGLPro
 from .geometry import *
 from . import utils
 
+#
+# Reflexions
+#
+#  Callback object?
+#  What callback you get as argument ? self ?
 
 def _nop(*args, **kwargs):
     pass
@@ -113,7 +118,7 @@ class BGLButton(BGLWidget):
         BGLWidget.__init__(self, **prop_values)
 
         self.highlight_color = lambda s=self: s.color ** 0.8
-        self._highlighted = False
+        self.is_highlighted = False
 
         if self.border_width:
             self._border_geometry = BGLRectLine(
@@ -123,7 +128,7 @@ class BGLButton(BGLWidget):
             self._border_geometry.position = lambda: self.position
 
         self._geometry = BGLRect(width=lambda: self.width, height=lambda: self.height)
-        self._geometry.color = lambda: self.highlight_color if self._highlighted else self.color
+        self._geometry.color = lambda: self.highlight_color if self.is_highlighted else self.color
         self._geometry.position = lambda: self.position
 
         self._text_geometry = BGLText(text=lambda: self.text, centered=True, color=self.text_color, size=self.text_size)
@@ -135,6 +140,7 @@ class BGLButton(BGLWidget):
         # self._icon_geometry.position = lambda: self._geometry.position #+ BGLCoord ( 0, icon_size *.5 )
 
         self._on_clicked_callback = _nop
+        self._on_highlighted_callback = _nop
         self._is_pushed = False
 
     @property
@@ -147,6 +153,17 @@ class BGLButton(BGLWidget):
             self._on_clicked_callback = _nop
         else:
             self._on_clicked_callback = callback
+
+    @property
+    def highlighted_callback(self):
+        return self._on_highlighted_callback
+
+    @highlighted_callback.setter
+    def highlighted_callback(self, callback: Callable[[], None]):
+        if callback is None:
+            self._on_highlighted_callback = _nop
+        else:
+            self._on_highlighted_callback = callback
 
     def get_bound(self, region):
         return self._geometry.get_bound(region)
@@ -165,9 +182,11 @@ class BGLButton(BGLWidget):
 
         elif event.type == "MOUSEMOVE":
             if self._geometry.is_over(mouse_pos, region):
-                self._highlighted = True
+                self.is_highlighted = True
+                self._on_highlighted_callback ()
             else:
-                self._highlighted = False
+                self.is_highlighted = False
+                self._on_highlighted_callback()
 
         return False
 
