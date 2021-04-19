@@ -73,14 +73,14 @@ bl_info = {
     "author": "Julien Blervaque (aka Werwack)",
     "description": "Introduce tracks to the Blender VSE - Ubisoft Animation Studio",
     "blender": (2, 90, 0),
-    "version": (0, 1, 2),
+    "version": (0, 1, 3),
     "location": "View3D > UAS Video Tracks",
     "wiki_url": "https://gitlab-ncsa.ubisoft.org/animation-studio/blender/videotracks-addon/-/wikis/home",
     "warning": "BETA Version",
     "category": "UAS",
 }
 
-__version__ = f"v{bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}"
+__version__ = f"v{bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}_beta1"
 
 ###########
 # Logging
