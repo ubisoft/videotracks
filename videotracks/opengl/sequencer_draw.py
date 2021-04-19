@@ -205,29 +205,13 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
         canva = BGLCanvas(BGLViewToRegion(apply_to_x=False), 0, 11, 11, 22)
         self.add_canva(canva)
 
-        # selected track highlight
-        ##########################
-        rect = BGLRect(width=9999999, height=1)
-        track_selected_frame = BGLGeometryStamp(
-            position=lambda prop=props: BGLCoord(0, prop.selected_track_index), geometry=rect
-        )
-        rect.color = lambda prop=props: selectedColor
         # rect.color = lambda prop=props: BGLColor(
         #     prop.tracks[prop.selected_track_index_inverted].color[0],
         #     prop.tracks[prop.selected_track_index_inverted].color[1],
         #     prop.tracks[prop.selected_track_index_inverted].color[2],
         #     0.2,
         # )
-        canva.addWidget(track_selected_frame)
-
-        # over track highlight
-        ######################
-        rect = BGLRect(width=9999999, height=1)
-        track_selected_frame = BGLGeometryStamp(
-            position=lambda prop=props: BGLCoord(0, prop.selected_track_index), geometry=rect
-        )
-        rect.color = lambda prop=props: selectedColor
-        canva.addWidget(track_selected_frame)
+        #canva.addWidget(track_selected_frame)
 
         img_man = BGLImageManager()
         # img = img_man.load_image(r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg")
@@ -261,9 +245,14 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
                 # color=lambda track=track: BGLColor(track.color[0], track.color[1], track.color[2]),
                 # icon=img,
             )
-
             # button.text_size = lambda text_size=text_size: 18
             button.clicked_callback = lambda prop=props, index=i: prop.setSelectedTrackByIndex(index + 1)
+
+            # Track highlighted or selected
+            hovered_track = BGLGeometryStamp(position = pos,
+                                             visible = lambda b = button, index=i: b.is_highlighted or props.selected_track_index == index + 1,
+                                             geometry = BGLRect(width = 9999999, height = 1, color = selectedColor))
+            canva.addWidget(hovered_track)
             canva.addWidget(button)
 
             # channel label
@@ -286,7 +275,7 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
             # track name
             #################
             pos_x = 80
-            pos = BGLCoord(pos_x, i + 0.5)
+            pos = BGLCoord(pos_x, i + 1.5)
             track_label = BGLLabel(
                 position=pos,
                 width=header_width - pos_x - 5,
