@@ -34,53 +34,22 @@ from bpy.props import BoolProperty
 
 from .config import config
 
-from .operators import prefs
-from .operators import general
-from .operators import tracks
-
-from . import otio
-from .operators import vt_tools
-from .properties import vt_props
-
-# from .ui.vsm_ui import UAS_PT_VideoTracks
-from .ui import vt_ui
-from .ui import vt_panels_ui
-from .ui import vt_time_controls_ui
-
-
-from .operators import about
-
-# from .properties import props
-from .properties import addon_prefs
-
-from .tools import vse_render
-
-from .tools import markers_nav_bar
-from .tools import time_controls_bar
-
-from .utils import utils
-
-# from .utils import utils_vse
-
-
-from .utils import utils_operators
-
-from .opengl import sequencer_draw
-
 
 bl_info = {
     "name": "UAS Video Tracks",
     "author": "Julien Blervaque (aka Werwack)",
     "description": "Introduce tracks to the Blender VSE - Ubisoft Animation Studio",
     "blender": (2, 90, 0),
-    "version": (0, 1, 3),
+    "version": (0, 1, 31),
     "location": "View3D > UAS Video Tracks",
     "wiki_url": "https://gitlab-ncsa.ubisoft.org/animation-studio/blender/videotracks-addon/-/wikis/home",
     "warning": "BETA Version",
     "category": "UAS",
 }
 
-__version__ = f"v{bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}_beta1"
+__version__ = ".".join(str(i) for i in bl_info["version"])
+display_version = __version__
+
 
 ###########
 # Logging
@@ -238,6 +207,32 @@ def checkDataVersion_post_load_handler(self, context):
 
 def register():
 
+    from .operators import prefs
+    from .operators import general
+    from .operators import tracks
+
+    from . import otio
+    from .properties import vt_props
+
+    # from .ui.vsm_ui import UAS_PT_VideoTracks
+    from .ui import vt_ui
+    from .ui import vt_panels_ui
+    from .ui import vt_time_controls_ui
+
+    from .operators import about
+    from .operators import vt_tools
+
+    from .properties import addon_prefs
+
+    from .tools import vse_render
+    from .tools import markers_nav_bar
+    from .tools import time_controls_bar
+
+    from .utils import utils
+    from .utils import utils_operators
+
+    from .opengl import sequencer_draw
+
     versionTupple = utils.display_addon_registered_version("UAS Video Tracks")
 
     config.initGlobalVariables()
@@ -347,6 +342,32 @@ def register():
 
 def unregister():
 
+    from .operators import prefs
+    from .operators import general
+    from .operators import tracks
+
+    from . import otio
+    from .properties import vt_props
+
+    # from .ui.vsm_ui import UAS_PT_VideoTracks
+    from .ui import vt_ui
+    from .ui import vt_panels_ui
+    from .ui import vt_time_controls_ui
+
+    from .operators import about
+    from .operators import vt_tools
+
+    from .properties import addon_prefs
+
+    from .tools import vse_render
+    from .tools import markers_nav_bar
+    from .tools import time_controls_bar
+
+    from .utils import utils
+    from .utils import utils_operators
+
+    from .opengl import sequencer_draw
+
     print("\n*** --- Unregistering UAS Video Tracks Add-on --- ***\n")
 
     # utils_handlers.removeAllHandlerOccurences(
@@ -359,7 +380,7 @@ def unregister():
 
     try:
         sequencer_draw.unregister()
-    except Exception as e:
+    except Exception:
         print("Error (handled) in Unregister sequencer_draw")
     vt_time_controls_ui.unregister()
     vt_panels_ui.unregister()
