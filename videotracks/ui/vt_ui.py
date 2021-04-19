@@ -97,7 +97,7 @@ class UAS_PT_VideoTracks(Panel):
             row.alert = True
             row.label(text=f" ***    First Frame is not 0 !!!: {vseFirstFrame}    *** ")
 
-        layout.prop(prefs, "showTrackHeaders", text="Show Headers")
+        #  layout.prop(prefs, "showTrackHeaders", text="Show Headers")
 
         #########################################
         # Tools
@@ -304,8 +304,8 @@ class UAS_PT_VideoTracks_TrackProperties(Panel):
         # layout.emboss = "NONE"
 
         row = layout.row(align=True)
-        op = row.operator("uas_video_tracks.select_track_from_clip_selection", text="Sel. Track")
-        op = row.operator("uas_video_tracks.track_select_and_zoom_view", text="Zoom on Clips")
+        op = row.operator("uas_video_tracks.select_track_from_clip_selection", text="", icon="RESTRICT_SELECT_OFF")
+        op = row.operator("uas_video_tracks.track_select_and_zoom_view", text="", icon="ZOOM_SELECTED")
         op.actionMode = "TRACKCLIPS"
         op.trackIndex = vt_props.getSelectedTrackIndex()
 
@@ -360,13 +360,13 @@ class UAS_PT_VideoTracks_TrackProperties(Panel):
             if "CUSTOM" == track.trackType:
                 layout.separator()
                 row = layout.row()
-                row.operator("uas_video_tracks.clear_vse_track")
+                row.operator("uas_video_tracks.clear_vse_track", text="Clear Track")
                 pass
 
             elif "STANDARD" == track.trackType or "AUDIO" == track.trackType or "VIDEO" == track.trackType:
                 layout.separator()
                 row = layout.row()
-                row.operator("uas_video_tracks.clear_vse_track")
+                row.operator("uas_video_tracks.clear_vse_track", text="Clear Track")
                 pass
 
             else:
@@ -384,7 +384,7 @@ class UAS_PT_VideoTracks_TrackProperties(Panel):
 
                 layout.separator()
                 row = layout.row()
-                row.operator("uas_video_tracks.clear_vse_track")
+                row.operator("uas_video_tracks.clear_vse_track", text="Clear Track")
                 row.operator("uas_video_tracks.update_vse_track", icon="FILE_REFRESH").trackName = track.name
                 row.operator("uas_video_tracks.go_to_specified_scene", icon="SCENE_DATA").trackName = track.name
                 layout.separator()

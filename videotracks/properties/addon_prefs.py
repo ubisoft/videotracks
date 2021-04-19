@@ -44,7 +44,7 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
     # general ###
     ##################
 
-    tracks_list_panel_opened: BoolProperty(default=True,)
+    tracks_list_panel_opened: BoolProperty(default=False,)
 
     ##################
     # ui helpers   ###
