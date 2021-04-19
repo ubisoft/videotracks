@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-Time control panel
+To do: module description here.
 """
 
 import bpy
@@ -24,7 +24,7 @@ import bpy
 from bpy.types import Panel
 
 import videotracks.config as config
-from videotracks import display_version
+from videotracks.utils import utils
 
 from videotracks.tools.markers_nav_bar.markers_nav_bar import draw_markers_nav_bar
 
@@ -54,7 +54,7 @@ from videotracks.tools.markers_nav_bar.markers_nav_bar import draw_markers_nav_b
 
 class UAS_PT_VideoTracksTimeControlsInVSE(Panel):
     bl_idname = "UAS_PT_VideoTracksTimeControlsPanelInVSE"
-    bl_label = "UAS Time Controls   V. " + display_version
+    bl_label = "UAS Time Controls   V. " + utils.addonVersion("UAS Video Tracks")[0]
     bl_description = "Time Control Options"
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
