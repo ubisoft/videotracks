@@ -80,7 +80,9 @@ bl_info = {
     "category": "UAS",
 }
 
-__version__ = f"v{bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}_beta1"
+__version__ = ".".join(str(i) for i in bl_info["version"])
+display_version = __version__
+# version_date = "2021-03-19:10:56:00 UTC"   # to do
 
 ###########
 # Logging
@@ -359,7 +361,7 @@ def unregister():
 
     try:
         sequencer_draw.unregister()
-    except Exception as e:
+    except Exception:
         print("Error (handled) in Unregister sequencer_draw")
     vt_time_controls_ui.unregister()
     vt_panels_ui.unregister()

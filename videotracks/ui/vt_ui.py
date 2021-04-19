@@ -16,15 +16,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-To do: module description here.
+All the ui of Video Tracks
 """
 
 import bpy
 
 from bpy.types import Panel, Menu, Operator
 
-from videotracks.utils import utils
-from videotracks.properties import vt_props
+from videotracks import display_version
 
 from videotracks.utils.utils_ui import collapsable_panel
 
@@ -37,7 +36,7 @@ import videotracks.config as config
 
 
 class UAS_PT_VideoTracks(Panel):
-    bl_label = "UAS Video Tracks   V. " + utils.addonVersion("UAS Video Tracks")[0]
+    bl_label = "UAS Video Tracks   V. " + display_version
     bl_idname = "UAS_PT_Video_Tracks"
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"

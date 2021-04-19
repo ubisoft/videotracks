@@ -26,6 +26,7 @@ import opentimelineio
 
 from xml.dom.minidom import parse
 
+from videotracks import display_version
 from videotracks.utils import utils_xml
 
 import logging
@@ -175,7 +176,7 @@ def exportShotManagerEditToOtio(
     timeline = opentimelineio.schema.Timeline(
         name=scene.name + "_" + take_name, global_start_time=opentimelineio.opentime.from_frames(startFrame, sceneFps)
     )
-    timeline.metadata["exported_with"] = "UAS Shot Manager V. " + props.version()[0]
+    timeline.metadata["exported_with"] = "UAS Video Tracks V. " + display_version
     from datetime import datetime
 
     now = datetime.now()
@@ -236,7 +237,7 @@ def exportShotManagerEditToOtio(
 
             _logger.info(f" Adding shot: {shotFileFullPath}")
             if not Path(shotFileFullPath).exists():
-                _logger.info(f"     *** File not found *** ")
+                _logger.info("     *** File not found *** ")
 
             media_reference_video = opentimelineio.schema.ExternalReference(
                 target_url=shotFileFullPath, available_range=available_range
