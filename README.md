@@ -13,12 +13,15 @@ like video and audio tracks existing in classic editing software. Each channel t
 a name and where its content can be globaly controlled.
 This is very convenient for previz and 3D layout.
 
+<br />
+<img src="docs/img/VideoTracks_screen.png" alt="Video Tracks screenshot" width="70%"/>
+<br /><br />
 
 ## Features
 
 ### Tools:
 	- Markers Navigation Bar: A set of buttons allowing fast and easy navigation between markers
-    - 
+    - Time Control Bar: Better control on scene time range as well as on VSE zoom range
 
 # History
 [Change Log](./CHANGELOG.md)
