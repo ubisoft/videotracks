@@ -6,7 +6,8 @@ import gpu
 from gpu_extras.batch import batch_for_shader
 from mathutils import Vector
 
-def remap ( value, old_min, old_max, new_min, new_max ):
+
+def remap(value, old_min, old_max, new_min, new_max):
     value = clamp(value, old_min, old_max)
     old_range = old_max - old_min
     if old_range == 0:
@@ -17,17 +18,18 @@ def remap ( value, old_min, old_max, new_min, new_max ):
 
     return new_value
 
+
 def clamp(value, minimum, maximum):
     return min(max(value, minimum), maximum)
 
 
-def clamp_to_region(x, y, region, bound ):
-    l_x, l_y = region.view2d.region_to_view ( bound.min.x, bound.min.y )
-    h_x, h_y = region.view2d.region_to_view (bound.max.x, bound.max.y )
+def clamp_to_region(x, y, region, bound):
+    l_x, l_y = region.view2d.region_to_view(bound.min.x, bound.min.y)
+    h_x, h_y = region.view2d.region_to_view(bound.max.x, bound.max.y)
     return clamp(x, l_x, h_x), clamp(y, l_y, h_y)
 
 
-def get_region_at_xy(context, x, y ):
+def get_region_at_xy(context, x, y):
     """
     Does not support quadview right now
 
@@ -55,8 +57,8 @@ class Mesh2D:
         self._indices = list() if indices is None else indices
         self._texcoords = list() if texcoords is None else texcoords
 
-        self._lo_bound = min ( self._vertices )
-        self._hi_bound = max ( self._vertices )
+        self._lo_bound = min(self._vertices)
+        self._hi_bound = max(self._vertices)
 
     @property
     def vertices(self):
@@ -71,24 +73,22 @@ class Mesh2D:
         return list(self._texcoords)
 
     @property
-    def bound ( self ):
+    def bound(self):
         return self._lo_bound, self._hi_bound
 
-    def draw(self, shader, region=None, use_region_to_view = False, draw_types="TRIS"):
+    def draw(self, shader, region=None, use_region_to_view=False, draw_types="TRIS"):
         transformed_vertices = self._vertices
         if region:
             if use_region_to_view:
-                transformed_vertices = [
-                    region.view2d.region_to_view ( x, y ) for x, y in transformed_vertices
-                ]
+                transformed_vertices = [region.view2d.region_to_view(x, y) for x, y in transformed_vertices]
             else:
                 transformed_vertices = [
-                    region.view2d.view_to_region(*clamp_to_region(x, y, region), clip=True) for x, y in transformed_vertices
+                    region.view2d.view_to_region(*clamp_to_region(x, y, region), clip=True)
+                    for x, y in transformed_vertices
                 ]
 
         batch = batch_for_shader(shader, draw_types, {"pos": transformed_vertices}, indices=self._indices)
         batch.draw(shader)
-
 
 
 def build_rectangle_mesh(position, width, height, as_lines=False):

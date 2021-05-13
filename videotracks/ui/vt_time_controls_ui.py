@@ -21,17 +21,10 @@ To do: module description here.
 
 import bpy
 
-from bpy.types import Panel, Menu, Operator
-from bpy.props import IntProperty, EnumProperty, BoolProperty, FloatProperty, StringProperty
-
-from ..properties import vt_props
-from ..operators import tracks
+from bpy.types import Panel
 
 import videotracks.config as config
-from videotracks.utils import utils
-from videotracks.utils import utils_markers
-
-from .vt_ui import UAS_PT_VideoTracks
+from videotracks import display_version
 
 from videotracks.tools.markers_nav_bar.markers_nav_bar import draw_markers_nav_bar
 
@@ -61,7 +54,7 @@ from videotracks.tools.markers_nav_bar.markers_nav_bar import draw_markers_nav_b
 
 class UAS_PT_VideoTracksTimeControlsInVSE(Panel):
     bl_idname = "UAS_PT_VideoTracksTimeControlsPanelInVSE"
-    bl_label = "UAS Time Controls   V. " + utils.addonVersion("UAS Video Tracks")[0]
+    bl_label = "UAS Time Controls   V. " + display_version
     bl_description = "Time Control Options"
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
@@ -75,7 +68,6 @@ class UAS_PT_VideoTracksTimeControlsInVSE(Panel):
         return prefs.tcmnavbars_display_in_vse
 
     def draw_header(self, context):
-        props = context.scene.UAS_video_tracks_props
         layout = self.layout
         layout.emboss = "NONE"
 

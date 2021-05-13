@@ -28,45 +28,11 @@ import bpy
 
 from bpy.app.handlers import persistent
 
-from bpy.props import BoolProperty, IntProperty
+from bpy.props import IntProperty
+from bpy.props import BoolProperty
 
 
 from .config import config
-
-from .operators import prefs
-from .operators import general
-from .operators import tracks
-
-from . import otio
-from .operators import vt_tools
-from .properties import vt_props
-
-# from .ui.vsm_ui import UAS_PT_VideoTracks
-from .ui import vt_ui
-from .ui import vt_panels_ui
-from .ui import vt_time_controls_ui
-
-
-from .operators import about
-
-# from .properties import props
-from .properties import addon_prefs
-
-from .tools import vse_render
-
-from .tools import markers_nav_bar
-from .tools import time_controls_bar
-
-from .ui import vt_ui
-
-from .utils import utils
-
-# from .utils import utils_vse
-
-
-from .utils import utils_operators
-
-from .opengl import sequencer_draw
 
 
 bl_info = {
@@ -74,14 +40,16 @@ bl_info = {
     "author": "Julien Blervaque (aka Werwack)",
     "description": "Introduce tracks to the Blender VSE - Ubisoft Animation Studio",
     "blender": (2, 90, 0),
-    "version": (0, 1, 2),
+    "version": (0, 1, 31),
     "location": "View3D > UAS Video Tracks",
     "wiki_url": "https://gitlab-ncsa.ubisoft.org/animation-studio/blender/videotracks-addon/-/wikis/home",
     "warning": "BETA Version",
     "category": "UAS",
 }
 
-__version__ = f"v{bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}"
+__version__ = ".".join(str(i) for i in bl_info["version"])
+display_version = __version__
+
 
 ###########
 # Logging
@@ -203,7 +171,7 @@ def checkDataVersion_post_load_handler(self, context):
 
         if numScenesToUpgrade:
             print(
-                f"Shot Manager Data Version is lower than the current Shot Manager version - Upgrading data with patches..."
+                "Shot Manager Data Version is lower than the current Shot Manager version - Upgrading data with patches..."
             )
             # apply patch and apply new data version
             # wkip patch strategy to re-think. Collect the data versions and apply the respective patches?
@@ -236,22 +204,34 @@ def checkDataVersion_post_load_handler(self, context):
             if lowerSceneVersion < props.version()[1]:
                 props.dataVersion = props.version()[1]
 
-    props = bpy.context.scene.UAS_shot_manager_props
-    if props is not None:
-        if props.display_shotname_in_3dviewport:
-            try:
-                bpy.ops.uas_video_tracks.draw_cameras_ui("INVOKE_DEFAULT")
-            except Exception as e:
-                print("Paf in draw cameras ui  *")
-
-        if props.display_hud_in_3dviewport:
-            try:
-                bpy.ops.uas_video_tracks.draw_hud("INVOKE_DEFAULT")
-            except Exception as e:
-                print("Paf in draw hud  *")
-
 
 def register():
+
+    from .operators import prefs
+    from .operators import general
+    from .operators import tracks
+
+    from . import otio
+    from .properties import vt_props
+
+    # from .ui.vsm_ui import UAS_PT_VideoTracks
+    from .ui import vt_ui
+    from .ui import vt_panels_ui
+    from .ui import vt_time_controls_ui
+
+    from .operators import about
+    from .operators import vt_tools
+
+    from .properties import addon_prefs
+
+    from .tools import vse_render
+    from .tools import markers_nav_bar
+    from .tools import time_controls_bar
+
+    from .utils import utils
+    from .utils import utils_operators
+
+    from .opengl import sequencer_draw
 
     versionTupple = utils.display_addon_registered_version("UAS Video Tracks")
 
@@ -288,6 +268,14 @@ def register():
 
     bpy.types.WindowManager.UAS_video_tracks_version = IntProperty(
         name="Add-on Version Int", description="Add-on version as integer", default=versionTupple[1]
+    )
+
+    def on_toggle_overlay_updated(self, context):
+        if self.UAS_video_tracks_overlay:
+            bpy.ops.uas_video_tracks.tracks_overlay("INVOKE_DEFAULT")
+
+    bpy.types.WindowManager.UAS_video_tracks_overlay = BoolProperty(
+        name="Toggle Overlay", default=False, update=on_toggle_overlay_updated
     )
 
     # utils_handlers.removeAllHandlerOccurences(
@@ -343,7 +331,7 @@ def register():
     vt_panels_ui.register()
     vt_time_controls_ui.register()
 
-    #  sequencer_draw.register()
+    sequencer_draw.register()
 
     about.register()
 
@@ -353,6 +341,32 @@ def register():
 
 
 def unregister():
+
+    from .operators import prefs
+    from .operators import general
+    from .operators import tracks
+
+    from . import otio
+    from .properties import vt_props
+
+    # from .ui.vsm_ui import UAS_PT_VideoTracks
+    from .ui import vt_ui
+    from .ui import vt_panels_ui
+    from .ui import vt_time_controls_ui
+
+    from .operators import about
+    from .operators import vt_tools
+
+    from .properties import addon_prefs
+
+    from .tools import vse_render
+    from .tools import markers_nav_bar
+    from .tools import time_controls_bar
+
+    from .utils import utils
+    from .utils import utils_operators
+
+    from .opengl import sequencer_draw
 
     print("\n*** --- Unregistering UAS Video Tracks Add-on --- ***\n")
 
@@ -366,7 +380,7 @@ def unregister():
 
     try:
         sequencer_draw.unregister()
-    except Exception as e:
+    except Exception:
         print("Error (handled) in Unregister sequencer_draw")
     vt_time_controls_ui.unregister()
     vt_panels_ui.unregister()

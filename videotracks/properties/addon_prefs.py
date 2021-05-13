@@ -21,9 +21,7 @@ To do: module description here.
 
 import bpy
 from bpy.types import AddonPreferences
-from bpy.props import StringProperty, IntProperty, BoolProperty, EnumProperty
-
-from ..config import config
+from bpy.props import StringProperty, BoolProperty, FloatProperty, FloatVectorProperty
 
 from videotracks.tools.markers_nav_bar.markers_nav_bar_addon_prefs import draw_markers_nav_bar_settings
 from videotracks.tools.time_controls_bar.time_controls_bar_addon_prefs import draw_time_controls_bar_settings
@@ -46,7 +44,7 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
     # general ###
     ##################
 
-    tracks_list_panel_opened: BoolProperty(default=True,)
+    tracks_list_panel_opened: BoolProperty(default=False,)
 
     ##################
     # ui helpers   ###
@@ -57,8 +55,25 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
     emptyBool: BoolProperty(name=" ", default=False)
 
     ##################
-    # global temps values   ###
+    # UI tracks values   ###
     ##################
+
+    showTrackHeaders: BoolProperty(default=True)
+    trackHeaderWidth: FloatProperty(default=5.0)
+    trackHeadeOpacity: FloatProperty(default=0.9)
+
+    trackHeaderColor: FloatVectorProperty(
+        name="Track Color",
+        description="Color of the track header",
+        subtype="COLOR",
+        size=3,
+        min=0.0,
+        max=1.0,
+        precision=2,
+        # get=_get_color,
+        # set=_set_color,
+        default=[0.9, 0.0, 0.0],
+    )
 
     ##################
     # Markers Nav Bar Settings ###
@@ -168,12 +183,20 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
         # row.separator()
         # row.prop(prefs, "tcmnavbars_display_in_timeline")
 
-    #     box = layout.box()
-    #     box.use_property_decorate = False
-    #     col = box.column()
-    #     col.use_property_split = True
-    #     col.prop(prefs, "new_shot_duration", text="Default Shot Length")
-    #    col.prop(prefs, "useLockCameraView", text="Use Lock Camera View")
+        #     box = layout.box()
+        #     box.use_property_decorate = False
+        #     col = box.column()
+        #     col.use_property_split = True
+        #     col.prop(prefs, "new_shot_duration", text="Default Shot Length")
+        #    col.prop(prefs, "useLockCameraView", text="Use Lock Camera View")
+
+        layout.label(text="Track Headers")
+        box = layout.box()
+
+        box.prop(self, "showTrackHeaders")
+        box.prop(self, "trackHeaderWidth")
+        box.prop(self, "trackHeadeOpacity")
+        box.prop(self, "trackHeaderColor")
 
     # layout.label(
     #     text="Temporary preference values (for dialogs for instance) are only visible when global variable uasDebug is True."

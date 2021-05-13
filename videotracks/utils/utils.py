@@ -206,7 +206,9 @@ def openMedia(media_filepath, inExternalPlayer=False):
         #  p = subprocess.Popen(["display", media_filepath])
         # subprocess.run(["open", media_filepath], check=True)
 
-        import subprocess, os, platform
+        import subprocess
+        import os
+        import platform
 
         if platform.system() == "Darwin":  # macOS
             subprocess.call(("open", media_filepath))

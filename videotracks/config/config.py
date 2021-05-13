@@ -54,5 +54,9 @@ def releaseGlobalVariables():
 
     global vt_icons_col
 
-    bpy.utils.previews.remove(vt_icons_col)
+    try:
+        bpy.utils.previews.remove(vt_icons_col)
+    except Exception:
+        pass
+
     vt_icons_col = None

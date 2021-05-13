@@ -21,15 +21,8 @@ To do: module description here.
 
 import bpy
 
-from bpy.types import Panel, Menu, Operator
-from bpy.props import IntProperty, EnumProperty, BoolProperty, FloatProperty, StringProperty
-
-from videotracks.properties import vt_props
-from videotracks.operators import tracks
-
-import videotracks.config as config
-
-from .vt_ui import UAS_PT_VideoTracks
+from bpy.types import Panel, Operator
+from bpy.props import StringProperty
 
 
 class UAS_VideoTracks_SelectStrip(Operator):
@@ -83,7 +76,9 @@ class UAS_PT_VideoTracksSelectedStrip(Panel):
         prefs = context.preferences.addons["videotracks"].preferences
         layout = self.layout
 
-        row = layout.row()
+        box = layout.box()
+        row = box.row()
+        row.separator(factor=1)
         row.label(text="Active Strip:")
         subRow = row.row()
         # if bpy.context.selected_sequences is not None and 1 == len(bpy.context.selected_sequences):
@@ -97,7 +92,8 @@ class UAS_PT_VideoTracksSelectedStrip(Panel):
             "uas_videovideotracks.select_strip", text="", icon="RESTRICT_SELECT_OFF"
         ).mode = "ACTIVE"  # "SEL_SEQ"
 
-        row = layout.row()
+        row = box.row()
+        row.separator(factor=1)
         row.label(text="Type:")
         if bpy.context.selected_sequences is not None and 1 == len(bpy.context.selected_sequences):
             row.label(text=str(type(bpy.context.selected_sequences[0]).__name__))

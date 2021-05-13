@@ -22,12 +22,8 @@ To do: module description here.
 import bpy
 
 from bpy.types import Panel, Menu, Operator
-from bpy.props import IntProperty, EnumProperty, BoolProperty, FloatProperty, StringProperty
 
-from videotracks.utils import utils
-from videotracks.properties import vt_props
-from videotracks.operators import tracks
-
+from videotracks import display_version
 from videotracks.utils.utils_ui import collapsable_panel
 
 import videotracks.config as config
@@ -39,7 +35,7 @@ import videotracks.config as config
 
 
 class UAS_PT_VideoTracks(Panel):
-    bl_label = "UAS Video Tracks   V. " + utils.addonVersion("UAS Video Tracks")[0]
+    bl_label = "UAS Video Tracks   V. " + display_version
     bl_idname = "UAS_PT_Video_Tracks"
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
@@ -89,12 +85,17 @@ class UAS_PT_VideoTracks(Panel):
 
         # scene warnings
         ################
+        layout.prop(
+            context.window_manager, "UAS_video_tracks_overlay", icon="VIEW3D", toggle=True,
+        )
 
         vseFirstFrame = scene.frame_start
         if vseFirstFrame != 0:
             row = layout.row()
             row.alert = True
             row.label(text=f" ***    First Frame is not 0 !!!: {vseFirstFrame}    *** ")
+
+        #  layout.prop(prefs, "showTrackHeaders", text="Show Headers")
 
         #########################################
         # Tools
@@ -135,7 +136,7 @@ class UAS_PT_VideoTracks(Panel):
 
             box = layout.box()
             row = box.row()
-            templateList = row.template_list(
+            row.template_list(
                 "UAS_UL_VideoTracks_Items", "", vt_props, "tracks", vt_props, "selected_track_index_inverted", rows=6,
             )
 
@@ -184,18 +185,27 @@ class UAS_UL_VideoTracks_Items(bpy.types.UIList):
             layout.alert = item.shotManagerScene is None
 
         row = layout.row(align=True)
+        subRow = row.row(align=False)
+        subRow.alignment = "LEFT"
+        subRow.enabled = False
+        subRow.scale_x = 0.8
+        subRow.label(text=f"{'  ' if item.vseTrackIndex < 10 else ''}{item.vseTrackIndex}")
 
         if vt_props.display_color_in_tracklist:
-            row.scale_x = 0.3
-            row.prop(item, "color", text="")
-            row.separator(factor=0.2)
+            subRow = layout.row(align=True)
+            row.scale_x = 0.5
+            # subRow.scale_x = 0.32
+            subRow.scale_x = 0.27
+            subRow.prop(item, "color", text="")
+            subRow.separator(factor=0.1)
 
         row = layout.row(align=True)
         subRow = row.row(align=False)
         subRow.scale_x = 0.3
-        subRow.prop(item, "enabled", text=f" ")
+        subRow.prop(item, "enabled", text=" ")
         # subrow.separator(factor=0.2)
-        row.label(text=f" {item.vseTrackIndex}: {item.name}")
+        # row.label(text=f" {item.vseTrackIndex}: {item.name}")
+        row.label(text=f" {item.name}")
 
         # c.operator("uas_video_tracks.set_current_shot", icon_value=icon.icon_id, text="").index = index
         # layout.separator(factor=0.1)
@@ -292,8 +302,8 @@ class UAS_PT_VideoTracks_TrackProperties(Panel):
         # layout.emboss = "NONE"
 
         row = layout.row(align=True)
-        op = row.operator("uas_video_tracks.select_track_from_clip_selection", text="Sel. Track")
-        op = row.operator("uas_video_tracks.track_select_and_zoom_view", text="Zoom on Clips")
+        op = row.operator("uas_video_tracks.select_track_from_clip_selection", text="", icon="RESTRICT_SELECT_OFF")
+        op = row.operator("uas_video_tracks.track_select_and_zoom_view", text="", icon="ZOOM_SELECTED")
         op.actionMode = "TRACKCLIPS"
         op.trackIndex = vt_props.getSelectedTrackIndex()
 
@@ -316,9 +326,17 @@ class UAS_PT_VideoTracks_TrackProperties(Panel):
             # name and color
             row = box.row()
             row.separator(factor=1.0)
-            row.prop(track, "name", text="Name")
+            # split = row.split(factor=0.9)
+            subRow = row.row()
+            subRow.scale_x = 3
+            subRow.prop(track, "name", text="Name")
+            #  split = row.split(factor=0.4)
+            #  split.alignment = "RIGHT"
+            #  subRow = split.row()
+            #  subRow.alignment = "RIGHT"
             row.prop(track, "color", text="")
             row.prop(vt_props, "display_color_in_tracklist", text="")
+            # subRow.separator(factor=0.1)
 
             row = box.row()
             row.separator(factor=1.0)
@@ -340,13 +358,13 @@ class UAS_PT_VideoTracks_TrackProperties(Panel):
             if "CUSTOM" == track.trackType:
                 layout.separator()
                 row = layout.row()
-                row.operator("uas_video_tracks.clear_vse_track")
+                row.operator("uas_video_tracks.clear_vse_track", text="Clear Track")
                 pass
 
             elif "STANDARD" == track.trackType or "AUDIO" == track.trackType or "VIDEO" == track.trackType:
                 layout.separator()
                 row = layout.row()
-                row.operator("uas_video_tracks.clear_vse_track")
+                row.operator("uas_video_tracks.clear_vse_track", text="Clear Track")
                 pass
 
             else:
@@ -364,7 +382,7 @@ class UAS_PT_VideoTracks_TrackProperties(Panel):
 
                 layout.separator()
                 row = layout.row()
-                row.operator("uas_video_tracks.clear_vse_track")
+                row.operator("uas_video_tracks.clear_vse_track", text="Clear Track")
                 row.operator("uas_video_tracks.update_vse_track", icon="FILE_REFRESH").trackName = track.name
                 row.operator("uas_video_tracks.go_to_specified_scene", icon="SCENE_DATA").trackName = track.name
                 layout.separator()

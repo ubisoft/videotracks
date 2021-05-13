@@ -25,9 +25,6 @@ from bpy.types import PropertyGroup
 from bpy.props import (
     CollectionProperty,
     IntProperty,
-    FloatProperty,
-    StringProperty,
-    EnumProperty,
     BoolProperty,
     PointerProperty,
 )
@@ -64,20 +61,18 @@ class VideoTracks_Props(PropertyGroup):
         # self.createDefaultTake()
         # self.createRenderSettings()
         self.updateTracksList(self.parentScene)  # bad context
-        bpy.ops.uas_video_tracks.tracks_overlay ( "INVOKE_DEFAULT" )
+        #bpy.ops.uas_video_tracks.tracks_overlay("INVOKE_DEFAULT")
         self.isInitialized = True
 
     def get_isInitialized(self):
-        #    print(" get_isInitialized")
         val = self.get("isInitialized", False)
-
         if not val:
             self.initialize_video_shot_manager()
 
         return val
 
     def set_isInitialized(self, value):
-        #  print(" set_isInitialized: value: ", value)
+        print(" set_isInitialized: value: ", value)
         self["isInitialized"] = value
 
     isInitialized: BoolProperty(get=get_isInitialized, set=set_isInitialized, default=False)

@@ -24,15 +24,10 @@ from pathlib import Path
 from urllib.parse import unquote_plus, urlparse
 import re
 
-from random import uniform
-from math import radians
-
 import bpy
 import opentimelineio
 
-from videotracks import config
 from videotracks.utils import utils
-from videotracks.utils import utils_vse
 
 from . import otio_wrapper as ow
 
@@ -45,9 +40,9 @@ def importTrack(track, trackInd, track_type, timeRange=None, offsetFrameNumber=0
     verbose = False
     #   verbose = "VIDEO" == track_type
 
-    trackInfo = f"\n\n------------------------------------------------------------"
-    trackInfo += f"\n------------------------------------------------------------"
-    trackInfo += f"\n  - Track {trackInd}: {track.name}, {track_type}"
+    trackInfo = "\n\n------------------------------------------------------------"
+    trackInfo += "\n------------------------------------------------------------"
+    trackInfo += "\n  - Track {trackInd}: {track.name}, {track_type}"
 
     range_start = -9999999
     range_end = 9999999
@@ -65,14 +60,14 @@ def importTrack(track, trackInd, track_type, timeRange=None, offsetFrameNumber=0
         clip_start = ow.get_clip_frame_final_start(clip, fps)
         clip_end = ow.get_timeline_clip_end_inclusive(clip)
 
-        clipInfo = f"\n\n- *** ----------------------------"
+        clipInfo = "\n\n- *** ----------------------------"
         clipInfo += f"\n  - Clip name: {clip.name}, Clip ind: {i}"
 
         isInRange = utils.segment_is_in_range(clip_start, clip_end, range_start, range_end, partly_inside=True)
 
         # excluse media out of range
         if not isInRange:
-            excludInfo = " not in range"
+            # excludInfo = " not in range"
             # print(f"{excludInfo}")
             continue
 
