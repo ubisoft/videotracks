@@ -3,7 +3,6 @@
 
 **Disclaimer**: This project is in alpha state and actively developed. Do not use it to edit your production assets without a backup or you might break them.
 
-Note that development is on Windows 10. Please report issues and submit PRs for other OSs.
 
 ## Purpose
 
@@ -18,6 +17,9 @@ This is very convenient for previz and 3D layout.
 <br /><br />
 
 ## Features
+
+
+**Important note**: This add-on required the installation of OpenTimelineIO. This is downloaded automaticaly at first launch. Be sure that your firewall autorizes this operation or use an application such as OpenVPN. 
 
 ### Tools:
 	- Markers Navigation Bar: A set of buttons allowing fast and easy navigation between markers
