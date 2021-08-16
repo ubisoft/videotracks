@@ -43,10 +43,12 @@ Now close Blender to save your user preferences with the Video Tracks installati
 ## Features
 
 - Several type of tracks are available: Audio, Video, Mixed... Some of them are experimental.
+<br />
 
-### Tools:
-	- Markers Navigation Bar: A set of buttons allowing fast and easy navigation between markers
-    - Time Control Bar: Better control on scene time range as well as on VSE zoom range
+**Tools:**
+
+- Markers Navigation Bar: A set of buttons allowing fast and easy navigation between markers
+- Time Control Bar: Better control on scene time range as well as on VSE zoom range
 
 # History
 [Change Log](./CHANGELOG.md)
