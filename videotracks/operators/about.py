@@ -27,8 +27,8 @@ from ..utils import utils
 
 class UAS_VideoTracks_OT_About(Operator):
     bl_idname = "uas_video_tracks.about"
-    bl_label = "About UAS Video Tracks..."
-    bl_description = "More information about UAS Video Tracks..."
+    bl_label = "About Ubisoft Video Tracks..."
+    bl_description = "More information about Ubisoft Video Tracks..."
     bl_options = {"INTERNAL"}
 
     def invoke(self, context, event):
@@ -44,7 +44,7 @@ class UAS_VideoTracks_OT_About(Operator):
         row = box.row()
         row.separator()
         print(f"Props.version(): {props.version()}")
-        row.label(text=f"Version: {props.version()[0]}   -    (December 2020)   -    Ubisoft Animation Studio")
+        row.label(text=f"Version: {props.version()[0]}   -    (July 2021)   -    Ubisoft")
 
         # Authors
         ###############

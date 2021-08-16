@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-To do: module description here.
+Add-on initialization
 """
 
 import logging
@@ -36,15 +36,15 @@ from .config import config
 
 
 bl_info = {
-    "name": "UAS Video Tracks",
-    "author": "Julien Blervaque (aka Werwack)",
+    "name": "Video Tracks",
+    "author": "Ubisoft - Julien Blervaque (aka Werwack)",
     "description": "Introduce tracks to the Blender VSE - Ubisoft Animation Studio",
-    "blender": (2, 90, 0),
+    "blender": (2, 93, 0),
     "version": (0, 1, 31),
-    "location": "View3D > UAS Video Tracks",
-    "wiki_url": "https://gitlab-ncsa.ubisoft.org/animation-studio/blender/videotracks-addon/-/wikis/home",
+    "location": "View3D > Video Tracks",
+    "wiki_url": "https://github.com/ubisoft/videotracks",
     "warning": "BETA Version",
-    "category": "UAS",
+    "category": "Ubisoft",
 }
 
 __version__ = ".".join(str(i) for i in bl_info["version"])
@@ -233,7 +233,7 @@ def register():
 
     from .opengl import sequencer_draw
 
-    versionTupple = utils.display_addon_registered_version("UAS Video Tracks")
+    versionTupple = utils.display_addon_registered_version("Video Tracks")
 
     config.initGlobalVariables()
 
@@ -363,7 +363,6 @@ def unregister():
     from .tools import markers_nav_bar
     from .tools import time_controls_bar
 
-    from .utils import utils
     from .utils import utils_operators
 
     from .opengl import sequencer_draw

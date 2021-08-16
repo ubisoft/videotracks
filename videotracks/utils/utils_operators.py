@@ -24,6 +24,7 @@ from pathlib import Path
 import subprocess
 
 import json
+from videotracks.utils.utils_os import open_folder
 
 import bpy
 from bpy.types import Operator
@@ -33,6 +34,25 @@ from bpy.props import StringProperty
 ###################
 # UI
 ###################
+
+
+class VideoTracks_OT_Open_Documentation_Url(Operator):  # noqa 801
+    bl_idname = "videotracks.open_documentation_url"
+    bl_label = "Open Documentation Web Page"
+    bl_description = "Open web page.\nShift + Click: Copy the URL into the clipboard"
+
+    path: StringProperty()
+
+    def invoke(self, context, event):
+        if event.shift:
+            # copy path to clipboard
+            cmd = "echo " + (self.path).strip() + "|clip"
+            subprocess.check_call(cmd, shell=True)
+        else:
+            open_folder(self.path)
+
+        return {"FINISHED"}
+
 
 # used as UI placeholder
 class UAS_OT_EmptyOperator(Operator):
@@ -135,6 +155,7 @@ class UAS_Utils_GetCurrentFrameForTimeRange(Operator):
 
 
 _classes = (
+    VideoTracks_OT_Open_Documentation_Url,
     UAS_OT_EmptyOperator,
     UAS_Utils_RunScript,
     UAS_VideoTracks_OpenExplorer,

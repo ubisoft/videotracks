@@ -46,7 +46,7 @@ class VideoTracks_Props(PropertyGroup):
                 - an integer. x.y.z becomes xxyyyzzz (eg: "1.21.3" becomes 1021003)
             Return None if the addon has not been found
         """
-        return utils.addonVersion("UAS Video Tracks")
+        return utils.addonVersion("Video Tracks")
 
     def initialize_video_shot_manager(self):
         print(f"\nInitializing Video Tracks... Scene: {bpy.context.scene.name}")
@@ -61,7 +61,7 @@ class VideoTracks_Props(PropertyGroup):
         # self.createDefaultTake()
         # self.createRenderSettings()
         self.updateTracksList(self.parentScene)  # bad context
-        #bpy.ops.uas_video_tracks.tracks_overlay("INVOKE_DEFAULT")
+        # bpy.ops.uas_video_tracks.tracks_overlay("INVOKE_DEFAULT")
         self.isInitialized = True
 
     def get_isInitialized(self):

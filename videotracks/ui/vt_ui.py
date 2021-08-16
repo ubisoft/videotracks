@@ -35,7 +35,7 @@ import videotracks.config as config
 
 
 class UAS_PT_VideoTracks(Panel):
-    bl_label = "UAS Video Tracks   V. " + display_version
+    bl_label = "Video Tracks   V. " + display_version
     bl_idname = "UAS_PT_Video_Tracks"
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
@@ -279,7 +279,7 @@ class UAS_PT_VideoTracks_TrackProperties(Panel):
     bl_idname = "UAS_PT_Video_Tracks_TrackProperties"
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
-    bl_category = "UAS Video Shot Man"
+    bl_category = "Video Tracks"
     bl_parent_id = "UAS_PT_Video_Tracks"
     bl_options = {"DEFAULT_CLOSED"}
 

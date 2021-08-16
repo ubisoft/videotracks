@@ -20,9 +20,7 @@ To do: module description here.
 """
 
 import bpy
-from bpy.types import Panel, Operator, Menu
-
-from videotracks.config import config
+from bpy.types import Operator, Menu
 
 #############
 # Preferences
@@ -46,9 +44,14 @@ class UAS_MT_VideoTracks_Prefs_MainMenu(Menu):
         # row = layout.row(align=True)
         # row.operator("uas_video_tracks.project_settings_prefs", text="Project Settings...")
 
-        layout.separator()
         row = layout.row(align=True)
+        row.operator(
+            "videotracks.open_documentation_url", text="Documentation"
+        ).path = "https://github.com/ubisoft/videotracks"
 
+        layout.separator()
+
+        row = layout.row(align=True)
         row.operator("uas_video_tracks.about", text="About...")
 
 

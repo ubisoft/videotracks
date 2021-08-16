@@ -19,8 +19,6 @@
 To do: module description here.
 """
 
-import bpy
-
 
 def storeUserRenderSettings(context, userRenderSettings):
     scene = context.scene
