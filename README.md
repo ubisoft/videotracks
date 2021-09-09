@@ -2,6 +2,8 @@
 # Video Tracks - Blender Add-on
 Video Tracks is a Blender add-on that provides track headers to the channels of the VSE.
 
+* **Latest <u>GitHub</u> release:** [github.com/ubisoft/videotracks/releases/latest](https://github.com/ubisoft/videotracks/releases/latest)
+
 **Disclaimer**
 >**This tool is currently supported for LTS version of Blender 2.83 and up to Blender 2.92**
 >
@@ -10,7 +12,7 @@ Video Tracks is a Blender add-on that provides track headers to the channels of 
 >It was initialy developed for an animated TV series production in 2020 on Blender 2.83. It has the features that were needed at the time but it
 may not be considered as feature complete for a more generic purpose. In spite of all our efforts to make it reliable some troubles may occur in use cases we have not faced.
 >
-><br />
+<br />
 
 Note that development is on Windows 10. Please report issues and submit PRs for other OSs.
 
