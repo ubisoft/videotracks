@@ -38,9 +38,9 @@ from videotracks.utils import utils_markers
 
 from videotracks.config import config
 
-import logging
+from videotracks.config import sm_logging
 
-_logger = logging.getLogger(__name__)
+_logger = sm_logging.getLogger(__name__)
 
 
 class UAS_VideoTracks_OT_Import_Edit_From_OTIO(Operator):

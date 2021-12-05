@@ -34,9 +34,9 @@ from videotracks.properties.track import UAS_VideoTracks_Track
 from videotracks.utils import utils
 from videotracks.utils import utils_vse
 
-import logging
+from videotracks.config import sm_logging
 
-_logger = logging.getLogger(__name__)
+_logger = sm_logging.getLogger(__name__)
 
 
 class VideoTracks_Props(PropertyGroup):

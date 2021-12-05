@@ -28,10 +28,9 @@ import re
 import math
 
 from ..utils import utils
+from videotracks.config import sm_logging
 
-import logging
-
-_logger = logging.getLogger(__name__)
+_logger = sm_logging.getLogger(__name__)
 
 
 def parseOtioFile(otioFile):

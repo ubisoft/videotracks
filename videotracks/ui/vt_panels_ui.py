@@ -98,7 +98,7 @@ class UAS_PT_VideoTracksSelectedStrip(Panel):
         if bpy.context.selected_sequences is not None and 1 == len(bpy.context.selected_sequences):
             row.label(text=str(type(bpy.context.selected_sequences[0]).__name__))
 
-        # if config.uasDebug:
+        # if config.devDebug:
         #     box = layout.box()
         #     box.label(text="Tools:")
         #     row = box.row()

@@ -16,34 +16,34 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-OTIO
+Draw the names of the libraries and add-ons required by this add-on
 """
 
-
-from videotracks.config import sm_logging
-
-_logger = sm_logging.getLogger(__name__)
+import bpy
 
 
-def register():
-    from . import operators
+def drawDependencies(context, layout: bpy.types.UILayout, **kwargs):
+
+    box = layout.box()
+    row = box.row()
+    row.label(text="Dependencies:")
+    row = box.row()
+    row.separator()
+    splitFactor = 0.45
+
+    # Pillow
+    ####################
+    split = row.split(factor=splitFactor)
+    split.label(text="- OpenTimelineIO:")
 
     try:
         import opentimelineio as otio
 
         otioVersion = otio.__version__
-        otioVersionStr = f" - OpenTimelineIO V. {otioVersion}"
+        split.label(text=f"V. {otioVersion}  installed")
     except Exception:
-        otioVersionStr = " - OpenTimelineIO not available"
+        subRow = split.row()
+        subRow.alert = True
+        subRow.label(text="Module not found  - Add-on cannot run normally")
 
-    _logger.debug_ext("       - Registering OTIO Package" + otioVersionStr, form="REG")
-
-    operators.register()
-
-
-def unregister():
-    from . import operators
-
-    _logger.debug_ext("       - Unregistering OTIO Package", form="UNREG")
-
-    operators.unregister()
+    box.separator()

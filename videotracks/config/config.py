@@ -29,15 +29,18 @@ import bpy.utils.previews
 def initGlobalVariables():
 
     # debug ############
-    global uasDebug
+    global devDebug
 
-    # wkip better code: uasDebug = os.environ.get("UasDebug", "0") == "1"
-    if "UasDebug" in os.environ.keys():
-        uasDebug = bool(int(os.environ["UasDebug"]))
+    # wkip better code: devDebug = os.environ.get("UasDebug", "0") == "1"
+    if "devDebug" in os.environ.keys():
+        devDebug = bool(int(os.environ["devDebug"]))
     else:
-        uasDebug = True
+        devDebug = True
 
-    uasDebug = True
+    devDebug = True
+
+    global devDebug_ignoreLoggerFormatting
+    devDebug_ignoreLoggerFormatting = True and devDebug
 
     # icons ############
     global vt_icons_col

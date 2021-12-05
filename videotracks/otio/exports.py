@@ -29,9 +29,9 @@ from xml.dom.minidom import parse
 from videotracks.utils import utils_xml
 from videotracks import display_version
 
-import logging
+from videotracks.config import sm_logging
 
-_logger = logging.getLogger(__name__)
+_logger = sm_logging.getLogger(__name__)
 
 
 def exportShotManagerEditToOtio(

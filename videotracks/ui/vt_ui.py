@@ -54,7 +54,7 @@ class UAS_PT_VideoTracks(Panel):
         layout.emboss = "NONE"
 
         row = layout.row(align=True)
-        if config.uasDebug:
+        if config.devDebug:
             subRow = row.row()
             subRow.alert = True
             subRow.label(text="Debug")
@@ -126,11 +126,11 @@ class UAS_PT_VideoTracks(Panel):
         if prefs.tracks_list_panel_opened:
             row = layout.row()
 
-            if config.uasDebug:
+            if config.devDebug:
                 row.prop(vt_props, "numTracks")
             row.operator("uas_video_tracks.update_tracks_list", text="", icon="FILE_REFRESH")
             subRow = row.row(align=True)
-            if config.uasDebug:
+            if config.devDebug:
                 subRow.operator("uas_video_tracks.clear_all")
             subRow.menu("UAS_MT_Video_Tracks_clear_menu", icon="TRIA_RIGHT", text="")
 
@@ -141,7 +141,7 @@ class UAS_PT_VideoTracks(Panel):
             )
 
             col = row.column(align=True)
-            if config.uasDebug:
+            if config.devDebug:
                 col.operator("uas_video_tracks.add_track", icon="ADD", text="")
                 col.operator("uas_video_tracks.duplicate_track", icon="DUPLICATE", text="")
                 col.operator("uas_video_tracks.remove_track", icon="REMOVE", text="")
@@ -152,7 +152,7 @@ class UAS_PT_VideoTracks(Panel):
             col.menu("UAS_MT_Video_Tracks_toolsmenu", icon="TOOL_SETTINGS", text="")
         else:
             subRow = titleRow.row(align=True)
-            if config.uasDebug:
+            if config.devDebug:
                 subRow.operator("uas_video_tracks.add_track", icon="ADD", text="")
                 subRow.operator("uas_video_tracks.duplicate_track", icon="DUPLICATE", text="")
                 subRow.operator("uas_video_tracks.remove_track", icon="REMOVE", text="")
@@ -436,11 +436,11 @@ class UAS_MT_VideoTracks_ToolsMenu(Menu):
 
         layout.separator()
         # wkip debug - to remove:
-        if config.uasDebug:
+        if config.devDebug:
             row = layout.row(align=True)
             row.operator("uas_video_tracks.importeditfromotio", text="   Import Edit From EDL - Debug...")
 
-        if config.uasDebug:
+        if config.devDebug:
             row = layout.row(align=True)
             row.operator(
                 "uas_video_tracks.importeditfromotio", text="   Import Edit From EDL - Debug + file"
@@ -455,7 +455,7 @@ class UAS_MT_VideoTracks_ToolsMenu(Menu):
         row.operator("uasotio.openfilebrowser", text="   Parse Edit From EDL").importMode = "PARSE_EDIT"
 
         # wkip debug - to remove:
-        if config.uasDebug:
+        if config.devDebug:
             row = layout.row(align=True)
             row.operator("uas_video_tracks.parseeditfromotio", text="   Import Edit From EDL - Debug").otioFile = ""
 

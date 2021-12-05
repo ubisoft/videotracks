@@ -633,7 +633,7 @@ class UAS_Vse_Render(PropertyGroup):
             bpy.data.scenes.remove(sequenceScene, do_unlink=True)
         sequenceScene = bpy.data.scenes.new(name="VSE_SequenceRenderScene")
 
-        sequenceScene = utils.getSceneVSE(sequenceScene.name, createVseTab=False)  # config.uasDebug)
+        sequenceScene = utils.getSceneVSE(sequenceScene.name, createVseTab=False)  # config.devDebug)
 
         bpy.context.window.scene = sequenceScene
 
@@ -702,8 +702,8 @@ class UAS_Vse_Render(PropertyGroup):
             bpy.data.scenes.remove(sequenceScene, do_unlink=True)
         sequenceScene = bpy.data.scenes.new(name="VSE_SequenceRenderScene")
 
-        createVseTab = False  # config.uasDebug
-        sequenceScene = utils.getSceneVSE(sequenceScene.name, createVseTab=createVseTab)  # config.uasDebug)
+        createVseTab = False  # config.devDebug
+        sequenceScene = utils.getSceneVSE(sequenceScene.name, createVseTab=createVseTab)  # config.devDebug)
         bpy.context.window.scene = sequenceScene
 
         if createVseTab:
@@ -841,9 +841,9 @@ class UAS_Vse_Render(PropertyGroup):
             pass
 
         # wkip changer ca fait que le time range n'est pas pris en compte...
-        # if not config.uasDebug:
+        # if not config.devDebug:
         bpy.context.window.scene = previousScene
-        # if config.uasDebug:
+        # if config.devDebug:
         #     bpy.context.window.scene = sequenceScene
 
     def compositeVideoInVSE(self, fps, frame_start, frame_end, output_filepath, postfixSceneName=""):
@@ -863,7 +863,7 @@ class UAS_Vse_Render(PropertyGroup):
         # Make "My New Scene" the active one
         #    bpy.context.window.scene = vse_scene
 
-        #    vse_scene = utils.getSceneVSE(vse_scene.name, createVseTab=config.uasDebug)
+        #    vse_scene = utils.getSceneVSE(vse_scene.name, createVseTab=config.devDebug)
         # if not vse_scene.sequence_editor:
         #     vse_scene.sequence_editor_create()
 

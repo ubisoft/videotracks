@@ -86,17 +86,17 @@ def addonVersion(addonName):
     return versions
 
 
-def display_addon_registered_version(addon_name):
+def display_addon_registered_version(addon_name, more_info=""):
     versionTupple = addonVersion(addon_name)
     if versionTupple is not None:
         print(
-            "\n*** *** Registering "
+            "\n*** *** Registering Ubisoft "
             + addon_name
             + " Add-on - version: "
             + versionTupple[0]
-            + "  ("
-            + str(versionTupple[1])
-            + ") *** ***"
+            + f"  ({versionTupple[1]})"
+            + (f" - {more_info}" if more_info != "" else "")
+            + " *** ***"
         )
     else:
         print('\n *** Cannot find registered version for add-on "' + addon_name + '" ***\n')

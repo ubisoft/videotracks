@@ -211,7 +211,7 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
         #     prop.tracks[prop.selected_track_index_inverted].color[2],
         #     0.2,
         # )
-        #canva.addWidget(track_selected_frame)
+        # canva.addWidget(track_selected_frame)
 
         img_man = BGLImageManager()
         # img = img_man.load_image(r"C:\\Users\rcarriquiryborchia\Pictures\Wip\casent0103346_d_1_high.jpg")
@@ -249,9 +249,11 @@ class UAS_VideoTracks_TracksOverlay(BGL_UIOperatorBase):
             button.clicked_callback = lambda prop=props, index=i: prop.setSelectedTrackByIndex(index + 1)
 
             # Track highlighted or selected
-            hovered_track = BGLGeometryStamp(position = pos,
-                                             visible = lambda b = button, index=i: b.is_highlighted or props.selected_track_index == index + 1,
-                                             geometry = BGLRect(width = 9999999, height = 1, color = selectedColor))
+            hovered_track = BGLGeometryStamp(
+                position=pos,
+                visible=lambda b=button, index=i: b.is_highlighted or props.selected_track_index == index + 1,
+                geometry=BGLRect(width=9999999, height=1, color=selectedColor),
+            )
             canva.addWidget(hovered_track)
             canva.addWidget(button)
 

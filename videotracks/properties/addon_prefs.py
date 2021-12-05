@@ -199,10 +199,10 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
         box.prop(self, "trackHeaderColor")
 
     # layout.label(
-    #     text="Temporary preference values (for dialogs for instance) are only visible when global variable uasDebug is True."
+    #     text="Temporary preference values (for dialogs for instance) are only visible when global variable devDebug is True."
     # )
 
-    # if config.uasDebug:
+    # if config.devDebug:
     #     layout.label(text="Add New Shot Dialog:")
     #     box = layout.box()
     #     col = box.column(align=False)

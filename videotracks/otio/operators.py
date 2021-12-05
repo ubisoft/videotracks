@@ -36,9 +36,9 @@ from videotracks.utils import utils
 import opentimelineio
 from .exports import exportShotManagerEditToOtio
 
-import logging
+from videotracks.config import sm_logging
 
-_logger = logging.getLogger(__name__)
+_logger = sm_logging.getLogger(__name__)
 
 
 class UAS_VideoTracks_Export_OTIO(Operator):
@@ -464,7 +464,7 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
         layout = self.layout
         box = layout.box()
 
-        if config.uasDebug:
+        if config.devDebug:
             row = box.row()
             row.label(text=self.importStepMode)
             row.prop(self, "refVideoTrackList")
@@ -495,10 +495,10 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
             row.separator(factor=3)
             row.label(text=f"Num. Sequences: {len(config.gMontageOtio.sequencesList)}")
 
-            if config.uasDebug:
+            if config.devDebug:
                 box.prop(self, "refVideoTrackList")
 
-            if config.uasDebug:
+            if config.devDebug:
                 row = box.row()
                 # row.enabled = self.useMediaAsCameraBG
                 row.separator(factor=3)
@@ -515,7 +515,7 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
                 row.label(text=f"!! Scene has a different framerate: {context.scene.render.fps} fps !!")
                 row.alert = False
 
-            # if config.uasDebug:
+            # if config.devDebug:
             #     row.operator("uas_video_tracks.montage_sequences_to_json")  # uses config.gMontageOtio
 
             if selSeq is not None:
@@ -541,11 +541,11 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
         row = box.row(align=True)
         row.label(text=labelText)
 
-        if config.uasDebug:
+        if config.devDebug:
             row = box.row(align=True)
             row.prop(self, "conformMode")
 
-        if "CREATE" == self.conformMode or config.uasDebug:
+        if "CREATE" == self.conformMode or config.devDebug:
             row = box.row(align=True)
             row.prop(self, "offsetTime")
             # row.separator(factor=3)
@@ -589,7 +589,7 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
         if self.createCameras:
             box.prop(self, "useMediaAsCameraBG")
 
-            if config.uasDebug:
+            if config.devDebug:
                 row = box.row()
                 row.enabled = self.useMediaAsCameraBG
                 row.separator(factor=3)
@@ -611,7 +611,7 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
         row = box.row()
         row.prop(self, "clearVSE")
 
-        # if config.uasDebug:
+        # if config.devDebug:
         #     row = box.row()
         #     row.prop(self, "importAnimaticInVSE")
         #     row = box.row()
@@ -728,7 +728,7 @@ class UAS_VideoTracks_OT_Create_Shots_From_OTIO_RRS(Operator):
             if self.importAudio_Music:
                 audioTracksToImport.extend(list(range(28, 30)))
 
-            if config.uasDebug:
+            if config.devDebug:
                 bpy.ops.uasvideotracks.compare_otio_and_current_montage(sequenceName=selSeq.get_name())
 
             textFile = conformToRefMontage(
