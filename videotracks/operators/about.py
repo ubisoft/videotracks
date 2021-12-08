@@ -44,13 +44,16 @@ class UAS_VideoTracks_OT_About(Operator):
         row = box.row()
         row.separator()
         print(f"Props.version(): {props.version()}")
-        row.label(text=f"Version: {props.version()[0]}   -    (July 2021)   -    Ubisoft")
+        row.label(text=f"Version: {props.version()[0]}   -    (December 2021)   -    Ubisoft")
 
         # Authors
         ###############
         row = box.row()
         row.separator()
-        row.label(text="Written by Julien Blervaque (aka Werwack)")
+        row.label(text="Designed and Written by Julien Blervaque (aka Werwack)")
+        row = box.row()
+        row.separator()
+        row.label(text="With the help of Romain Carriquiry Borchiari")
 
         # Purpose
         ###############

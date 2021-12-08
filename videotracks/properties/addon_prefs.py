@@ -24,7 +24,6 @@ from bpy.types import AddonPreferences
 from bpy.props import StringProperty, BoolProperty, FloatProperty, FloatVectorProperty
 
 from videotracks.tools.markers_nav_bar.markers_nav_bar_addon_prefs import draw_markers_nav_bar_settings
-from videotracks.tools.time_controls_bar.time_controls_bar_addon_prefs import draw_time_controls_bar_settings
 
 from videotracks.utils.utils_ui import collapsable_panel
 
@@ -162,10 +161,6 @@ class UAS_VideoTracks_AddonPrefs(AddonPreferences):
         collapsable_panel(box, prefs, "mnavbar_pref_panel_opened", text="Markers Nav Bar")
         if prefs.mnavbar_pref_panel_opened:
             draw_markers_nav_bar_settings(self, context, box)
-
-        collapsable_panel(box, prefs, "tcbar_pref_panel_opened", text="Time Controls Bar")
-        if prefs.tcbar_pref_panel_opened:
-            draw_time_controls_bar_settings(self, context, box)
 
         row = layout.row()
         row.separator()

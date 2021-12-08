@@ -39,12 +39,12 @@ _logger = sm_logging.getLogger(__name__)
 
 bl_info = {
     "name": "Video Tracks",
-    "author": "Ubisoft - Julien Blervaque (aka Werwack)",
+    "author": "Ubisoft - Julien Blervaque (aka Werwack), Romain Carriquiry Borchiari",
     "description": "Introduce tracks to the Blender VSE - Ubisoft",
     "blender": (3, 0, 0),
     "version": (0, 2, 1),
     "location": "View3D > Video Tracks",
-    "wiki_url": "https://github.com/ubisoft/videotracks",
+    "doc_url": "https://github.com/ubisoft/videotracks",
     "warning": "BETA Version",
     "category": "Ubisoft",
 }
@@ -103,7 +103,6 @@ def register():
 
     from .tools import vse_render
     from .tools import markers_nav_bar
-    from .tools import time_controls_bar
 
     from .utils import utils_operators
 
@@ -157,7 +156,6 @@ def register():
     addon_prefs.register()
 
     markers_nav_bar.register()
-    time_controls_bar.register()
 
     utils_operators.register()
     #   utils_vse.register()
@@ -208,7 +206,6 @@ def unregister():
 
     from .tools import vse_render
     from .tools import markers_nav_bar
-    from .tools import time_controls_bar
 
     from .utils import utils_operators
 
@@ -243,7 +240,6 @@ def unregister():
     about.unregister()
 
     utils_operators.unregister()
-    time_controls_bar.unregister()
     markers_nav_bar.unregister()
     # markers_nav_bar_addon_prefs.unregister()
 

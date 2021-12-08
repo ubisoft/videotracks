@@ -1,17 +1,35 @@
-![](doc/images/Logo_90_A.png)
-# Video Tracks - Blender Add-on
-Video Tracks is a Blender add-on that provides track headers to the channels of the VSE.
+<img align="left" width="auto" height="auto" src="doc/images/Logo_90_A.png">
 
-* **Latest <u>GitHub</u> release:** [github.com/ubisoft/videotracks/releases/latest](https://github.com/ubisoft/videotracks/releases/latest)
+# Ubisoft Video Tracks - Blender Add-on
+
+</br>
+
+**Video Tracks is a Blender add-on that provides track headers to the channels of the VSE.**
+
+<p align="center">
+  <a href="https://github.com/ubisoft/videotracks#installation" title="Consult the documentation" target="_blank">
+  <img src="doc/images/Documentation.png" width="160" />
+  </a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/ubisoft/videotracks/releases/latest" title="Download latest version">
+  <img src="doc/images/Download.png" width="160" />
+  </a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/ubisoft/videotracks/issues" title="Report and follow issues">
+  <img src="doc/images/Issues.png" width="160" />
+  </a>
+</p>
+
 
 **Disclaimer**
->**This tool is currently supported for LTS version of Blender 2.83 and up to Blender 2.92**
+>**This tool is currently supported for LTS version of Blender 2.93 and up to Blender 3.0**
 >
->**At the moment it is NOT compatible with Blender version 2.93 because there is currently no OpenTimelineIO package for Python 3.9**
->
->It was initialy developed for an animated TV series production in 2020 on Blender 2.83. It has the features that were needed at the time but it
-may not be considered as feature complete for a more generic purpose. In spite of all our efforts to make it reliable some troubles may occur in use cases we have not faced.
->
+>It was initialy developed for an animated TV series production in 2020 on Blender 2.83. It improved a bit the use of the VSE
+and has a set of features that was helpful for us at the time. It should be seen as an experimental tool and cannot be
+considered as feature complete, neither for production nor even for a more generic purpose.
+
+In spite of all our efforts to make it reliable some troubles may occur in use cases we have not faced.
+
 <br />
 
 Note that development is on Windows 10. Please report issues and submit PRs for other OSs.
@@ -26,14 +44,14 @@ a name and where its content can be globaly controlled.
 This is very convenient for previz and 3D layout.
 
 <br />
-<img src="docs/img/VideoTracks_screen.png" alt="Video Tracks screenshot" width="70%"/>
+<img src="doc/images/VideoTracks_screen.png" alt="Video Tracks screenshot" width="70%"/>
 <br /><br />
 
 
 ## Installation:
 Video Tracks can be installed as any standard Blender add-on. Nevertheless:
 
->The addon must be installed in Administrator mode so that the OpenTimelineIO Python wheel can
+>**The addon must be installed in Administrator mode** so that the OpenTimelineIO Python wheel can
 >be downloaded and deployed correctly. Also be sure that your firewall doesn't block the download (or use OpenVPN or equivalent).
 
 Launch Blender, open the Preferences panel and go to the Add-ons section. Press the Install button located at the top of the panel. A dialog box opens, pick the Video Tracks zip file you previously downloaded and validate. The add-on will be installed. Click on the checkbox at the left side of its name to enable it.

@@ -87,7 +87,7 @@ def install_library(lib_names, pip_retries=2, pip_timeout=-100):
 
                 try:
                     f = open(tmp_file, "w")
-                    f.write("Temp file for Ubisoft Stamp Info")
+                    f.write("Temp file for Ubisoft Video Tracks")
                     f.close()
                 except Exception as e:
                     print(f"e: {e}")
@@ -101,7 +101,7 @@ def install_library(lib_names, pip_retries=2, pip_timeout=-100):
 
                 try:
                     f = open(tmp_file, "w")
-                    f.write("Temp file for Ubisoft Stamp Info")
+                    f.write("Temp file for Ubisoft Video Tracks")
                     f.close()
                 except Exception as e:
                     print(f"e: {e}")

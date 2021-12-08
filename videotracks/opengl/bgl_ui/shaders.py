@@ -23,7 +23,7 @@ class BGLShader:
     @classmethod
     def create_batch(cls, draw_mode, vertex_data, indices=None):
         cls._build()
-        return batch_for_shader(cls._shader, draw_mode, vertex_data, indices)
+        return batch_for_shader(cls._shader, draw_mode, vertex_data, indices=indices)
 
     @classmethod
     def draw_batch(cls, batch, blending=True):
