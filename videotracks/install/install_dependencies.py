@@ -191,6 +191,29 @@ def install_dependencies(dependencies_list, retries=2, timeout=100):
     Returns:
         0 if everything went well, the error code (>0) otherwise
     """
+
+    import pip
+    import site
+    import sys
+    import subprocess
+    import os
+    import sys
+    from pathlib import Path
+
+    _logger.debug_ext(f"Installing dependencies. Pip version: {pip.__version__}", col="ORANGE")
+
+    app_path = site.USER_SITE
+    if app_path not in sys.path:
+        sys.path.append(app_path)
+
+    pybin = sys.executable  # bpy.app.binary_path_python # Use for 2.83
+
+    try:
+        subprocess.call([pybin, "-m", "ensurepip"])
+    except ImportError:
+        pass
+    _logger.debug_ext(f"Pip version: {pip.__version__}", col="ORANGE")
+
     for dependencyLib in dependencies_list:
         installation_errors = install_library(dependencyLib, pip_retries=retries, pip_timeout=timeout)
 

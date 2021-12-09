@@ -42,7 +42,7 @@ bl_info = {
     "author": "Ubisoft - Julien Blervaque (aka Werwack), Romain Carriquiry Borchiari",
     "description": "Introduce tracks to the Blender VSE - Ubisoft",
     "blender": (3, 0, 0),
-    "version": (0, 2, 1),
+    "version": (0, 2, 2),
     "location": "View3D > Video Tracks",
     "doc_url": "https://github.com/ubisoft/videotracks",
     "warning": "BETA Version",
@@ -254,4 +254,3 @@ def unregister():
     del bpy.types.WindowManager.UAS_video_tracks_version
 
     config.releaseGlobalVariables()
-

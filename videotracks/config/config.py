@@ -37,7 +37,7 @@ def initGlobalVariables():
     else:
         devDebug = True
 
-    devDebug = True
+    devDebug = False
 
     global devDebug_ignoreLoggerFormatting
     devDebug_ignoreLoggerFormatting = True and devDebug
