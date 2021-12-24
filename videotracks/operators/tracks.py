@@ -329,7 +329,7 @@ class UAS_VideoTracks_MoveTrackUpDown(Operator):
     bl_label = "Move Track Up of Down"
     bl_description = (
         "Move track up or down in the track stack"
-        "\nShift + Click: Move the track channel only,\nCtrl + Click: Movetrack header only"
+        "\nShift + Click: Move the track channel only,\nCtrl + Click: Move track header only"
     )
     bl_options = {"INTERNAL", "UNDO"}
 
