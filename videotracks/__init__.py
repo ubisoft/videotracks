@@ -103,6 +103,7 @@ def register():
 
     from .tools import vse_render
     from .tools import markers_nav_bar
+    from .tools import vsm_tools
 
     from .utils import utils_operators
 
@@ -165,6 +166,7 @@ def register():
     # markers_nav_bar_addon_prefs.register()
 
     vse_render.register()
+    vsm_tools.register()
 
     general.register()
 
@@ -206,6 +208,7 @@ def unregister():
 
     from .tools import vse_render
     from .tools import markers_nav_bar
+    from .tools import vsm_tools
 
     from .utils import utils_operators
 
@@ -234,6 +237,7 @@ def unregister():
     prefs.unregister()
     general.unregister()
 
+    vsm_tools.unregister()
     vse_render.unregister()
 
     # ui
