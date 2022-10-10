@@ -2,7 +2,9 @@
 
 # Ubisoft Video Tracks - Blender Add-on
 
-</br>
+**Video Tracks is NOT SUPPORTED ANYMORE - It has been archived**
+
+</br></br>
 
 **Video Tracks is a Blender add-on that provides track headers to the channels of the VSE.**
 
@@ -22,7 +24,7 @@
 
 
 **Disclaimer**
->**This tool is currently supported for LTS version of Blender 2.93 and up to Blender 3.0**
+>**Up to September 2022 this tool was supported for LTS version of Blender 2.93 and Blender 3.0**
 >
 >It was initialy developed for an animated TV series production in 2020 on Blender 2.83. It improved a bit the use of the VSE
 and has a set of features that was helpful for us at the time. It should be seen as an experimental tool and cannot be
