@@ -2,9 +2,11 @@
 
 # Ubisoft Video Tracks - Blender Add-on
 
+</br>
+
 **Video Tracks is NOT SUPPORTED ANYMORE - It has been archived**
 
-</br></br>
+</br>
 
 **Video Tracks is a Blender add-on that provides track headers to the channels of the VSE.**
 
